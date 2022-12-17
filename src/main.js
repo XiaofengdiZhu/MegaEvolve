@@ -9806,7 +9806,7 @@ function spyCaught(i){
 
 intervals['version_check'] = setInterval(function(){
     $.ajax({
-        url: 'https://pmotschmann.github.io/Evolve/package.json',
+        url: 'https://xiaofengdizhu.github.io/MegaEvolve/package.json',
         type: 'GET',
         dataType: 'json',
         success: function(res){

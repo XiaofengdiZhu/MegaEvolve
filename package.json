@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pmotschmann/Evolve.git"
+    "url": "git+https://github.com/XiaofengdiZhu/MegaEvolve.git"
   },
   "keywords": [
     "Evolve"
@@ -25,9 +25,9 @@
   "author": "Peter Motschmann",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/pmotschmann/Evolve/issues"
+    "url": "https://github.com/XiaofengdiZhu/MegaEvolve/issues"
   },
-  "homepage": "https://github.com/pmotschmann/Evolve#readme",
+  "homepage": "https://github.com/XiaofengdiZhu/MegaEvolve#readme",
   "devDependencies": {
     "ini": "^1.3.8",
     "less": "^3.13.0",

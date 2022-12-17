@@ -1435,7 +1435,7 @@ export function index(){
                     <li><a href="wiki.html" target="_blank">Wiki</a></li>
                     <li><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a></li>
                     <li><a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a></li>
-                    <li><a href="https://github.com/pmotschmann/Evolve" target="_blank">GitHub</a></li>
+                    <li><a href="https://github.com/XiaofengdiZhu/MegaEvolve" target="_blank">GitHub</a></li>
                     <li><a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a></li>
                     <li><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=PTRJZBW9J662C&currency_code=USD&source=url" target="_blank">Donate</a></li>
                 </ul>
