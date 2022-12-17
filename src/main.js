@@ -134,10 +134,8 @@ if (global.lastMsg){
         global.lastMsg[tag].reverse();
     });
 }
-
 $(`#msgQueue`).height(global.settings.msgQueueHeight);
 $(`#buildQueue`).height(global.settings.buildQueueHeight);
-
 if (global.queue.rename === true){
     updateQueueNames(true);
     global.queue.rename = false;
@@ -337,12 +335,15 @@ popover('powerStatus',function(obj){
     }
 );
 
-
+let $pausegame=$('#pausegame');
+$pausegame.addClass('pause');
 if (global.settings.pause){
-    $(`#pausegame`).addClass('pause');
+    $pausegame.text("▶");
 }
 else {
-    $(`#pausegame`).addClass('play');
+    let $pausegame=$('#pausegame');
+    $pausegame.addClass('play');
+    $pausegame.text("〓");
 }
 
 vBind({
@@ -350,7 +351,9 @@ vBind({
     data: {
         city: global.city,
         race: global.race,
-        s: global.settings
+        s: global.settings,
+        checkPeriod:global.settings.checkPeriod,
+        frameLongLoopCount:global.settings.frameLongLoopCount
     },
     methods: {
         weather(){
@@ -414,15 +417,16 @@ vBind({
             return loc(`accelerated_time`);
         },
         pause(){
-            $(`#pausegame`).removeClass('play');
-            $(`#pausegame`).removeClass('pause');
+            let $pausegame=$('#pausegame');
+            $pausegame.removeClass('play');
             if (global.settings.pause){
                 global.settings.pause = false;
-                $(`#pausegame`).addClass('play');
+                $pausegame.addClass('play');
+                $pausegame.text("〓");
             }
             else {
                 global.settings.pause = true;
-                $(`#pausegame`).addClass('pause');
+                $pausegame.text("▶");
             }
             if (!global.settings.pause && !webWorker.s){
                 gameLoop('start');
@@ -430,6 +434,12 @@ vBind({
         },
         pausedesc(){
             return global.settings.pause ? loc('game_play') : loc('game_pause');
+        },
+        checkPeriodChanged(event){
+            global.settings.checkPeriod = event.target.value;
+        },
+        frameLongLoopCountChanged(event){
+            global.settings.frameLongLoopCount = event.target.value;
         }
     },
     filters: {
@@ -656,17 +666,49 @@ $('#lbl_city').html('Village');
 
 if (window.Worker){
     webWorker.w = new Worker("evolve/evolve.js");
+    let counter = 0;
+    let hourLoopStartTime = new Date();
+    let frameStartTime = new Date();
     webWorker.w.addEventListener('message', function(e){
         var data = e.data;
         switch (data) {
             case 'fast':
-                fastLoop();
+                let frameLongLoopCount = global.settings.frameLongLoopCount;
+                try{
+                    for (let x = 0; x < frameLongLoopCount; x++) {
+                        for (let i = 0; i < 5; i++) {
+                            for (let j = 0; j < 4; j++) {
+                                fastLoop();
+                            }
+                            midLoop();
+                        }
+                        longLoop();
+                        counter++;
+                    }
+                    frameLoop();
+                }catch (e) {console.log(e);}
+                if(counter%720 ===0){
+                    let costTime = new Date() - hourLoopStartTime;
+                    let factor = (3600000 / costTime).toFixed(1);
+                    let str = "一小时实际耗时"+(costTime / 1000)+"秒，倍率"+factor;
+                    messageQueue(str,'danger');
+                    counter = 0;
+                    hourLoopStartTime = new Date();
+                }
+                let $realFactor = $("#realFactor");
+                let $frameCost = $("#frameCost");
+                webWorker.mt = new Date()-frameStartTime;
+                $frameCost.text((webWorker.mt/1000).toFixed(2)+"s");
+                global.frameFactor = 5000*frameLongLoopCount/webWorker.mt;
+                $realFactor.text(global.frameFactor.toFixed(1));
+                frameStartTime = new Date();
+                webWorker.w.postMessage({ loop: 'done' });
                 break;
             case 'mid':
-                midLoop();
+                //midLoop();
                 break;
             case 'long':
-                longLoop();
+                //longLoop();
                 break;
         }
     }, false);
@@ -678,13 +720,6 @@ resourceAlt();
 var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
-    if (!global.race['no_craft']){
-        $('.craft').each(function(e){
-            if (typeof $(this).data('val') === 'number'){
-                $(this).html(sizeApproximation($(this).data('val') * keyMultiplier(),1));
-            }
-        });
-    }
     const date = new Date();
 
     breakdown.p['Global'] = {};
@@ -1679,16 +1714,16 @@ function fastLoop(){
                     }
                 }
 
-                if (p_on[parts[1]] !== global[region][parts[1]].on){
+                /*if (p_on[parts[1]] !== global[region][parts[1]].on){
                     $(`#${region}-${parts[1]} .on`).addClass('warn');
                 }
                 else {
                     $(`#${region}-${parts[1]} .on`).removeClass('warn');
-                }
+                }*/
             }
             else {
                 p_on[parts[1]] = 0;
-                $(`#${region}-${parts[1]} .on`).removeClass('warn');
+                //$(`#${region}-${parts[1]} .on`).removeClass('warn');
             }
         }
 
@@ -1731,16 +1766,16 @@ function fastLoop(){
                     }
                 }
 
-                if (support_on['lander'] !== global.space.lander.on){
+                /*if (support_on['lander'] !== global.space.lander.on){
                     $(`#space-lander .on`).addClass('warn');
                 }
                 else {
                     $(`#space-lander .on`).removeClass('warn');
-                }
+                }*/
             }
             else {
                 global.space.fob.troops = 0;
-                $(`#space-lander .on`).addClass('warn');
+                //$(`#space-lander .on`).addClass('warn');
             }
         }
 
@@ -1783,12 +1818,12 @@ function fastLoop(){
                                 break;
                             }
                         }
-                        if (p_on[sup.s] < global.space[sup.s].on){
+                        /*if (p_on[sup.s] < global.space[sup.s].on){
                             $(`#space-${sup.s} .on`).addClass('warn');
                         }
                         else {
                             $(`#space-${sup.s} .on`).removeClass('warn');
-                        }
+                        }*/
                     }
                 }
 
@@ -1842,10 +1877,10 @@ function fastLoop(){
 
                         if (used_support + operating > global.space[sup.s].s_max){
                             operating -= (used_support + operating) - global.space[sup.s].s_max;
-                            $(`#${id} .on`).addClass('warn');
+                            //$(`#${id} .on`).addClass('warn');
                         }
                         else {
-                            $(`#${id} .on`).removeClass('warn');
+                            //$(`#${id} .on`).removeClass('warn');
                         }
                         used_support += operating;
                         support_on[area_structs[i]] = operating;
@@ -1931,10 +1966,10 @@ function fastLoop(){
                     let id = actions.interstellar.int_alpha[structs[i]].id;
                     if (used_support + operating > global.interstellar.starport.s_max){
                         operating -=  (used_support + operating) - global.interstellar.starport.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -1995,10 +2030,10 @@ function fastLoop(){
                     let id = actions.galaxy.gxy_gateway[gateway_structs[i]].id;
                     if (used_support + operating > global.galaxy.starbase.s_max){
                         operating -= (used_support + operating) - global.galaxy.starbase.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating * -(actions.galaxy.gxy_gateway[gateway_structs[i]].support());
                     gal_on[gateway_structs[i]] = operating;
@@ -2022,10 +2057,10 @@ function fastLoop(){
                     let id = actions.galaxy.gxy_alien2[foothold_structs[i]].id;
                     if (used_support + operating > global.galaxy.foothold.s_max){
                         operating -= (used_support + operating) - global.galaxy.foothold.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating * -(actions.galaxy.gxy_alien2[foothold_structs[i]].support());
                     gal_on[foothold_structs[i]] = operating;
@@ -2069,10 +2104,10 @@ function fastLoop(){
                     let id = actions.portal.prtl_lake[harbour_structs[i]].id;
                     if (used_support + operating > global.portal.harbour.s_max){
                         operating -= (used_support + operating) - global.portal.harbour.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating * -(actions.portal.prtl_lake[harbour_structs[i]].support());
                     gal_on[harbour_structs[i]] = operating;
@@ -2096,10 +2131,10 @@ function fastLoop(){
                     let id = actions.portal.prtl_spire[purifier_structs[i]].id;
                     if (used_support + operating > global.portal.purifier.s_max){
                         operating -= (used_support + operating) - global.portal.purifier.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating * -(actions.portal.prtl_spire[purifier_structs[i]].support());
                     spire_on[purifier_structs[i]] = operating;
@@ -2135,10 +2170,10 @@ function fastLoop(){
                     if (used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) > global.space.space_station.s_max){
                         let excess = used_support + (operating * -(actions.space.spc_belt[belt_structs[i]].support())) - global.space.space_station.s_max;
                         operating -= Math.ceil(excess / -(actions.space.spc_belt[belt_structs[i]].support()));
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += (operating * -(actions.space.spc_belt[belt_structs[i]].support()));
                     support_on[belt_structs[i]] = operating;
@@ -2173,10 +2208,10 @@ function fastLoop(){
                     let id = actions.interstellar.int_nebula[structs[i]].id;
                     if (used_support + operating > global.interstellar.nexus.s_max){
                         operating -=  (used_support + operating) - global.interstellar.nexus.s_max;
-                        $(`#${id} .on`).addClass('warn');
+                        //$(`#${id} .on`).addClass('warn');
                     }
                     else {
-                        $(`#${id} .on`).removeClass('warn');
+                        //$(`#${id} .on`).removeClass('warn');
                     }
                     used_support += operating;
                     int_on[structs[i]] = operating;
@@ -2372,12 +2407,12 @@ function fastLoop(){
                         crew_mil += global[area][ship]['mil'];
                     }
 
-                    if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil() || gal_on[ship] < global[area][ship].on){
+                    /*if (global[area][ship]['crew'] < global[area][ship].on * actions[area][region][ship].ship.civ() || global[area][ship]['mil'] < global[area][ship].on * actions[area][region][ship].ship.mil() || gal_on[ship] < global[area][ship].on){
                         $(`#galaxy-${ship} .on`).addClass('warn');
                     }
                     else {
                         $(`#galaxy-${ship} .on`).removeClass('warn');
-                    }
+                    }*/
                 }
             }
         }
@@ -5779,21 +5814,6 @@ function fastLoop(){
         // Power grid state
         global.city.power_total = -max_power;
         global.city.power = power_grid;
-        if (global.city.power < 0){
-            $('#powerMeter').addClass('low');
-            $('#powerMeter').removeClass('neutral');
-            $('#powerMeter').removeClass('high');
-        }
-        else if (global.city.power > 0){
-            $('#powerMeter').removeClass('low');
-            $('#powerMeter').removeClass('neutral');
-            $('#powerMeter').addClass('high');
-        }
-        else {
-            $('#powerMeter').removeClass('low');
-            $('#powerMeter').addClass('neutral');
-            $('#powerMeter').removeClass('high');
-        }
 
         if (p_on['world_controller'] && p_on['world_controller'] > 0){
             if (global.tech['wsc'] === 0){
@@ -5881,10 +5901,11 @@ function fastLoop(){
 
     // carport repair
     if (global.portal['carport']){
+        let $portalCarport = $('#portal-carport .count');
         if (global.portal.carport.damaged > 0){
-            if (!$('#portal-carport .count').hasClass('has-text-alert')){
-                $('#portal-carport .count').addClass('has-text-alert');
-            }
+            //if (!$portalCarport.hasClass('has-text-alert')){
+                $portalCarport.addClass('has-text-alert');
+            //}
             global.portal.carport.repair++;
             if (global.portal.carport.repair >= actions.portal.prtl_fortress.carport.repair()){
                 global.portal.carport.repair = 0;
@@ -5892,18 +5913,11 @@ function fastLoop(){
             }
         }
         else {
-            if ($('#portal-carport .count').hasClass('has-text-alert')){
-                $('#portal-carport .count').removeClass('has-text-alert');
-            }
+            //if ($portalCarport.hasClass('has-text-alert')){
+                $portalCarport.removeClass('has-text-alert');
+            //}
         }
     }
-
-    // main resource delta tracking
-    Object.keys(global.resource).forEach(function (res) {
-        if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
-            diffCalc(res,webWorker.mt);
-        }
-    });
 
     if (global.settings.expose){
         if (!window['evolve']){
@@ -5915,9 +5929,10 @@ function fastLoop(){
     let easter = eventActive('easter');
     if (easter.active){
         for (i=1; i<=15; i++){
-            if ($(`#egg${i}`).length > 0 && !$(`#egg${i}`).hasClass('binded')){
+            let $egg = $(`#egg${i}`);
+            if ($egg.length > 0 && !$egg.hasClass('binded')){
                 easterEggBind(i);
-                $(`#egg${i}`).addClass('binded');
+                $egg.addClass('binded');
             }
         }
     }
@@ -5925,15 +5940,17 @@ function fastLoop(){
     let halloween = eventActive('halloween');
     if (halloween.active){
         for (i=1; i<=7; i++){
-            if ($(`#treat${i}`).length > 0 && !$(`#treat${i}`).hasClass('binded')){
+            let $treat = $(`#treat${i}`);
+            if ($treat.length > 0/* && !$treat.hasClass('binded')*/){
                 trickOrTreatBind(i,false);
-                $(`#treat${i}`).addClass('binded');
+                $treat.addClass('binded');
             }
         }
         for (i=1; i<=7; i++){
-            if ($(`#trick${i}`).length > 0 && !$(`#trick${i}`).hasClass('binded')){
+            let $trick=$(`#trick${i}`);
+            if ($trick.length > 0/* && !$trick.hasClass('binded')*/){
                 trickOrTreatBind(i,true);
-                $(`#trick${i}`).addClass('binded');
+                $trick.addClass('binded');
             }
         }
     }
@@ -5969,19 +5986,21 @@ function midLoop(){
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
                     if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
+                        //if (element.hasClass('cna')){
                             element.removeClass('cna');
-                        }
+                        //}
                     }
-                    else if (!element.hasClass('cna')){
+                    //else if (!element.hasClass('cna')){
+                    else{
                         element.addClass('cna');
                     }
                     if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
+                        //if (element.hasClass('cnam')){
                             element.removeClass('cnam');
-                        }
+                        //}
                     }
-                    else if (!element.hasClass('cnam')){
+                    //else if (!element.hasClass('cnam')){
+                    else{
                         element.addClass('cnam');
                     }
                 }
@@ -7613,11 +7632,12 @@ function midLoop(){
                 global.resource[res].amount = 0;
             }
             if (global.resource[res].amount >= global.resource[res].max * 0.99){
-                if (!$(`#res${res} .count`).hasClass('has-text-warning')){
+                //if (!$(`#res${res} .count`).hasClass('has-text-warning')){
                     $(`#res${res} .count`).addClass('has-text-warning');
-                }
+                //}
             }
-            else if ($(`#res${res} .count`).hasClass('has-text-warning')){
+            //else if ($(`#res${res} .count`).hasClass('has-text-warning')){
+            else{
                 $(`#res${res} .count`).removeClass('has-text-warning');
             }
         });
@@ -7796,19 +7816,21 @@ function midLoop(){
                 let c_action = actions.city[action];
                 let element = $('#'+c_action.id);
                 if (checkAffordable(c_action)){
-                    if (element.hasClass('cna')){
+                    //if (element.hasClass('cna')){
                         element.removeClass('cna');
-                    }
+                    //}
                 }
-                else if (!element.hasClass('cna')){
+                //else if (!element.hasClass('cna')){
+                else{
                     element.addClass('cna');
                 }
                 if (checkAffordable(c_action,true)){
-                    if (element.hasClass('cnam')){
+                    //if (element.hasClass('cnam')){
                         element.removeClass('cnam');
-                    }
+                    //}
                 }
-                else if (!element.hasClass('cnam')){
+                //else if (!element.hasClass('cnam')){
+                else{
                     element.addClass('cnam');
                 }
                 if (global.city[action]){
@@ -7825,19 +7847,21 @@ function midLoop(){
                 let element = $('#'+c_action.id);
                 if (element.length > 0){
                     if (checkAffordable(c_action)){
-                        if (element.hasClass('cna')){
+                        //if (element.hasClass('cna')){
                             element.removeClass('cna');
-                        }
+                        //}
                     }
-                    else if (!element.hasClass('cna')){
+                    //else if (!element.hasClass('cna')){
+                    else{
                         element.addClass('cna');
                     }
                     if (checkAffordable(c_action,true)){
-                        if (element.hasClass('cnam')){
+                        //if (element.hasClass('cnam')){
                             element.removeClass('cnam');
-                        }
+                        //}
                     }
-                    else if (!element.hasClass('cnam')){
+                    //else if (!element.hasClass('cnam')){
+                    else{
                         element.addClass('cnam');
                     }
                 }
@@ -7854,19 +7878,21 @@ function midLoop(){
                         let c_action = actions[location][region][action];
                         let element = $('#'+c_action.id);
                         if (checkAffordable(c_action)){
-                            if (element.hasClass('cna')){
+                            //if (element.hasClass('cna')){
                                 element.removeClass('cna');
-                            }
+                            //}
                         }
-                        else if (!element.hasClass('cna')){
+                        //else if (!element.hasClass('cna')){
+                        else{
                             element.addClass('cna');
                         }
                         if (checkAffordable(c_action,true)){
-                            if (element.hasClass('cnam')){
+                            //if (element.hasClass('cnam')){
                                 element.removeClass('cnam');
-                            }
+                            //}
                         }
-                        else if (!element.hasClass('cnam')){
+                        //else if (!element.hasClass('cnam')){
+                        else{
                             element.addClass('cnam');
                         }
                         if (global[s_region][action]){
@@ -8016,12 +8042,12 @@ function midLoop(){
 
             if (global.portal.hasOwnProperty('waygate') && global.tech.hasOwnProperty('waygate') && global.portal.waygate.on === 1 && global.tech.waygate >= 2 && global.portal.waygate.progress < 100){
                 global.portal.waygate.progress += progress;
-                global.portal.waygate.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.waygate.progress) / progress);
+                global.portal.waygate.time = progress === 0 ? timeFormat(-1) : timeFormat(((100 - global.portal.waygate.progress) / progress)/(global.frameFactor??1));
                 global.portal.spire.time = timeFormat(-1);
             }
             else {
                 global.portal.spire.progress += progress;
-                global.portal.spire.time = progress === 0 ? timeFormat(-1) : timeFormat((100 - global.portal.spire.progress) / progress);
+                global.portal.spire.time = progress === 0 ? timeFormat(-1) : timeFormat(((100 - global.portal.spire.progress) / progress)/(global.frameFactor??1));
                 if (global.tech['waygate'] && global.tech.waygate >= 2){
                     global.portal.waygate.time = timeFormat(-1);
                 }
@@ -8405,8 +8431,10 @@ function midLoop(){
     });
 
     {
-        let msgHeight = $(`#msgQueue`).height();
-        let buildHeight = $(`#buildQueue`).height();
+        let $msgQueue=$(`#msgQueue`);
+        let $buildQueue=$(`#buildQueue`);
+        let msgHeight = $msgQueue.height();
+        let buildHeight = $buildQueue.height();
         let totHeight = $(`.leftColumn`).height();
         let rem = $(`#topBar`).height();
         let min = rem * 5;
@@ -8434,25 +8462,25 @@ function midLoop(){
             }
         }
 
-        if ($(`#msgQueue`).hasClass('right')){
+        if ($msgQueue.hasClass('right')){
             $(`#resources`).height(`calc(100vh - 5rem)`);
-            if ($(`#msgQueue`).hasClass('vscroll')){
-                $(`#msgQueue`).removeClass('vscroll');
-                $(`#msgQueue`).addClass('sticky');
+            if ($msgQueue.hasClass('vscroll')){
+                $msgQueue.removeClass('vscroll');
+                $msgQueue.addClass('sticky');
             }
             msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
         }
         else {
             $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
-            if ($(`#msgQueue`).hasClass('sticky')){
-                $(`#msgQueue`).removeClass('sticky');
-                $(`#msgQueue`).addClass('vscroll');
+            if ($msgQueue.hasClass('sticky')){
+                $msgQueue.removeClass('sticky');
+                $msgQueue.addClass('vscroll');
                 msgHeight = 100;
             }
         }
 
-        $(`#msgQueue`).height(msgHeight);
-        $(`#buildQueue`).height(buildHeight);
+        $msgQueue.height(msgHeight);
+        $buildQueue.height(buildHeight);
         global.settings.msgQueueHeight = msgHeight;
         global.settings.buildQueueHeight = buildHeight;
     }
@@ -9382,7 +9410,40 @@ function longLoop(){
         }
     }
 }
+function frameLoop(){
+    if (!global.race['no_craft']){
+        $('.craft').each(function(e){
+            if (typeof $(this).data('val') === 'number'){
+                $(this).html(sizeApproximation($(this).data('val') * keyMultiplier(),1));
+            }
+        });
+    }
 
+    // main resource delta tracking
+    Object.keys(global.resource).forEach(function (res) {
+        if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
+            diffCalc(res,webWorker.mt);
+        }
+    });
+
+
+    let $powerMeter = $('#powerMeter');
+    if (global.city.power < 0){
+        $powerMeter.addClass('low');
+        $powerMeter.removeClass('neutral');
+        $powerMeter.removeClass('high');
+    }
+    else if (global.city.power > 0){
+        $powerMeter.removeClass('low');
+        $powerMeter.removeClass('neutral');
+        $powerMeter.addClass('high');
+    }
+    else {
+        $powerMeter.removeClass('low');
+        $powerMeter.addClass('neutral');
+        $powerMeter.removeClass('high');
+    }
+}
 function buildGene(){
     if (global.resource.Knowledge.amount >= 200000 && global.resource.Knowledge.amount >= global.resource.Knowledge.max - 10000){
         global.resource.Knowledge.amount -= 200000;
@@ -9432,14 +9493,14 @@ function q_check(load){
 
 function diffCalc(res,period){
     let sec = 1000;
-    if (global.race['slow']){
+    /*if (global.race['slow']){
         let slow = 1 + (traits.slow.vars()[0] / 100);
         sec = Math.floor(sec * slow);
     }
     if (global.race['hyper']){
         let fast = 1 - (traits.hyper.vars()[0] / 100);
         sec = Math.floor(sec * fast);
-    }
+    }*/
 
     global.resource[res].diff = +(global.resource[res].delta / (period / sec)).toFixed(2);
     global.resource[res].delta = 0;
@@ -9487,207 +9548,209 @@ function steelCheck(){
         messageQueue(loc('steel_sample'),'info',false,['progress']);
     }
 }
-
 function setWeather(){
+    let $moon = $("#moon");
+    let $temp = $("#temp");
+    let $weather = $("#weather");
     // Moon Phase
     switch(global.city.calendar.moon){
         case 0:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-1')
-                : $('#moon').removeClass('wi-moon-waning-crescent-6');
-            $('#moon').addClass('wi-moon-new');
+                ? $moon.removeClass('wi-moon-waxing-crescent-1')
+                : $moon.removeClass('wi-moon-waning-crescent-6');
+            $moon.addClass('wi-moon-new');
             break;
         case 1:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-2')
-                : $('#moon').removeClass('wi-moon-new');
-            $('#moon').addClass('wi-moon-waxing-crescent-1');
+                ? $moon.removeClass('wi-moon-waxing-crescent-2')
+                : $moon.removeClass('wi-moon-new');
+            $moon.addClass('wi-moon-waxing-crescent-1');
             break;
         case 2:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-3')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-1');
-            $('#moon').addClass('wi-moon-waxing-crescent-2');
+                ? $moon.removeClass('wi-moon-waxing-crescent-3')
+                : $moon.removeClass('wi-moon-waxing-crescent-1');
+            $moon.addClass('wi-moon-waxing-crescent-2');
             break;
         case 3:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-4')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-2');
-            $('#moon').addClass('wi-moon-waxing-crescent-3');
+                ? $moon.removeClass('wi-moon-waxing-crescent-4')
+                : $moon.removeClass('wi-moon-waxing-crescent-2');
+            $moon.addClass('wi-moon-waxing-crescent-3');
             break;
         case 4:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-5')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-3');
-            $('#moon').addClass('wi-moon-waxing-crescent-4');
+                ? $moon.removeClass('wi-moon-waxing-crescent-5')
+                : $moon.removeClass('wi-moon-waxing-crescent-3');
+            $moon.addClass('wi-moon-waxing-crescent-4');
             break;
         case 5:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-crescent-6')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-4');
-            $('#moon').addClass('wi-moon-waxing-crescent-5');
+                ? $moon.removeClass('wi-moon-waxing-crescent-6')
+                : $moon.removeClass('wi-moon-waxing-crescent-4');
+            $moon.addClass('wi-moon-waxing-crescent-5');
             break;
         case 6:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-first-quarter')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-5');
-            $('#moon').addClass('wi-moon-waxing-crescent-6');
+                ? $moon.removeClass('wi-moon-first-quarter')
+                : $moon.removeClass('wi-moon-waxing-crescent-5');
+            $moon.addClass('wi-moon-waxing-crescent-6');
             break;
         case 7:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-1')
-                : $('#moon').removeClass('wi-moon-waxing-crescent-6');
-            $('#moon').addClass('wi-moon-first-quarter');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-1')
+                : $moon.removeClass('wi-moon-waxing-crescent-6');
+            $moon.addClass('wi-moon-first-quarter');
             break;
         case 8:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-2')
-                : $('#moon').removeClass('wi-moon-first-quarter');
-            $('#moon').addClass('wi-moon-waxing-gibbous-1');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-2')
+                : $moon.removeClass('wi-moon-first-quarter');
+            $moon.addClass('wi-moon-waxing-gibbous-1');
             break;
         case 9:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-3')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-1');
-            $('#moon').addClass('wi-moon-waxing-gibbous-2');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-3')
+                : $moon.removeClass('wi-moon-waxing-gibbous-1');
+            $moon.addClass('wi-moon-waxing-gibbous-2');
             break;
         case 10:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-4')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-2');
-            $('#moon').addClass('wi-moon-waxing-gibbous-3');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-4')
+                : $moon.removeClass('wi-moon-waxing-gibbous-2');
+            $moon.addClass('wi-moon-waxing-gibbous-3');
             break;
         case 11:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-5')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-3');
-            $('#moon').addClass('wi-moon-waxing-gibbous-4');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-5')
+                : $moon.removeClass('wi-moon-waxing-gibbous-3');
+            $moon.addClass('wi-moon-waxing-gibbous-4');
             break;
         case 12:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waxing-gibbous-6')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-4');
-            $('#moon').addClass('wi-moon-waxing-gibbous-5');
+                ? $moon.removeClass('wi-moon-waxing-gibbous-6')
+                : $moon.removeClass('wi-moon-waxing-gibbous-4');
+            $moon.addClass('wi-moon-waxing-gibbous-5');
             break;
         case 13:
-            clearElement($('#moon'));
+            clearElement($moon);
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-full')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-5');
-            $('#moon').addClass('wi-moon-waxing-gibbous-6');
+                ? $moon.removeClass('wi-moon-full')
+                : $moon.removeClass('wi-moon-waxing-gibbous-5');
+            $moon.addClass('wi-moon-waxing-gibbous-6');
             break;
         case 14:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-1')
-                : $('#moon').removeClass('wi-moon-waxing-gibbous-6');
+                ? $moon.removeClass('wi-moon-waning-gibbous-1')
+                : $moon.removeClass('wi-moon-waxing-gibbous-6');
             let egg = easterEgg(2);
             if (egg.length > 0){
-                $('#moon').append(egg);
+                $moon.append(egg);
             }
             else {
-                $('#moon').addClass('wi-moon-full');
+                $moon.addClass('wi-moon-full');
             }
             break;
         case 15:
-            clearElement($('#moon'));
+            clearElement($moon);
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-2')
-                : $('#moon').removeClass('wi-moon-full');
-            $('#moon').addClass('wi-moon-waning-gibbous-1');
+                ? $moon.removeClass('wi-moon-waning-gibbous-2')
+                : $moon.removeClass('wi-moon-full');
+            $moon.addClass('wi-moon-waning-gibbous-1');
             break;
         case 16:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-3')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-1');
-            $('#moon').addClass('wi-moon-waning-gibbous-2');
+                ? $moon.removeClass('wi-moon-waning-gibbous-3')
+                : $moon.removeClass('wi-moon-waning-gibbous-1');
+            $moon.addClass('wi-moon-waning-gibbous-2');
             break;
         case 17:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-4')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-2');
-            $('#moon').addClass('wi-moon-waning-gibbous-3');
+                ? $moon.removeClass('wi-moon-waning-gibbous-4')
+                : $moon.removeClass('wi-moon-waning-gibbous-2');
+            $moon.addClass('wi-moon-waning-gibbous-3');
             break;
         case 18:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-5')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-3');
-            $('#moon').addClass('wi-moon-waning-gibbous-4');
+                ? $moon.removeClass('wi-moon-waning-gibbous-5')
+                : $moon.removeClass('wi-moon-waning-gibbous-3');
+            $moon.addClass('wi-moon-waning-gibbous-4');
             break;
         case 19:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-gibbous-6')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-4');
-            $('#moon').addClass('wi-moon-waning-gibbous-5');
+                ? $moon.removeClass('wi-moon-waning-gibbous-6')
+                : $moon.removeClass('wi-moon-waning-gibbous-4');
+            $moon.addClass('wi-moon-waning-gibbous-5');
             break;
         case 20:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-third-quarter')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-5');
-            $('#moon').addClass('wi-moon-waning-gibbous-6');
+                ? $moon.removeClass('wi-moon-third-quarter')
+                : $moon.removeClass('wi-moon-waning-gibbous-5');
+            $moon.addClass('wi-moon-waning-gibbous-6');
             break;
         case 21:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-1')
-                : $('#moon').removeClass('wi-moon-waning-gibbous-6');
-            $('#moon').addClass('wi-moon-third-quarter');
+                ? $moon.removeClass('wi-moon-waning-crescent-1')
+                : $moon.removeClass('wi-moon-waning-gibbous-6');
+            $moon.addClass('wi-moon-third-quarter');
             break;
         case 22:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-2')
-                : $('#moon').removeClass('wi-moon-third-quarter');
-            $('#moon').addClass('wi-moon-waning-crescent-1');
+                ? $moon.removeClass('wi-moon-waning-crescent-2')
+                : $moon.removeClass('wi-moon-third-quarter');
+            $moon.addClass('wi-moon-waning-crescent-1');
             break;
         case 23:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-3')
-                : $('#moon').removeClass('wi-moon-waning-crescent-1');
-            $('#moon').addClass('wi-moon-waning-crescent-2');
+                ? $moon.removeClass('wi-moon-waning-crescent-3')
+                : $moon.removeClass('wi-moon-waning-crescent-1');
+            $moon.addClass('wi-moon-waning-crescent-2');
             break;
         case 24:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-4')
-                : $('#moon').removeClass('wi-moon-waning-crescent-2');
-            $('#moon').addClass('wi-moon-waning-crescent-3');
+                ? $moon.removeClass('wi-moon-waning-crescent-4')
+                : $moon.removeClass('wi-moon-waning-crescent-2');
+            $moon.addClass('wi-moon-waning-crescent-3');
             break;
         case 25:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-5')
-                : $('#moon').removeClass('wi-moon-waning-crescent-3');
-            $('#moon').addClass('wi-moon-waning-crescent-4');
+                ? $moon.removeClass('wi-moon-waning-crescent-5')
+                : $moon.removeClass('wi-moon-waning-crescent-3');
+            $moon.addClass('wi-moon-waning-crescent-4');
             break;
         case 26:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-waning-crescent-6')
-                : $('#moon').removeClass('wi-moon-waning-crescent-4');
-            $('#moon').addClass('wi-moon-waning-crescent-5');
+                ? $moon.removeClass('wi-moon-waning-crescent-6')
+                : $moon.removeClass('wi-moon-waning-crescent-4');
+            $moon.addClass('wi-moon-waning-crescent-5');
             break;
         case 27:
             global.city.ptrait.includes('retrograde')
-                ? $('#moon').removeClass('wi-moon-new')
-                : $('#moon').removeClass('wi-moon-waning-crescent-5');
-            $('#moon').addClass('wi-moon-waning-crescent-6');
+                ? $moon.removeClass('wi-moon-new')
+                : $moon.removeClass('wi-moon-waning-crescent-5');
+            $moon.addClass('wi-moon-waning-crescent-6');
             break;
     }
 
     // Temp
-    $('#temp').removeClass('wi-thermometer');
-    $('#temp').removeClass('wi-thermometer-exterior');
+    $temp.removeClass('wi-thermometer');
+    $temp.removeClass('wi-thermometer-exterior');
     if (global.city.calendar.temp === 0){
-        $('#temp').addClass('wi-thermometer-exterior');
+        $temp.addClass('wi-thermometer-exterior');
     }
     else if (global.city.calendar.temp === 2){
-        $('#temp').addClass('wi-thermometer');
+        $temp.addClass('wi-thermometer');
     }
 
     // Sky
-    $('#weather').removeClass('wi-day-sunny');
-    $('#weather').removeClass('wi-day-windy');
-    $('#weather').removeClass('wi-cloud');
-    $('#weather').removeClass('wi-cloudy-gusts');
-    $('#weather').removeClass('wi-rain');
-    $('#weather').removeClass('wi-storm-showers');
-    $('#weather').removeClass('wi-snow');
-    $('#weather').removeClass('wi-snow-wind');
+    $weather.removeClass('wi-day-sunny');
+    $weather.removeClass('wi-day-windy');
+    $weather.removeClass('wi-cloud');
+    $weather.removeClass('wi-cloudy-gusts');
+    $weather.removeClass('wi-rain');
+    $weather.removeClass('wi-storm-showers');
+    $weather.removeClass('wi-snow');
+    $weather.removeClass('wi-snow-wind');
 
     let weather;
     if (global.city.calendar.weather === 0){
@@ -9704,7 +9767,7 @@ function setWeather(){
     else if (global.city.calendar.weather === 2){
         weather = global.city.calendar.wind === 0 ? 'wi-day-sunny' : 'wi-day-windy';
     }
-    $('#weather').addClass(weather);
+    $weather.addClass(weather);
 }
 
 function resourceAlt(){

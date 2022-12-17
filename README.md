@@ -1,10 +1,19 @@
-# Evolve
+# MegaEvolve 超进化
 
-## Play
+## Play 开玩
 
-https://pmotschmann.github.io/Evolve/
+https://xiaofengdizhu.github.io/MegaEvolve/
 
-## About
+## About 关于
+
+This Version is based on [pmotschmann/Evolve](https://github.com/pmotschmann/Evolve), I add speed-up feature and make some small UI changes to this awesome game(no values changed). I hope you will enjoy it!
+这个版本基于[pmotschmann/Evolve](https://github.com/pmotschmann/Evolve)，我给这个超赞的游戏添加了加速功能，还做了一点界面调整（没有数值调整），希望你能享受它。
+
+Thanks to [g8hh/Evolve](https://github.com/g8hh/evolve), I used it's `strings.zh-CN.json`(not totally).感谢[g8hh/Evolve](https://github.com/g8hh/evolve)，我使用了它的`strings.zh-CN.json`（不完全照抄）。
+
+For faster speed, you will need a powerful CPU with higher Single-Core performance.如果你想要更快的加速，需要有更强劲单核性能的CPU。
+
+Below is original readme.以下是原版介绍。
 
 An incremental game about evolving a civilization from primordial ooze into a space faring empire.
 Evolve combines elements of a clicker with an idler and has lots of micromanagement.

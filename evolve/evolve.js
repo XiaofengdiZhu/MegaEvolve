@@ -1,26 +1,31 @@
 var intervals = {};
-self.addEventListener('message', function(e){
+let lastDone = true;
+function fastTick(period) {
+    if(lastDone) {
+        lastDone = false;
+        self.postMessage('fast');}
+    intervals['main_loop'] = setTimeout(() => fastTick(period), period<1?0:period);
+}
+
+self.addEventListener('message', function (e) {
     var data = e.data;
     switch (data.loop) {
         case 'short':
-            intervals['main_loop'] = setInterval(function(){
-                self.postMessage('fast');
-            }, data.period);
+            lastDone = true;
+            intervals['main_loop'] = fastTick(data.period);
             break;
         case 'mid':
-            intervals['mid_loop'] = setInterval(function(){
-                self.postMessage('mid');
-            }, data.period);
+            intervals['mid_loop'] = null;
             break;
         case 'long':
-            intervals['long_loop'] = setInterval(function(){
-                self.postMessage('long');
-            }, data.period);
+            intervals['long_loop'] = null;
             break;
         case 'clear':
-            clearInterval(intervals['main_loop']);
-            clearInterval(intervals['mid_loop']);
-            clearInterval(intervals['long_loop']);
+            clearTimeout(intervals['main_loop']);
             break;
-    };
-  }, false);
+        case "done":
+            lastDone = true;
+            break;
+    }
+    ;
+}, false);

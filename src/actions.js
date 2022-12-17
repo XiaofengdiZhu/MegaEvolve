@@ -8412,7 +8412,7 @@ export function resQueue(){
     clearElement($('#resQueue'));
     $('#resQueue').append($(`
         <h2 class="has-text-success">${loc('research_queue')} ({{ queue.length }}/{{ max }})</h2>
-        <span id="pauserqueue" class="${global.r_queue.pause ? 'pause' : 'play'}" role="button" @click="pauseRQueue()" :aria-label="pausedesc()"></span>
+        <span id="pauserqueue" class="pause ${global.r_queue.pause ? '' : 'play'}" role="button" @click="pauseRQueue()" :aria-label="pausedesc()">${global.queue.pause ? '▶' : '〓'}</span>
     `));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -8434,15 +8434,16 @@ export function resQueue(){
                     return `rq${global.r_queue.queue[index].id}`;
                 },
                 pauseRQueue(){
-                    $(`#pauserqueue`).removeClass('play');
-                    $(`#pauserqueue`).removeClass('pause');
+                    let $pauserqueue=$(`#pauserqueue`);
+                    $pauserqueue.removeClass('play');
                     if (global.r_queue.pause){
                         global.r_queue.pause = false;
-                        $(`#pauserqueue`).addClass('play');
+                        $pauserqueue.addClass('play');
+                        $pauserqueue.text("〓");
                     }
                     else {
                         global.r_queue.pause = true;
-                        $(`#pauserqueue`).addClass('pause');
+                        $pauserqueue.text("▶");
                     }
                 },
                 pausedesc(){

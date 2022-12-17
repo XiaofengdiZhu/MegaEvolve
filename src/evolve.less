@@ -1155,33 +1155,16 @@ Misc ---------> Main template
         }
         
         // Play/Pause
-        .play {
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            bottom: .125rem;
-            width: 0;
-            height: 0;
-            border-top: .25rem solid transparent;
-            border-left: .375rem solid @has-text-success;
-            border-bottom: .25rem solid transparent;
-            transition: all 0.3s;
-            -webkit-transition: all 0.3s;
-            -moz-transition: all 0.3s;
-        }
         .pause {
             display: inline-block;
             position: relative;
             cursor: pointer;
-            box-sizing: content-box;
-            bottom: .0625rem;
-            width: .125rem;;
-            height: .625rem;;
-            border-right: .125rem solid @has-text-danger;
-            border-left: .125rem solid @has-text-danger;
-            transition: all 0.3s;
-            -webkit-transition: all 0.3s;
-            -moz-transition: all 0.3s;
+            width:16px;
+            height:19px;
+            vertical-align: top;
+        }
+        .play{
+            transform: rotate(90deg);
         }
 
         // .meter
@@ -1685,7 +1668,10 @@ html.light {
             .wi-snow-wind {
                 color: #fff;
             }
+
+            .day{width:50px;}
         }
+        #realFactor{display:inline-block;width:42px;}
     }
 
     // .main
@@ -3905,10 +3891,14 @@ span.inline {
         .temp {
             margin-left: 0.125rem;
             font-size: 0.875rem;
+            width: 10px;
+            text-align: center;
         }
 
         .weather {
             font-size: 0.8125rem;
+            width: 19px;
+            text-align: center;
         }
 
         .moon {

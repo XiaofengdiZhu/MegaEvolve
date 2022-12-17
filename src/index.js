@@ -131,9 +131,10 @@ export function mainVue(){
             },
             setTheme(theme){
                 global.settings.theme = theme;
-                $('html').removeClass();
-                $('html').addClass(theme);
-                $('html').addClass(global.settings.font);
+                let $html = $('html');
+                $html.removeClass();
+                $html.addClass(theme);
+                $html.addClass(global.settings.font);
             },
             numNotation(notation){
                 global.settings.affix = notation;
@@ -151,10 +152,11 @@ export function mainVue(){
             },
             font(f){
                 global.settings.font = f;
-                $(`html`).removeClass('standard');
-                $(`html`).removeClass('large_log');
-                $(`html`).removeClass('large_all');
-                $('html').addClass(f);
+                let $html = $('html');
+                $html.removeClass('standard');
+                $html.removeClass('large_log');
+                $html.removeClass('large_all');
+                $html.addClass(f);
             },
             q_merge(merge){
                 global.settings.q_merge = merge;
@@ -163,13 +165,14 @@ export function mainVue(){
                 initTabs();
             },
             unpause(){
-                $(`#pausegame`).removeClass('play');
-                $(`#pausegame`).removeClass('pause');
+                let $pausegame=$('#pausegame');
+                $pausegame.removeClass('play');
                 if (global.settings.pause){
-                    $(`#pausegame`).addClass('pause');
+                    $pausegame.text("▶");
                 }
                 else {
-                    $(`#pausegame`).addClass('play');
+                    $pausegame.addClass('play');
+                    $pausegame.text("〓");
                 }
                 if (!global.settings.pause && !webWorker.s){
                     gameLoop('start');
@@ -868,12 +871,36 @@ export function index(){
                 <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
                 <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
                 <b-tooltip :label="atRemain()" v-show="s.at" :aria-label="atRemain()" position="is-bottom" size="is-small" multilined animated><span class="atime has-text-caution">{{ s.at | remain }}</span></b-tooltip>
-                <span id="pausegame" class="atime" role="button" @click="pause" :aria-label="pausedesc()"></span>
             </span>
         </span>
-        <span class="version" id="versionLog"><a href="wiki.html#changelog" target="_blank"></a></span>
+        <span>当前倍速：<span id="realFactor">1</span></span>
+        <span style="margin-left:1rem">帧耗时：<span id="frameCost">0.25s</span></span>
+        <span title="越久越卡" style="margin-left:1rem">每帧计算：</span>
+        <select id="frameLongLoopCount" style="height: 18px; width: 60px;text-align: end;" v-model="frameLongLoopCount" @change="frameLongLoopCountChanged($event)">
+            <option value="1">5s</option>
+            <option value="2">10s</option>
+            <option value="3">15s</option>
+            <option value="4">20s</option>
+            <option value="6">30s</option>
+            <option value="8">40s</option>
+            <option value="12">60s</option>
+        </select>
+        <span title="每隔多久检测上一帧运算完成，建议小于帧耗时的5%" style="margin-left:1rem">检测周期：</span>
+        <select id="checkPeriod" style="height: 18px; width: 70px;text-align: end;margin-right:1rem" v-model="checkPeriod" @change="checkPeriodChanged($event)">
+            <option value="0" title="不建议">0ms</option>
+            <option value="1" title="不建议">1ms</option>
+            <option value="5">5ms</option>
+            <option value="10">10ms</option>
+            <option value="20" title="推荐">20ms</option>
+            <option value="50">50ms</option>
+            <option value="100">100ms</option>
+            <option value="250" title="即原版每秒运行4帧">250ms(原版)</option>
+            <option value="500">500ms</option>
+            <option value="1000">1000ms</option>
+        </select>
+        <span id="pausegame" class="atime" role="button" @click="pause" :aria-label="pausedesc()" style="margin:auto 1rem"></span>
+        <span class="version" id="versionLog" style="margin:0 1rem"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
-
     let main = $(`<div id="main" class="main"></div>`);
     let columns = $(`<div class="columns is-gapless"></div>`);
     $('body').append(main);
@@ -1104,7 +1131,6 @@ export function index(){
             }
         }
     });
-
     // Center Column
     let mainColumn = $(`<div id="mainColumn" class="column is-three-quarters"></div>`);
     columns.append(mainColumn);

@@ -6,6 +6,7 @@ getString(global.settings.locale);
 export function loc(key, variables) {
     let string = strings[key];
     if (!string) {
+        console.trace();
         if (global.settings.expose){
             console.error(`string ${key} not found`);
             console.log(strings);

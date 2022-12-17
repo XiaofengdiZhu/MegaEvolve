@@ -1470,6 +1470,12 @@ if (typeof global.settings.tabLoad === 'undefined'){
 if (typeof global.settings.boring === 'undefined'){
     global.settings['boring'] = false;
 }
+if (typeof global.settings.checkPeriod === 'undefined'){
+    global.settings['checkPeriod'] = 20;
+}
+if (typeof global.settings.frameLongLoopCount === 'undefined'){
+    global.settings['frameLongLoopCount'] = 1;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }

@@ -810,7 +810,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                 }
                 let costs = $(`<div><span class="has-text-danger">${loc('manual_crafting_hover_use')} </span></div>`);
                 for (let i=0; i<craft_costs[res].length; i++){
-                    costs.append($(`<span class="craft-elm has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
+                    costs.append($(`<span class="craft-elm has-text-caution">${sizeApproximation(num_crafted * craft_costs[res][i].a * global.frameFactor,1)} ${global.resource[craft_costs[res][i].r].name}</span>`));
                     if (i + 1 < craft_costs[res].length){
                         costs.append($(`<span>, </span>`));
                     }
@@ -1777,7 +1777,7 @@ export function craftingPopover(id,res,type,extra){
                 col1.append(`<div class="modal_bd"><span>${label}</span><span class="has-text-${type}">{{ craft.multi_bd['${mod}'] | translate }}</span></div>`);
             }
         });
-        
+        col1.append('<div class="modal_bd"><span>倍速</span><span class="has-text-success">+{{ ((frameFactor-1)*100).toFixed(1) }}%</span></div>');
         let col2 = $(`<div class="col"></div>`);
         let title = $(`<div class="has-text-info">${loc(`craft_tools_multi`)}</div>`);
         col2.append(title);
@@ -1811,6 +1811,7 @@ export function craftingPopover(id,res,type,extra){
                 }
             });
             if (count > 0){
+                col3.append('<div class="modal_bd"><span>倍速</span><span class="has-text-danger">+{{ ((frameFactor-1)*100).toFixed(1) }}%</span></div>');
                 table.append(col3);
             }
         }
@@ -1832,7 +1833,8 @@ export function craftingPopover(id,res,type,extra){
                     [res]: breakdown.p[res],
                     res: global['resource'][res],
                     'consume': breakdown.p['consume'],
-                    craft: craftingRatio(res,type)
+                    craft: craftingRatio(res,type),
+                    frameFactor: global.frameFactor
                 }, 
                 filters: {
                     translate(raw){
@@ -1918,6 +1920,7 @@ function breakdownPopover(id,name,type){
                     });
                 }
             }
+            if(type==="p")col1.append('<div class="modal_bd"><span>倍速</span><span class="has-text-success">+{{ ((frameFactor-1)*100).toFixed(1) }}%</span></div>');
         }
 
         if (breakdown[type].consume && breakdown[type].consume[name]){
@@ -1934,6 +1937,7 @@ function breakdownPopover(id,name,type){
                 }
             });
             if (count > 0){
+                col2.append('<div class="modal_bd"><span>倍速</span><span class="has-text-danger">+{{ ((frameFactor-1)*100).toFixed(1) }}%</span></div>');
                 table.append(col2);
             }
         }
@@ -1952,7 +1956,8 @@ function breakdownPopover(id,name,type){
                     'Global': breakdown[type]['Global'],
                     [name]: breakdown[type][name],
                     'consume': breakdown[type]['consume'],
-                    res: global['resource'][name]
+                    res: global['resource'][name],
+                    frameFactor:global.frameFactor
                 }, 
                 filters: {
                     translate(raw){
@@ -2446,7 +2451,7 @@ function initEjector(){
                     return '';
                 },
                 approx(tons){
-                    return sizeApproximation(tons,2);
+                    return sizeApproximation(tons*global.frameFactor,2);
                 }
             }
         });

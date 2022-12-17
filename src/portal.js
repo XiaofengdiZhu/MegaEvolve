@@ -4456,14 +4456,14 @@ function drawHellAnalysis(){
     
     let calcAverage = function(num,gameDays,units){
         if (num){
-            if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+            /*if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
                 if (global.race['slow']){
                     gameDays *= 1 + (traits.slow.vars()[0] / 100);
                 }
                 if (global.race['hyper']){
                     gameDays *= 1 - (traits.hyper.vars()[0] / 100);
                 }
-            }
+            }*/
             num /= gameDays;
             switch (units){
                 case 'seconds':
@@ -4574,14 +4574,14 @@ function drawHellAnalysis(){
                     return loc('hell_analysis_number_display',[loc(`hell_analysis_${name}`),calcAverage(num,global.portal.observe.stats[type].days,global.portal.observe.settings.display)]);
                 },
                 time(days, units){
-                    if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
+                    /*if (units !== 'game_days' && global.portal.observe.settings.hyperSlow){
                         if (global.race['slow']){
                             days *= 1 + (traits.slow.vars()[0] / 100);
                         }
                         if (global.race['hyper']){
                             days *= 1 - (traits.hyper.vars()[0] / 100);
                         }
-                    }
+                    }*/
                     switch (units){
                         case 'seconds':
                             days *= 5;

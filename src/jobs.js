@@ -622,13 +622,13 @@ export function loadFoundry(){
                     let multiplier = craft_total.multiplier;
                     let speed = global.genes['crafty'] ? 2 : 1;
                     let final = +(global.resource[res].diff).toFixed(2);
-                    let bonus = +(multiplier * 100).toFixed(0);
+                    let bonus = +(multiplier * 100).toFixed(0)*global.frameFactor;
 
                     total.append($(`<div>${loc('craftsman_hover_bonus', [bonus.toLocaleString(), name])}</div>`));
                     total.append($(`<div>${loc('craftsman_hover_prod', [final.toLocaleString(), name])}</div>`));
                     let craft_cost = craftCost();
                     for (let i=0; i<craft_cost[res].length; i++){
-                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140).toFixed(2);
+                        let cost = +(craft_cost[res][i].a * global.city.foundry[res] * speed / 140 *global.frameFactor).toFixed(2);
                         total.append($(`<div>${loc('craftsman_hover_cost', [cost, global.resource[craft_cost[res][i].r].name])}<div>`));
                     }
 

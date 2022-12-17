@@ -1753,10 +1753,10 @@ function genetics(){
                 timer(val){
                     if (global.arpa.sequence.on && global.arpa.sequence.labs > 0){
                         if (global.arpa.sequence.boost){
-                            return timeFormat(val / (global.arpa.sequence.labs * 2));
+                            return timeFormat(val / (global.arpa.sequence.labs * 2)/global.frameFactor);
                         }
                         else {
-                            return timeFormat(val / global.arpa.sequence.labs);
+                            return timeFormat(val / global.arpa.sequence.labs/global.frameFactor);
                         }
                     }
                     else {

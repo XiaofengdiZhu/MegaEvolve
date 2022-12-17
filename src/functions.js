@@ -121,8 +121,8 @@ export function gameLoop(act){
             break;
         case 'start':
             {
-                let main_timer = 250;
-                let mid_timer = 1000;
+                let main_timer = global.settings.checkPeriod?global.settings.checkPeriod: 250;
+                /*let mid_timer = 1000;
                 let long_timer = 5000;
                 if (global.race['slow']){
                     let slow = 1 + (traits.slow.vars()[0] / 100);
@@ -135,21 +135,21 @@ export function gameLoop(act){
                     main_timer = Math.floor(main_timer * fast);
                     mid_timer = Math.floor(mid_timer * fast);
                     long_timer = Math.floor(long_timer * fast);
-                }
-                webWorker.mt = main_timer;
+                }*/
+                //webWorker.mt = main_timer;
 
                 calcATime();
                 
                 if (global.settings.at > 0){
                     main_timer = Math.ceil(main_timer * 0.5);
-                    mid_timer = Math.ceil(mid_timer * 0.5);
-                    long_timer = Math.ceil(long_timer * 0.5);
+                    //mid_timer = Math.ceil(mid_timer * 0.5);
+                    //long_timer = Math.ceil(long_timer * 0.5);
                 }
 
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'short', period: main_timer });
-                    webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
-                    webWorker.w.postMessage({ loop: 'long', period: long_timer });
+                    //webWorker.w.postMessage({ loop: 'mid', period: mid_timer });
+                    //webWorker.w.postMessage({ loop: 'long', period: long_timer });
                 }
                 else {
                     intervals['main_loop'] = setInterval(function(){
@@ -310,10 +310,11 @@ export function messageQueue(msg,color,dnr,tags,reload){
     color = color || 'warning';
 
     if (tags.includes(message_logs.view)){
-        let new_message = $('<p class="has-text-'+color+'">'+msg+'</p>');
-        $('#msgQueueLog').prepend(new_message);
-        if ($('#msgQueueLog').children().length > global.settings.msgFilters[message_logs.view].max){
-            $('#msgQueueLog').children().last().remove();
+        let new_message = $('<p class="has-text-'+color+'">['+global.stats.days+'日]'+msg+'</p>');
+        let $msgQueueLog = $('#msgQueueLog');
+        $msgQueueLog.prepend(new_message);
+        if ($msgQueueLog.children().length > global.settings.msgFilters[message_logs.view].max){
+            $msgQueueLog.children().last().remove();
         }
     }
     tags.forEach(function (tag){
@@ -390,7 +391,7 @@ export function buildQueue(){
     clearElement($('#buildQueue'));
     $('#buildQueue').append($(`
         <h2 class="has-text-success">${loc('building_queue')} ({{ | used_q }}/{{ max }})</h2>
-        <span id="pausequeue" class="${global.queue.pause ? 'pause' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()"></span>
+        <span id="pausequeue" class="pause ${global.queue.pause ? '' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()">${global.queue.pause ? '▶' : '〓'}</span>
     `));
 
     let queue = $(`<ul class="buildList"></ul>`);
@@ -451,15 +452,16 @@ export function buildQueue(){
                     return final_costs;
                 },
                 pauseQueue(){
-                    $(`#pausequeue`).removeClass('play');
-                    $(`#pausequeue`).removeClass('pause');
+                    let $pausequeue=$(`#pausequeue`);
+                    $pausequeue.removeClass('play');
                     if (global.queue.pause){
                         global.queue.pause = false;
-                        $(`#pausequeue`).addClass('play');
+                        $pausequeue.addClass('play');
+                        $pausequeue.text("〓");
                     }
                     else {
                         global.queue.pause = true;
-                        $(`#pausequeue`).addClass('pause');
+                        $pausequeue.text("▶");
                     }
                 },
                 pausedesc(){
@@ -2069,7 +2071,7 @@ export function calcGenomeScore(genome,wiki){
         }
     }
 
-    Object.keys(genus_traits[genome.genus]).forEach(function (t){
+    Object.keys(genus_traits[genome.genus?genome.genus:"humanoid"]).forEach(function (t){
         genes -= traits[t].val;
     });
 
