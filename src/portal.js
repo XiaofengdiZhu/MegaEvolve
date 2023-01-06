@@ -1236,7 +1236,6 @@ const fortressModules = {
                 return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s</span>)`;
             },
             filter(v,fix){
-                v*=global.frameFactor;
                 return fix ? +(v).toFixed(fix) : Math.floor(v);
             }
         },

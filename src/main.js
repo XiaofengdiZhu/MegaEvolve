@@ -2753,7 +2753,7 @@ function fastLoop(){
                 }
             }
             global.portal.purifier.supply += supply;
-            global.portal.purifier.diff = supply / time_multiplier;
+            global.portal.purifier.diff = supply / time_multiplier * global.frameFactor;
             if (global.portal.purifier.supply > global.portal.purifier.sup_max){
                 global.portal.purifier.supply = global.portal.purifier.sup_max;
             }
