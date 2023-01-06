@@ -1232,11 +1232,37 @@ const fortressModules = {
             desc: loc('portal_spire_desc'),
             support: 'purifier',
             prop(){
-                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max }}</span>`;
-                return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s</span>)`;
+                let desc = ` - <span class="has-text-advanced">${loc('portal_spire_supply')}:</span> <span class="has-text-caution">{{ supply | filter }} / {{ sup_max | filter }}</span>`;
+                return desc + ` (<span class="has-text-success">+{{ diff | filter(2) }}/s ${loc('to_full')}: {{(sup_max-supply)/diff | filter("time")}}</span>)`;
             },
             filter(v,fix){
-                return fix ? +(v).toFixed(fix) : Math.floor(v);
+                if(fix){
+                    if(Number.isInteger(fix)){
+                        return sizeApproximation(v,fix);
+                    }else if(fix==="time"){
+                        if (v === Infinity || Number.isNaN(v) || v<0){
+                            return 'Never';
+                        }
+                        v=Math.floor(v);
+                        if (v > 60){
+                            let secs = v % 60;
+                            let mins = (v - secs) / 60;
+                            if (mins >= 60){
+                                let r = mins % 60;
+                                let hours = (mins - r) / 60;
+                                return `${hours}h ${r}m`;
+                            }
+                            else {
+                                return `${mins}m ${secs}s`;
+                            }
+                        }
+                        else {
+                            return `${v}s`;
+                        }
+                    }
+                }else{
+                    return sizeApproximation(v,0,true);
+                }
             }
         },
         spire_mission: {
@@ -3372,7 +3398,7 @@ export function drawMechLab(){
         assemble.append(title);
 
         title.append(` | <span><span class="has-text-warning">${loc('portal_mech_bay_space')}</span>: {{ m.bay }} / {{ m.max }}</span>`);
-        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | round }} / {{ p.sup_max }}</span>`);
+        title.append(` | <span><span class="has-text-warning">${loc('portal_mech_sup_avail')}</span>: {{ p.supply | sizeApproximation }} / {{ p.sup_max | sizeApproximation }}</span>`);
 
         let infernal = global.blood['prepared'] && global.blood.prepared >= 3 ? `<b-checkbox class="patrol" v-model="b.infernal">${loc('portal_mech_infernal')} (${loc('portal_mech_infernal_effect',[25])})</b-checkbox>` : ``;
         assemble.append(`<div><span class="has-text-warning">${loc(`portal_mech_space`)}</span> <span class="has-text-danger">{{ b.size | bay }}</span> | <span class="has-text-warning">${loc(`portal_mech_cost`)}</span> <span class="has-text-danger">{{ b.size | price }}</span> | <span class="has-text-warning">${loc(`portal_mech_soul`,[global.resource.Soul_Gem.name])}</span> <span class="has-text-danger">{{ b.size | soul }}</span>${infernal}</div>`)
@@ -3579,7 +3605,7 @@ export function drawMechLab(){
                 },
                 price(s){
                     let costs = mechCost(s,global.portal.mechbay.blueprint.infernal);
-                    return costs.c;
+                    return sizeApproximation(costs.c,0,true);
                 },
                 soul(s){
                     let costs = mechCost(s,global.portal.mechbay.blueprint.infernal);
@@ -3614,6 +3640,9 @@ export function drawMechLab(){
                             break;
                     }
                     return loc(`portal_mech_equip_${type}`);
+                },
+                sizeApproximation(v){
+                    return sizeApproximation(v,0,true);
                 }
             }
         });
