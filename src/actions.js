@@ -6692,7 +6692,8 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
                         color = 'has-text-danger';
                     }
                     empty = false;
-                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${res_cost}</div>`));
+                    let display_cost = sizeApproximation(res_cost,1);
+                    cost.append($(`<div class="${color} res-${res}" data-${res}="${res_cost}">${label}: ${display_cost}</div>`));
                 }
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
