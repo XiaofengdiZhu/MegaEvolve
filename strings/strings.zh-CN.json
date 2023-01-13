@@ -78,7 +78,7 @@
   "theme_gruvboxLight": "GruvBox主题（明亮）",
   "theme_gruvboxDark": "GruvBox主题（黑暗）",
   "theme_orangeSoda": "橘子汽水主题",
-  "theme_dracula": "德古拉",
+  "theme_dracula": "德古拉主题",
   "units": "数字格式",
   "metric": "公制",
   "scientific": "科学计数法",
@@ -832,7 +832,7 @@
   "evo_challenge_cataclysm_effect": "你的母星被一场恐怖的超级地震炸成了碎片，仅剩太空的居住区，设法从此逃向新世界（进行播种重置）。",
   "evo_challenge_cataclysm_warn": "该剧情模式的节奏极慢，不适合萌新。",
   "evo_challenge_cataclysm_flair": "你喜欢敲鸡蛋吗？",
-  "evo_challenge_cataclys_conditions": "播种重置或再次触发大灾变重置可以完成此挑战。",
+  "evo_challenge_cataclysm_conditions": "播种重置或再次触发大灾变重置可以完成此挑战。",
   "evo_challenge_joyless": "无趣",
   "evo_challenge_joyless_desc": "禁用娱乐。",
   "evo_challenge_joyless_effect": "没有艺人的生活就是这么朴实无华，且枯燥。建造生物穹顶（或水仙花园、信号塔）完成挑战后，娱乐禁令将自动解除。",
@@ -8045,7 +8045,7 @@
   "wiki_resets_bioseed_para6": "%1中还可以建造%0。",
   "wiki_resets_bioseed_para7": "%0竣工以后，您就可以让飞船启航，触发播种重置。",
   "wiki_resets_bioseed_para8": "进行播种重置后，您将会切换星球。",
-  "wiki_resets_bioseed_para9": "可选星球数量与%0数量有关。基础数量为 1，每有一个%0再 +1。",
+  "wiki_resets_bioseed_para9": "可选星球数量与%0数量有关。基础数量为 1，每有一个%1再 +1。",
   "wiki_resets_bioseed_para10": "星球拥有不同的矿产属性，如果想要获取更详细的信息，请查阅 %0 页面。",
   "wiki_resets_bioseed_para11": "您只能通过特定的重置方式切换星球。",
   "wiki_resets_bioseed_para12": "%0可以完成伟大类成就。",
@@ -8990,5 +8990,9 @@
   "wiki_events_xmas_para5": "2020年的圣诞大礼是：100 + 总重置次数 + 核爆重置次数 的质粒，播种重置次数 + 大灾变重置次数 的噬菌体，士兵战死总数 的煤，0-4 暗能量，0-5 和谐水晶，0-25 鲜血之石，和 0-5 上古遗物。",
   "wiki_events_xmas_para6": "2021年的圣诞大礼是：100 + 总重置次数 + 核爆重置次数 的质粒，播种重置次数 + 大灾变重置次数 的噬菌体，士兵战死总数 的煤，0-4 暗能量，0-5 和谐水晶，0-25 鲜血之石，0-5 上古遗物，和 0-5 AI核心。",
   "wiki_events_xmas_condition_para1": "在12月25日发生。",
-  "resource_Orbit_name": "轨道衰减"
+  "resource_Orbit_name": "轨道衰减",
+  "wiki_achievements_missing": "未获得",
+  "wiki_achievements_obtained": "已获得",
+  "wiki_achievements_incomplete": "未完成",
+  "wiki_achievements_completed": "已完成"
 }
