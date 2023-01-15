@@ -9426,13 +9426,6 @@ function longLoop(){
     if (global.settings.pause && webWorker.s){
         gameLoop('stop');
     }
-    if (global.settings.at > 0){
-        global.settings.at--;
-        if (global.settings.at <= 0){
-            gameLoop('stop');
-            gameLoop('start');
-        }
-    }
 }
 function frameLoop(){
     if (!global.race['no_craft']){
