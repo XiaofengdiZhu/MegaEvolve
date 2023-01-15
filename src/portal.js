@@ -5,7 +5,7 @@ import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
-import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
+import {payCosts, setAction, drawTech, bank_vault, virtualDrawTech} from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -97,7 +97,7 @@ const fortressModules = {
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
-                        drawTech();
+                        virtualDrawTech();
                     }
                     return true;
                 }
@@ -529,7 +529,7 @@ const fortressModules = {
             },
             post(){
                 if (global.portal.vault.count === 2){
-                    drawTech();
+                    virtualDrawTech();
                     renderFortress();
                     clearPopper();
                 }
@@ -605,7 +605,7 @@ const fortressModules = {
             },
             post(){
                 vBind({el: `#srprtl_ruins`},'update');
-                drawTech();
+                virtualDrawTech();
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
@@ -1503,7 +1503,7 @@ const fortressModules = {
             },
             post(){
                 if (global.tech['sphinx_bribe']){
-                    drawTech();
+                    virtualDrawTech();
                     renderFortress();
                     clearPopper('portal-bribe_sphinx');
                 }
@@ -2625,7 +2625,7 @@ export function bloodwar(){
                 global.resource.Corrupt_Gem.display = true;
                 messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
                 global.tech['corrupt'] = 1;
-                drawTech();
+                virtualDrawTech();
             }
             else {
                 global.resource.Soul_Gem.amount++;

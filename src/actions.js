@@ -1,13 +1,59 @@
-import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
+import {
+    global,
+    save,
+    webWorker,
+    keyMultiplier,
+    keyMap,
+    srSpeak,
+    sizeApproximation,
+    p_on,
+    support_on,
+    gal_on,
+    quantum_level,
+    virtualElement,
+    virtualTree
+} from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
+import {
+    timeCheck,
+    timeFormat,
+    vBind,
+    popover,
+    clearPopper,
+    flib,
+    tagEvent,
+    clearElement,
+    costMultiplier,
+    darkEffect,
+    genCivName,
+    powerModifier,
+    powerCostMod,
+    calcPrestige,
+    adjustCosts,
+    modRes,
+    messageQueue,
+    buildQueue,
+    format_emblem,
+    shrineBonusActive,
+    calc_mastery,
+    calcPillar,
+    calcGenomeScore,
+    getShrineBonus,
+    eventActive,
+    easterEgg,
+    getHalloween,
+    trickOrTreat,
+    deepClone,
+    hoovedRename,
+    virtualClearElement
+} from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
 import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes,  virtualRenderSpace, piracy } from './space.js';
 import { renderFortress, fortressTech } from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
@@ -1821,7 +1867,7 @@ export const actions = {
                                     global.stats.plasmid += 100;
                                     messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
                                 }
-                                drawCity();
+                                virtualDrawCity();
                             }
                         }
                         else {
@@ -1904,7 +1950,7 @@ export const actions = {
                                 }
 
                                 messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
-                                drawCity();
+                                virtualDrawCity();
                             }
                         }
                     }
@@ -5542,12 +5588,29 @@ function registerTech(action){
 export function gainTech(action){
     let tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
-    drawCity();
-    drawTech();
-    renderSpace();
+    virtualDrawCity();
+    virtualDrawTech();
+     virtualRenderSpace();
     renderFortress();
 }
+export function virtualDrawCity(){
+    let city_buildings = {};
+    Object.keys(actions.city).forEach(function (city_name) {
+        virtualRemoveAction(actions.city[city_name].id);
 
+        if(!checkCityRequirements(city_name))
+            return;
+
+        let action = actions.city[city_name];
+        let category = 'category' in action ? action.category : 'utility';
+
+        if(!(category in city_buildings)) {
+            city_buildings[category] = [];
+        }
+
+        virtualAddAction('city', city_name);
+    });
+}
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
@@ -5609,7 +5672,110 @@ export function drawCity(){
         }
     });
 }
+export function virtualDrawTech(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 3){
+        return;
+    }
+    let techs = {};
+    let old_techs = {};
+    let new_techs = {};
+    let tech_categories = [];
+    let old_categories = [];
+    let all_categories = [];
 
+    ['primitive','civilized','discovery','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+        new_techs[era] = [];
+    });
+
+    const tp_era = {
+        interstellar: 'solar'
+    };
+
+    Object.keys(actions.tech).forEach(function (tech_name){
+        if (!checkTechPath(tech_name)){
+            return;
+        }
+        virtualRemoveAction(actions.tech[tech_name].id);
+
+        let isOld = checkOldTech(tech_name);
+
+        let action = actions.tech[tech_name];
+        let category = 'category' in action ? action.category : 'research';
+
+        if (!isOld && tech_categories.indexOf(category) === -1) {
+            tech_categories.push(category);
+        }
+        if (isOld && old_categories.indexOf(category) === -1) {
+            old_categories.push(category);
+        }
+        if (all_categories.indexOf(category) === -1) {
+            all_categories.push(category);
+        }
+
+        if (isOld === true) {
+            if (!(category in old_techs)){
+                old_techs[category] = [];
+            }
+
+            old_techs[category].push(tech_name);
+        }
+        else {
+            if (!checkTechRequirements(tech_name)){
+                return;
+            }
+            let c_action = actions['tech'][tech_name];
+            if (!checkTechQualifications(c_action,tech_name)){
+                return;
+            }
+
+            if (!(category in techs)) {
+                techs[category] = [];
+            }
+
+            let era = global.race['truepath'] && tp_era[c_action.era] ? tp_era[c_action.era] : c_action.era;
+
+            if (!new_techs.hasOwnProperty(era)){
+                new_techs[era] = [];
+            }
+
+            new_techs[era].push(tech_name);
+        }
+    });
+
+    virtualClearElement("tech");
+    Object.keys(new_techs).forEach(function (era){
+        if (new_techs[era].length > 0){
+
+            new_techs[era].sort(function(a, b){
+                if(actions.tech[a].cost.Knowledge == undefined){
+                    return -1;
+                }
+                if(actions.tech[b].cost.Knowledge == undefined){
+                    return 1;
+                }
+                return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+            });
+            new_techs[era].forEach(function(tech_name){
+                virtualAddAction('tech', tech_name);
+            });
+        }
+    });
+
+    all_categories.forEach(function(category){
+        virtualClearElement(`tech-dist-${category}`,true);
+        virtualClearElement(`tech-dist-old-${category}`,true);
+    });
+
+    old_categories.forEach(function(category){
+        if(!(category in old_techs)){
+            return;
+        }
+
+        old_techs[category].forEach(function(tech_name) {
+            virtualAddAction('tech', tech_name, true);
+        });
+    });
+}
 export function drawTech(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 3){
         return;
@@ -5725,11 +5891,101 @@ export function drawTech(){
     });
 }
 
+export function virtualAddAction(action,type,old){
+    let c_action = actions[action][type];
+    virtualSetAction(c_action,action,type,old)
+}
 export function addAction(action,type,old){
     let c_action = actions[action][type];
     setAction(c_action,action,type,old)
 }
 
+export function virtualSetAction(c_action,action,type,old){
+    if (checkTechQualifications(c_action,type) === false) {
+        return;
+    }
+    let tab = action;
+    if (action === 'outerSol'){
+        action = 'space';
+    }
+    if (c_action['region']){
+        action = c_action.region;
+    }
+    if (c_action['powered'] && !global[action][type]['on']){
+        global[action][type]['on'] = 0;
+    }
+    let id = c_action.id;
+    virtualRemoveAction(id);
+    if(!virtualTree.some(el=>el.id===tab)){
+        new virtualElement(tab,null);
+    }
+    let parent = new virtualElement(id,tab);
+    parent.action = ()=>runAction(c_action,action,type);
+    if(old){
+        parent.old = old;
+    }
+
+    if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
+        parent.special = function(){
+            if (c_action['sAction'] && typeof c_action['sAction'] === 'function'){
+                c_action.sAction()
+            }
+            else {
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: {
+                        template: '<div id="modalBox" class="modalBox"></div>'
+                    }
+                });
+
+                let checkExist = setInterval(function(){
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        drawModal(c_action,type);
+                    }
+                }, 50);
+            }
+        }
+    }
+    if (c_action['on'] || c_action['off']){
+    }
+    else {
+        if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
+            parent.power_on = function () {
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on < global[action][type].count){
+                        global[action][type].on++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (c_action['postPower']){
+                    setTimeout(function(){
+                        c_action.postPower(true);
+                    }, 250);
+                }
+            }
+            parent.power_off = function (){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on > 0){
+                        global[action][type].on--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (c_action['postPower']){
+                    setTimeout(function(){
+                        c_action.postPower(false);
+                    }, 250);
+                }
+            }
+        }
+    }
+}
 export function setAction(c_action,action,type,old){
     if (checkTechQualifications(c_action,type) === false) {
         return;
@@ -6127,9 +6383,9 @@ export function postBuild(c_action,action,type){
     }
     if (c_action['grant'] || c_action['refresh']){
         removeAction(c_action.id);
-        drawCity();
-        drawTech();
-        renderSpace();
+        virtualDrawCity();
+        virtualDrawTech();
+         virtualRenderSpace();
         renderFortress();
     }
     if (c_action['post']){
@@ -6776,6 +7032,9 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
     }
 }
 
+export function virtualRemoveAction(id){
+    virtualClearElement(id,true);
+}
 export function removeAction(id){
     clearElement($(`#${id}`),true);
     clearPopper(id);
@@ -7286,7 +7545,7 @@ export function orbitDecayed(){
 
         clearElement($(`#infoTimer`));
 
-        renderSpace();
+         virtualRenderSpace();
     }
 }
 
@@ -7837,7 +8096,7 @@ function sentience(){
 
     calc_mastery(true);
     if (global.settings.tabLoad){
-        drawCity();
+        virtualDrawCity();
         defineGarrison();
         buildGarrison($('#c_garrison'),false);
         foreignGov();
@@ -8068,8 +8327,8 @@ function aiStart(){
             max: 0
         };
 
-        drawCity();
-        drawTech();
+        virtualDrawCity();
+        virtualDrawTech();
         loadFoundry();
     }
 }
@@ -8345,9 +8604,9 @@ function cataclysm(){
             max: 2
         };
 
-        drawCity();
-        drawTech();
-        renderSpace();
+        virtualDrawCity();
+        virtualDrawTech();
+         virtualRenderSpace();
         arpa('Physics');
         loadFoundry();
     }

@@ -3451,6 +3451,7 @@ function addInformation(parent,key,path){
 }
 
 function addRequirements(parent,key,keyName,path){
+    console.log(parent,key,keyName,path);
     let techTrees = getTechTrees(path);
     if (Object.keys(key.reqs).length > 0){
         let techReqs = {};

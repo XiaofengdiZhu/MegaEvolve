@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, virtualTree } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -953,6 +953,17 @@ export function arpaTimeCheck(project, remain, track){
     return allRemainingSegmentsTime;
 }
 
+export function virtualClearElement(elm,remove){
+    virtualTree.forEach(el=>{
+        if(el.id === elm){
+            if(remove){
+                el.remove()
+            }else{
+                el.empty();
+            }
+        }
+    });
+}
 export function clearElement(elm,remove){
     elm.find('.vb').each(function(){
         try {

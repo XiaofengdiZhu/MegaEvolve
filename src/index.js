@@ -8,8 +8,8 @@ import { clearSpyopDrag } from './governor.js';
 import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { races, shapeShift } from './races.js';
-import { drawCity, drawTech, resQueue, clearResDrag } from './actions.js';
-import { renderSpace, ascendLab, terraformLab } from './space.js';
+import {drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
+import {  virtualRenderSpace, ascendLab, terraformLab, deepSpace, galaxySpace, space } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
 import { drawShipYard, clearShipDrag } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
@@ -324,25 +324,25 @@ export function loadTab(tab){
                     <b-tab-item id="city" :visible="s.showCity">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'city' | label }}</h2>
-                            <span aria-hidden="true">{{ 'city' | label }}</span>
+                            <span aria-hidden="true" @click="drawCity">{{ 'city' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="space" :visible="s.showSpace">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'local_space' | label }}</h2>
-                            <span aria-hidden="true">{{ 'local_space' | label }}</span>
+                            <span aria-hidden="true" @click="spaceInner">{{ 'local_space' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="interstellar" :visible="s.showDeep">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_interstellar' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_interstellar' | label }}</span>
+                            <span aria-hidden="true" @click="deepSpace">{{ 'tab_interstellar' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="galaxy" :visible="s.showGalactic">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_galactic' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_galactic' | label }}</span>
+                            <span aria-hidden="true" @click="galaxySpace">{{ 'tab_galactic' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="portal" :visible="s.showPortal">
@@ -354,7 +354,7 @@ export function loadTab(tab){
                     <b-tab-item id="outerSol" :visible="s.showOuter">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'outer_local_space' | label }}</h2>
-                            <span aria-hidden="true">{{ 'outer_local_space' | label }}</span>
+                            <span aria-hidden="true" @click="outerSol">{{ 'outer_local_space' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -364,6 +364,21 @@ export function loadTab(tab){
                         s: global.settings
                     },
                     methods: {
+                        drawCity(){
+                            drawCity();
+                        },
+                        deepSpace(){
+                            deepSpace();
+                        },
+                        galaxySpace(){
+                            galaxySpace();
+                        },
+                        spaceInner(){
+                            space("inner");
+                        },
+                        outerSol(){
+                            space("outer");
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearElement($(`#city`));
@@ -380,7 +395,7 @@ export function loadTab(tab){
                                     case 2:
                                     case 3:
                                     case 5:
-                                        renderSpace();
+                                         virtualRenderSpace();
                                         break;
                                     case 4:
                                         renderFortress();
@@ -397,8 +412,8 @@ export function loadTab(tab){
                     }
                 });
                 if (global.race.species !== 'protoplasm'){
-                    drawCity();
-                    renderSpace();
+                    virtualDrawCity();
+                     virtualRenderSpace();
                     renderFortress();
                 }
                 if (global.race['noexport']){
@@ -567,13 +582,13 @@ export function loadTab(tab){
                     <b-tab-item id="tech">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'new_sr' | label }}</h2>
-                            <span aria-hidden="true">{{ 'new' | label }}</span>
+                            <span aria-hidden="true" @click="drawTech">{{ 'new' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="oldTech">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'old_sr' | label }}</h2>
-                            <span aria-hidden="true">{{ 'old' | label }}</span>
+                            <span aria-hidden="true" @click="drawTech">{{ 'old' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -587,11 +602,16 @@ export function loadTab(tab){
                         label(lbl){
                             return tabLabel(lbl);
                         }
+                    },
+                    methods: {
+                        drawTech(){
+                            drawTech();
+                        }
                     }
                 });
                 resQueue();
                 if (global.race.species !== 'protoplasm'){
-                    drawTech();
+                    virtualDrawTech();
                 }
             }
             break;

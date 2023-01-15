@@ -2,7 +2,7 @@ import { global, p_on, support_on } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits } from './races.js';
 import { govTitle, garrisonSize, armyRating } from './civics.js';
-import { housingLabel, drawTech, actions } from './actions.js';
+import {housingLabel, drawTech, actions, virtualDrawTech} from './actions.js';
 import { tradeRatio } from './resources.js';
 import { checkControlling } from './civics.js';
 import { govActive } from './governor.js';
@@ -319,7 +319,7 @@ export const events = {
         },
         effect(){
             global.tech['quaked'] = 1;
-            drawTech();
+            virtualDrawTech();
             return loc('event_quake',[global.race['cataclysm'] || global.race['orbit_decayed'] ? races[global.race.species].solar.red : races[global.race.species].home]);
         }
     },

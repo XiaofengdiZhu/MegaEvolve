@@ -2,12 +2,21 @@ import { global, save, webWorker } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
-import { payCosts, housingLabel, wardenLabel, updateQueueNames, drawTech, fanaticism, checkAffordable } from './actions.js';
+import {
+    payCosts,
+    housingLabel,
+    wardenLabel,
+    updateQueueNames,
+    drawTech,
+    fanaticism,
+    checkAffordable,
+    virtualDrawTech
+} from './actions.js';
 import { races, genusVars, checkAltPurgatory } from './races.js';
 import { defineResources, resource_values, atomic_mass } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { defineIndustry, buildGarrison, checkControlling, govTitle } from './civics.js';
-import { renderSpace } from './space.js';
+import {  virtualRenderSpace } from './space.js';
 import { drawHellObservations } from './portal.js';
 import { setOrbits } from './truepath.js';
 import { arpa } from './arpa.js';
@@ -1539,7 +1548,7 @@ const techs = {
         post(){
             if (global.race['steelen']){
                 global.tech['smelting'] = 2;
-                drawTech();
+                virtualDrawTech();
             }
         }
     },
@@ -1592,7 +1601,7 @@ const techs = {
         post(){
             if (global.race['steelen']){
                 global.tech['smelting'] = 6;
-                drawTech();
+                virtualDrawTech();
             }
         }
     },
@@ -2840,7 +2849,7 @@ const techs = {
         post(){
             if (global.race['noble']){
                 global.tech['currency'] = 5;
-                drawTech();
+                virtualDrawTech();
             }
         }
     },
@@ -9661,7 +9670,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.galaxy['frigate_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                renderSpace();
+                 virtualRenderSpace();
                 return true;
             }
             return false;
@@ -9684,7 +9693,7 @@ const techs = {
                 global.galaxy['cruiser_ship'] = { count: 0, on: 0, crew: 0, mil: 0 };
                 global.galaxy['foothold'] = { count: 0, on: 0, support: 0, s_max: 0 };
                 global.settings.space.alien2 = true;
-                renderSpace();
+                 virtualRenderSpace();
                 return true;
             }
             return false;
@@ -9705,7 +9714,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.galaxy['dreadnought'] = { count: 0, on: 0, crew: 0, mil: 0 };
-                renderSpace();
+                 virtualRenderSpace();
                 return true;
             }
             return false;

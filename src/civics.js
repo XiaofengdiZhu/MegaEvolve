@@ -5,7 +5,7 @@ import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes } from './races.js';
 import { loadIndustry } from './industry.js';
 import { defineGovernor, govActive } from './governor.js';
-import { drawTech } from  './actions.js';
+import {drawTech, virtualDrawTech} from './actions.js';
 import { jobScale } from './jobs.js';
 import { warhead } from './resets.js';
 
@@ -369,7 +369,7 @@ function drawGovModal(){
                     }
                     global.civic.govern.rev = time + global.civic.govern.fr;
                     if (drawTechs){
-                        drawTech();
+                        virtualDrawTech();
                     }
                     vBind({el: '#govModal'},'destroy');
                     $('.modal-background').click();
@@ -1750,7 +1750,7 @@ function war_campaign(gov){
             global.civic.foreign[`gov${gov}`].sab = 0;
             global.civic.foreign[`gov${gov}`].act = 'none';
             if (drawTechs){
-                drawTech();
+                virtualDrawTech();
             }
             if (global.race['banana']){
                 let affix = universeAffix();

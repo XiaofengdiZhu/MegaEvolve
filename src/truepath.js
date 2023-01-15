@@ -5,8 +5,8 @@ import { spatialReasoning } from './resources.js';
 import { defineIndustry, armyRating, garrisonSize } from './civics.js';
 import { jobScale } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, drawTech, bank_vault } from './actions.js';
-import { fuel_adjust, spaceTech, renderSpace } from './space.js';
+import {actions, payCosts, drawTech, bank_vault, virtualDrawTech} from './actions.js';
+import { fuel_adjust, spaceTech,  virtualRenderSpace } from './space.js';
 import { loc } from './locale.js';
 
 export const outerTruth = {
@@ -88,7 +88,7 @@ export const outerTruth = {
             post(){
                 if (global.tech['titan'] === 1){
                     global.tech['titan'] = 2;
-                    drawTech();
+                    virtualDrawTech();
                 }
             }
         },
@@ -126,7 +126,7 @@ export const outerTruth = {
             post(){
                 if (global.tech['titan'] === 3){
                     global.tech['titan'] = 4;
-                    drawTech();
+                    virtualDrawTech();
                 }
             }
         },
@@ -554,8 +554,8 @@ export const outerTruth = {
                             if (global.city.power >= outerTruth.spc_titan.ai_core2.powered()){
                                 global.space.ai_core2.on++;
                             }
-                            renderSpace();
-                            drawTech();
+                             virtualRenderSpace();
+                            virtualDrawTech();
                         }
                         return true;
                     }
@@ -922,8 +922,8 @@ export const outerTruth = {
             post(){
                 if (global.tech['triton'] === 2){
                     global.tech['triton'] = 3;
-                    drawTech();
-                    renderSpace();
+                    virtualDrawTech();
+                     virtualRenderSpace();
                     messageQueue(loc('space_fob_msg'),'info',false,['progress']);
                 }
             }
