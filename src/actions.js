@@ -6382,7 +6382,8 @@ export function postBuild(c_action,action,type){
         global.tech[tech] = c_action.grant[1];
     }
     if (c_action['grant'] || c_action['refresh']){
-        removeAction(c_action.id);
+        virtualRemoveAction(c_action.id);
+        virtualRemoveAction(c_action.id);
         virtualDrawCity();
         virtualDrawTech();
          virtualRenderSpace();
@@ -7842,7 +7843,7 @@ function sentience(){
     }
     for (var i = 0; i < city_actions.length; i++) {
         if (global.city[city_actions[i]]){
-            addAction('city',city_actions[i]);
+            virtualAddAction('city',city_actions[i]);
         }
     }
 

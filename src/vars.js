@@ -59,7 +59,7 @@ export var message_logs = {
     view: 'all'
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
-
+export var virtualHeaders = "";
 export class virtualElement {
     constructor(id,parentId) {
         if(id && virtualTree.some(el=>el.id === id)){return;}
@@ -75,6 +75,10 @@ export class virtualElement {
         }
         if(id){
             this.id = id;
+            let head = id.split('-')[0]+"-";
+            if(virtualHeaders.indexOf(head)===-1){
+                virtualHeaders+=head+"|";
+            }
         }else{
             this.id = Math.random().toString();
         }
