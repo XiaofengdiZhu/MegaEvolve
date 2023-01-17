@@ -77,7 +77,11 @@ export class virtualElement {
             this.id = id;
             let head = id.split('-')[0]+"-";
             if(virtualHeaders.indexOf(head)===-1){
-                virtualHeaders+=head+"|";
+                if(id==="fleet"){
+                    virtualHeaders+=id+"|";
+                }else{
+                    virtualHeaders+=head+"|";
+                }
             }
         }else{
             this.id = Math.random().toString();

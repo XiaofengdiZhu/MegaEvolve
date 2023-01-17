@@ -6383,7 +6383,6 @@ export function postBuild(c_action,action,type){
     }
     if (c_action['grant'] || c_action['refresh']){
         virtualRemoveAction(c_action.id);
-        virtualRemoveAction(c_action.id);
         virtualDrawCity();
         virtualDrawTech();
          virtualRenderSpace();
