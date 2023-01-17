@@ -10,7 +10,14 @@ import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commis
 import { races, shapeShift } from './races.js';
 import {drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
 import {  virtualRenderSpace, ascendLab, terraformLab, deepSpace, galaxySpace, space } from './space.js';
-import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations } from './portal.js';
+import {
+    renderFortress,
+    buildFortress,
+    drawMechLab,
+    clearMechDrag,
+    drawHellObservations,
+    virtualBuildFortress, virtualRenderFortress
+} from './portal.js';
 import { drawShipYard, clearShipDrag } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
@@ -348,7 +355,7 @@ export function loadTab(tab){
                     <b-tab-item id="portal" :visible="s.showPortal">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_portal' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_portal' | label }}</span>
+                            <span aria-hidden="true" @click="renderFortress">{{ 'tab_portal' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="outerSol" :visible="s.showOuter">
@@ -379,6 +386,9 @@ export function loadTab(tab){
                         outerSol(){
                             space("outer");
                         },
+                        renderFortress(){
+                            renderFortress();
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearElement($(`#city`));
@@ -389,16 +399,16 @@ export function loadTab(tab){
                                 clearElement($(`#outerSol`));
                                 switch (tab){
                                     case 0:
-                                        drawCity();
+                                        virtualDrawCity();
                                         break;
                                     case 1:
                                     case 2:
                                     case 3:
                                     case 5:
-                                         virtualRenderSpace();
+                                        virtualRenderSpace();
                                         break;
                                     case 4:
-                                        renderFortress();
+                                        virtualRenderFortress();
                                         break;
                                 }
                             }
@@ -413,8 +423,8 @@ export function loadTab(tab){
                 });
                 if (global.race.species !== 'protoplasm'){
                     virtualDrawCity();
-                     virtualRenderSpace();
-                    renderFortress();
+                    virtualRenderSpace();
+                    virtualRenderFortress();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){
@@ -521,7 +531,7 @@ export function loadTab(tab){
                                     case 3:
                                         if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                                             defineGarrison();
-                                            buildFortress($('#fortress'),false);
+                                            virtualBuildFortress('fortress',false);
                                         }
                                         break;
                                     case 4:
@@ -558,7 +568,7 @@ export function loadTab(tab){
                 if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
                     defineGarrison();
                     buildGarrison($('#c_garrison'),false);
-                    buildFortress($('#fortress'),false);
+                    virtualBuildFortress('fortress',false);
                     foreignGov();
                     drawMechLab();
                     if (global.race['truepath']){

@@ -33,7 +33,17 @@ import {
     virtualDrawTech
 } from './actions.js';
 import {  virtualRenderSpace, fuel_adjust, int_fuel_adjust, zigguratBonus, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech } from './space.js';
-import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay } from './portal.js';
+import {
+    renderFortress,
+    bloodwar,
+    soulForgeSoldiers,
+    hellSupression,
+    genSpireFloor,
+    mechRating,
+    mechCollect,
+    updateMechbay,
+    virtualRenderFortress
+} from './portal.js';
 import { syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, storehouseMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
@@ -8122,7 +8132,7 @@ function midLoop(){
                 }
 
                 genSpireFloor();
-                renderFortress();
+                virtualRenderFortress();
             }
         }
 
@@ -8424,96 +8434,6 @@ function midLoop(){
             global.queue.queue = merged_queue;
             buildQueue();
         }
-    }
-
-    resourceAlt();
-
-    $(`.costList`).each(function (){
-        $(this).children().each(function (){
-            let elm = $(this);
-            this.className.split(/\s+/).forEach(function(cls){
-                if (cls.startsWith(`res-`)){
-                    let res = cls.split(`-`)[1];
-                    if (global.resource.hasOwnProperty(res)){
-                        let res_val = elm.attr(`data-${res}`);
-                        let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
-                        let avail = elm.attr(`data-ok`) ? elm.attr(`data-ok`) : 'has-text-dark';
-                        if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
-                            if (elm.hasClass(avail)){
-                                elm.removeClass(avail);
-                                elm.addClass('has-text-danger');
-                            }
-                        }
-                        else if (elm.hasClass('has-text-danger') || elm.hasClass('has-text-alert')){
-                            elm.removeClass('has-text-danger');
-                            elm.addClass(avail);
-                        }
-                    }
-                }
-            });
-        });
-    });
-
-    {
-        let $msgQueue=$(`#msgQueue`);
-        let $buildQueue=$(`#buildQueue`);
-        let msgHeight = $msgQueue.height();
-        let buildHeight = $buildQueue.height();
-        let totHeight = $(`.leftColumn`).height();
-        let rem = $(`#topBar`).height();
-        let min = rem * 5;
-        let max = totHeight - (5 * rem);
-
-        if (msgHeight < min) {
-            if (buildHeight > min){
-                buildHeight -= (min - msgHeight);
-            }
-            msgHeight = min;
-        }
-        if (buildHeight < min) {
-            buildHeight = min;
-        }
-        if (msgHeight + buildHeight > max){
-            msgHeight -= (msgHeight + buildHeight) - max;
-            if (msgHeight < rem) {
-                msgHeight = rem;
-            }
-            if (msgHeight + buildHeight > max){
-                buildHeight -= (msgHeight + buildHeight) - max;
-                if (buildHeight < rem) {
-                    buildHeight = rem;
-                }
-            }
-        }
-
-        if ($msgQueue.hasClass('right')){
-            $(`#resources`).height(`calc(100vh - 5rem)`);
-            if ($msgQueue.hasClass('vscroll')){
-                $msgQueue.removeClass('vscroll');
-                $msgQueue.addClass('sticky');
-            }
-            msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
-        }
-        else {
-            $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
-            if ($msgQueue.hasClass('sticky')){
-                $msgQueue.removeClass('sticky');
-                $msgQueue.addClass('vscroll');
-                msgHeight = 100;
-            }
-        }
-
-        $msgQueue.height(msgHeight);
-        $buildQueue.height(buildHeight);
-        global.settings.msgQueueHeight = msgHeight;
-        global.settings.buildQueueHeight = buildHeight;
-    }
-
-    if ($(`#mechList`).length > 0){
-        $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
-    }
-    if ($(`#shipList`).length > 0){
-        $(`#shipList`).css('height',`calc(100vh - 11.5rem - ${$(`#shipPlans`).height()}px)`);
     }
 }
 
@@ -9024,7 +8944,7 @@ function longLoop(){
             if (Math.rand(0,10000) + 1 <= value){
                 global.tech['hell_vault'] = 1;
                 messageQueue(loc('portal_ruins_vault'),'info',false,['progress']);
-                renderFortress();
+                virtualRenderFortress();
             }
         }
 
@@ -9407,12 +9327,6 @@ function longLoop(){
         drawAchieve();
     }
 
-    // Save game state
-    global.stats['current'] = Date.now();
-    if (!global.race.hasOwnProperty('geck')){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    }
-
     if (global.race.species !== 'protoplasm' && (global.stats.days + global.stats.tdays) % 100000 === 99999){
         messageQueue(loc(`backup_warning`), 'advanced', true);
     }
@@ -9421,10 +9335,6 @@ function longLoop(){
     if (kplv <= 0){
         kplv = 60;
         tagEvent('page_view',{ page_title: `Game Loop` });
-    }
-
-    if (global.settings.pause && webWorker.s){
-        gameLoop('stop');
     }
 }
 function frameLoop(){
@@ -9443,6 +9353,11 @@ function frameLoop(){
         }
     });
 
+    // Save game state
+    global.stats['current'] = Date.now();
+    if (!global.race.hasOwnProperty('geck')){
+        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    }
 
     let $powerMeter = $('#powerMeter');
     if (global.city.power < 0){
@@ -9459,6 +9374,98 @@ function frameLoop(){
         $powerMeter.removeClass('low');
         $powerMeter.addClass('neutral');
         $powerMeter.removeClass('high');
+    }
+    resourceAlt();
+
+    $(`.costList`).each(function (){
+        $(this).children().each(function (){
+            let elm = $(this);
+            this.className.split(/\s+/).forEach(function(cls){
+                if (cls.startsWith(`res-`)){
+                    let res = cls.split(`-`)[1];
+                    if (global.resource.hasOwnProperty(res)){
+                        let res_val = elm.attr(`data-${res}`);
+                        let fail_max = global.resource[res].max >= 0 && res_val > global.resource[res].max ? true : false;
+                        let avail = elm.attr(`data-ok`) ? elm.attr(`data-ok`) : 'has-text-dark';
+                        if (global.resource[res].amount + global.resource[res].diff < res_val || fail_max){
+                            if (elm.hasClass(avail)){
+                                elm.removeClass(avail);
+                                elm.addClass('has-text-danger');
+                            }
+                        }
+                        else if (elm.hasClass('has-text-danger') || elm.hasClass('has-text-alert')){
+                            elm.removeClass('has-text-danger');
+                            elm.addClass(avail);
+                        }
+                    }
+                }
+            });
+        });
+    });
+
+    {
+        let $msgQueue=$(`#msgQueue`);
+        let $buildQueue=$(`#buildQueue`);
+        let msgHeight = $msgQueue.height();
+        let buildHeight = $buildQueue.height();
+        let totHeight = $(`.leftColumn`).height();
+        let rem = $(`#topBar`).height();
+        let min = rem * 5;
+        let max = totHeight - (5 * rem);
+
+        if (msgHeight < min) {
+            if (buildHeight > min){
+                buildHeight -= (min - msgHeight);
+            }
+            msgHeight = min;
+        }
+        if (buildHeight < min) {
+            buildHeight = min;
+        }
+        if (msgHeight + buildHeight > max){
+            msgHeight -= (msgHeight + buildHeight) - max;
+            if (msgHeight < rem) {
+                msgHeight = rem;
+            }
+            if (msgHeight + buildHeight > max){
+                buildHeight -= (msgHeight + buildHeight) - max;
+                if (buildHeight < rem) {
+                    buildHeight = rem;
+                }
+            }
+        }
+
+        if ($msgQueue.hasClass('right')){
+            $(`#resources`).height(`calc(100vh - 5rem)`);
+            if ($msgQueue.hasClass('vscroll')){
+                $msgQueue.removeClass('vscroll');
+                $msgQueue.addClass('sticky');
+            }
+            msgHeight = `calc(100vh - ${buildHeight}px - 6rem)`;
+        }
+        else {
+            $(`#resources`).height(`calc(100vh - 5rem - ${buildHeight}px - ${msgHeight}px)`);
+            if ($msgQueue.hasClass('sticky')){
+                $msgQueue.removeClass('sticky');
+                $msgQueue.addClass('vscroll');
+                msgHeight = 100;
+            }
+        }
+
+        $msgQueue.height(msgHeight);
+        $buildQueue.height(buildHeight);
+        global.settings.msgQueueHeight = msgHeight;
+        global.settings.buildQueueHeight = buildHeight;
+    }
+    if ($(`#mechList`).length > 0){
+        $(`#mechList`).css('height',`calc(100vh - 11.5rem - ${$(`#mechAssembly`).height()}px)`);
+    }
+    if ($(`#shipList`).length > 0){
+        $(`#shipList`).css('height',`calc(100vh - 11.5rem - ${$(`#shipPlans`).height()}px)`);
+    }
+
+    if (global.settings.pause && webWorker.s){
+        gameLoop('stop');
     }
 }
 function buildGene(){

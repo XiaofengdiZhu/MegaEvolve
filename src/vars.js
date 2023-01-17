@@ -26,8 +26,7 @@ export var global = {
         t: 499,
         l: false
     },
-    frameFactor:0,
-    virtualElements:[]
+    frameFactor:0
 };
 export var virtualTree = [];
 export var tmp_vars = {};
@@ -60,6 +59,7 @@ export var message_logs = {
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 export var virtualHeaders = "";
+const specialIds = ["fleet","fort","gFort"];
 export class virtualElement {
     constructor(id,parentId) {
         if(id && virtualTree.some(el=>el.id === id)){return;}
@@ -77,8 +77,8 @@ export class virtualElement {
             this.id = id;
             let head = id.split('-')[0]+"-";
             if(virtualHeaders.indexOf(head)===-1){
-                if(id==="fleet"){
-                    virtualHeaders+=id+"|";
+                if(specialIds.indexOf(id)>-1){
+                    virtualHeaders+="^"+id+"$|";
                 }else{
                     virtualHeaders+=head+"|";
                 }

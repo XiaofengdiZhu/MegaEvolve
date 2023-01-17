@@ -54,7 +54,7 @@ import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
 import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes,  virtualRenderSpace, piracy } from './space.js';
-import { renderFortress, fortressTech } from './portal.js';
+import {renderFortress, fortressTech, virtualRenderFortress} from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -5590,8 +5590,8 @@ export function gainTech(action){
     global.tech[tech] = actions.tech[action].grant[1];
     virtualDrawCity();
     virtualDrawTech();
-     virtualRenderSpace();
-    renderFortress();
+    virtualRenderSpace();
+    virtualRenderFortress();
 }
 export function virtualDrawCity(){
     let city_buildings = {};
@@ -6341,7 +6341,7 @@ function runAction(c_action,action,type){
                         grant = true;
                     }
                     if (grant){
-                        postBuild(c_action,action,type);
+                        virtualPostBuild(c_action,action,type);
                         if (global.tech['queue'] && c_action['queue_complete']) {
                             let buid_max = c_action.queue_complete();
                             for (let i=0, j=0; j<global.queue.queue.length; i++, j++){
@@ -6372,6 +6372,24 @@ function runAction(c_action,action,type){
     }
 }
 
+export function virtualPostBuild(c_action,action,type){
+    if (c_action['grant']){
+        let tech = c_action.grant[0];
+        global.tech[tech] = c_action.grant[1];
+    }
+    if (c_action['grant'] || c_action['refresh']){
+        virtualRemoveAction(c_action.id);
+        virtualDrawCity();
+        virtualDrawTech();
+        virtualRenderSpace();
+        virtualRenderFortress();
+    }
+    if (c_action['post']){
+        setTimeout(function(){
+            c_action.post();
+        }, 250);
+    }
+}
 export function postBuild(c_action,action,type){
     if (!checkAffordable(c_action)){
         let id = c_action.id;
@@ -6385,8 +6403,8 @@ export function postBuild(c_action,action,type){
         virtualRemoveAction(c_action.id);
         virtualDrawCity();
         virtualDrawTech();
-         virtualRenderSpace();
-        renderFortress();
+        virtualRenderSpace();
+        virtualRenderFortress();
     }
     if (c_action['post']){
         setTimeout(function(){
