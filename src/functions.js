@@ -456,13 +456,13 @@ export function buildQueue(){
             },
             filters: {
                 time(time){
-                    return timeFormat(time);
+                    return timeFormat(time/global.frameFactor);
                 },
                 count(q){
                     return q > 1 ? ` (${q})`: '';
                 },
                 max_t(max,time){
-                    return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
+                    return time === max || time < 0 ? '' : ` / ${timeFormat(max/global.frameFactor)}`;
                 },
                 used_q(){
                     let used = 0;

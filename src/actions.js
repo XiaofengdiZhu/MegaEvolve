@@ -8873,7 +8873,7 @@ export function resQueue(){
             },
             filters: {
                 time(time){
-                    return timeFormat(time);
+                    return timeFormat(time/global.frameFactor);
                 }
             }
         });
