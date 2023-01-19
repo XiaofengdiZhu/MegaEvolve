@@ -5610,6 +5610,9 @@ export function virtualDrawCity(){
 
         virtualAddAction('city', city_name);
     });
+    if(global.settings.autoRefresh){
+        drawCity();
+    }
 }
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
@@ -5775,6 +5778,9 @@ export function virtualDrawTech(){
             virtualAddAction('tech', tech_name, true);
         });
     });
+    if(global.settings.autoRefresh){
+        drawTech();
+    }
 }
 export function drawTech(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 3){
@@ -6348,7 +6354,6 @@ function virtualRunAction(c_action,action,type){
                             let item = global.queue.queue[j];
                             if (item.id === c_action.id) {
                                 if (buid_max < 1) {
-                                    clearPopper(`q${item.id}${i}`);
                                     global.queue.queue.splice(j--,1);
                                     add_queue = true;
                                 }

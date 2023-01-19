@@ -1809,6 +1809,9 @@ export function virtualRenderFortress(){
             });
         }
     });
+    if(global.settings.autoRefresh){
+        renderFortress();
+    }
 }
 export function renderFortress(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 4)){

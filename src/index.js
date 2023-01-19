@@ -924,9 +924,15 @@ export function index(){
             <option value="20" title="推荐">20ms</option>
             <option value="50">50ms</option>
             <option value="100">100ms</option>
-            <option value="250" title="即原版每秒运行4帧">250ms(原版)</option>
+            <option value="250" title="原版每秒运行4帧">250ms</option>
             <option value="500">500ms</option>
             <option value="1000">1000ms</option>
+            <option value="5000" title="把每帧计算调成5s约等于原版">5000ms</option>
+        </select>
+        <span title="建议关闭" style="margin-left:1rem">自动刷新：</span>
+        <select id="autoRefresh" style="height: 18px; width: 60px;text-align: end;" v-model="autoRefresh" @change="autoRefreshChanged($event)">
+            <option value="0">否</option>
+            <option value="1">是</option>
         </select>
         <span id="pausegame" class="atime" role="button" @click="pause" :aria-label="pausedesc()" style="margin:auto 1rem"></span>
         <span class="version" id="versionLog" style="margin:0 1rem"><a href="wiki.html#changelog" target="_blank"></a></span>

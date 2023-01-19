@@ -1553,6 +1553,9 @@ if (typeof global.settings.checkPeriod === 'undefined'){
 if (typeof global.settings.frameLongLoopCount === 'undefined'){
     global.settings['frameLongLoopCount'] = 1;
 }
+if (typeof global.settings.autoRefresh === 'undefined' || global.settings.autoRefresh !== false){
+    global.settings['autoRefresh'] = false;
+}
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];
 }

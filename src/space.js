@@ -5640,6 +5640,9 @@ export function virtualRenderSpace(){
     }
     virtualDeepSpace();
     virtualGalaxySpace();
+    if(global.settings.autoRefresh){
+        renderSpace();
+    }
 }
 
 export function renderSpace(){

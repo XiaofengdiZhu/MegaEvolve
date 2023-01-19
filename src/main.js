@@ -387,7 +387,8 @@ vBind({
         race: global.race,
         s: global.settings,
         checkPeriod:global.settings.checkPeriod,
-        frameLongLoopCount:global.settings.frameLongLoopCount
+        frameLongLoopCount:global.settings.frameLongLoopCount,
+        autoRefresh:"0"
     },
     methods: {
         weather(){
@@ -474,6 +475,9 @@ vBind({
         },
         frameLongLoopCountChanged(event){
             global.settings.frameLongLoopCount = event.target.value;
+        },
+        autoRefreshChanged(event){
+            global.settings.autoRefresh = event.target.value==="1";
         }
     },
     filters: {
