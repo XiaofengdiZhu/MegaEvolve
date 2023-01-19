@@ -667,7 +667,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
 
     var res_container;
     if (global.resource[name].max === -1 || global.resource[name].max === -2){
-        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | diffSize }}</span></div>`);
+        res_container = $(`<div id="res${name}" class="resource crafted" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | sizeApproximation }}</span></div>`);
     }
     else {
         res_container = $(`<div id="res${name}" class="resource" v-show="display"><h3 class="res has-text-${color}">{{ name | namespace }}</h3><span id="cnt${name}" class="count">{{ amount | size }} / {{ max | size }}</span></div>`);
@@ -712,8 +712,11 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
             size: function (value){
                 return value ? sizeApproximation(value,0) : value;
             },
-            diffSize: function (value){
+            sizeApproximation: function (value){
                 return sizeApproximation(value,2);
+            },
+            diffSize: function (value){
+                return sizeApproximation(value*global.frameFactor,2);
             },
             namespace(val){
                 return val.replace("_", " ");
@@ -721,7 +724,7 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         },
         methods: {
             resRate(n){
-                let diff = sizeApproximation(global.resource[n].diff,2);
+                let diff = sizeApproximation(global.resource[n].diff*global.frameFactor,2);
                 return `${n} ${diff} per second`;
             },
             trigModal(){
@@ -1855,7 +1858,7 @@ export function craftingPopover(id,res,type,extra){
                         return val + 'v';
                     },
                     counter(val){
-                        let rate = -global['resource'][res].diff;
+                        let rate = -global['resource'][res].diff*global.frameFactor;
                         let time = +(val / rate).toFixed(0);
                         
                         if (time > 60){
@@ -1977,7 +1980,7 @@ function breakdownPopover(id,name,type){
                         return val + 'v';
                     },
                     counter(val){
-                        let rate = global['resource'][name].diff;
+                        let rate = global['resource'][name].diff*global.frameFactor;
                         let time = 0;
                         if (rate < 0){
                             rate *= -1;

@@ -930,7 +930,7 @@ export function index(){
             <option value="5000" title="把每帧计算调成5s约等于原版">5000ms</option>
         </select>
         <span title="建议关闭" style="margin-left:1rem">自动刷新：</span>
-        <select id="autoRefresh" style="height: 18px; width: 60px;text-align: end;" v-model="autoRefresh" @change="autoRefreshChanged($event)">
+        <select id="autoRefresh" style="height: 18px; width: 40px;text-align: end;" v-model="autoRefresh" @change="autoRefreshChanged($event)">
             <option value="0">否</option>
             <option value="1">是</option>
         </select>

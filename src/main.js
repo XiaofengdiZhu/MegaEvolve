@@ -2791,7 +2791,8 @@ function fastLoop(){
                 }
             }
             global.portal.purifier.supply += supply;
-            global.portal.purifier.diff = supply / time_multiplier * global.frameFactor;
+            global.portal.purifier.diff = supply / time_multiplier;
+            //global.portal.purifier.diff = supply / time_multiplier * global.frameFactor;
             if (global.portal.purifier.supply > global.portal.purifier.sup_max){
                 global.portal.purifier.supply = global.portal.purifier.sup_max;
             }
@@ -5957,6 +5958,12 @@ function fastLoop(){
         }
     }
 
+    // main resource delta tracking
+    Object.keys(global.resource).forEach(function (res) {
+        if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
+            diffCalc(res,250);
+        }
+    });
     if (global.settings.expose){
         if (!window['evolve']){
             enableDebug();
@@ -9353,7 +9360,8 @@ function frameLoop(){
     // main resource delta tracking
     Object.keys(global.resource).forEach(function (res) {
         if (global['resource'][res].rate > 0 || (global['resource'][res].rate === 0 && global['resource'][res].max === -1)){
-            diffCalc(res,webWorker.mt);
+            //diffCalc(res,webWorker.mt);
+            updateUIDiff(res);
         }
     });
 
@@ -9538,6 +9546,12 @@ function diffCalc(res,period){
         global.resource[res].gen_d = 0;
     }
 
+    if(global.settings.autoRefresh){
+        updateUIDiff(res);
+    }
+}
+
+function updateUIDiff(res){
     let el = $(`#res${res} .diff`);
     if (global.race['decay']){
         if (global.resource[res].diff < 0){
