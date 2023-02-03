@@ -62,7 +62,10 @@ export var virtualHeaders = "";
 const specialIds = ["fleet","fort","gFort"];
 export class virtualElement {
     constructor(id,parentId) {
-        if(id && virtualTree.some(el=>el.id === id)){return;}
+        if(id){
+            let elm = virtualTree.find(el=>el.id === id);
+            if(elm)return elm;
+        }
         if(parentId){
             let parent = virtualTree.find(el=>el.id === parentId);
             if(!parent){return;}

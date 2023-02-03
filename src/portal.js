@@ -1263,12 +1263,12 @@ const fortressModules = {
             filter(v,fix){
                 if(fix){
                     if(Number.isInteger(fix)){
-                        return sizeApproximation(v,fix);
+                        return sizeApproximation(v*global.frameFactor,fix);
                     }else if(fix==="time"){
                         if (v === Infinity || Number.isNaN(v) || v<0){
                             return 'Never';
                         }
-                        v=Math.floor(v);
+                        v=Math.floor(v/global.frameFactor);
                         if (v > 60){
                             let secs = v % 60;
                             let mins = (v - secs) / 60;
@@ -1782,7 +1782,7 @@ export function virtualRenderFortress(){
         return;
     }
     let parent =new virtualElement('portal',null);
-    virtualClearElement(parent);
+    virtualClearElement('portal');
     if (!global.tech['portal'] || global.tech['portal'] < 2){
         return;
     }
@@ -1951,7 +1951,7 @@ export function virtualBuildFortress(parentId,full){
     let fort = full?new virtualElement(id,parentId):virtualTree.find(el=>el.id===id);
     if(!full) {
         if (fort){
-            virtualClearElement(fort);
+            virtualClearElement(id);
         }
         else {
             fort=new virtualElement(id,parentId);

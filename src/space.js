@@ -5667,7 +5667,7 @@ export function virtualSpace(zone){
         }
     }
     let parent = new virtualElement(zone === 'inner' ?"space": "outerSol");
-    virtualClearElement(parent);
+    virtualClearElement(zone === 'inner' ?"space": "outerSol");
     if (!global.settings.showSpace){
         return false;
     }
@@ -5849,7 +5849,7 @@ export function virtualDeepSpace(){
         return;
     }
     let parent = new virtualElement('interstellar');
-    virtualClearElement(parent);
+    virtualClearElement('interstellar');
     if (!global.settings.showDeep){
         return false;
     }
@@ -5930,7 +5930,7 @@ export function virtualGalaxySpace(){
         return;
     }
     let parent = new virtualElement('galaxy');
-    virtualClearElement(parent);
+    virtualClearElement('galaxy');
     if (!global.settings.showGalactic){
         return false;
     }
