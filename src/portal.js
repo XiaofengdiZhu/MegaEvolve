@@ -1,11 +1,36 @@
-import { global, keyMultiplier, p_on, gal_on, spire_on, quantum_level, hell_reports, hell_graphs, sizeApproximation } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, spaceCostMultiplier, messageQueue, powerModifier, calcPillar, deepClone, popCost } from './functions.js';
+import {
+    global,
+    keyMultiplier,
+    p_on,
+    gal_on,
+    spire_on,
+    quantum_level,
+    hell_reports,
+    hell_graphs,
+    sizeApproximation,
+    virtualElement, virtualTree
+} from './vars.js';
+import {
+    vBind,
+    clearElement,
+    popover,
+    clearPopper,
+    timeFormat,
+    powerCostMod,
+    spaceCostMultiplier,
+    messageQueue,
+    powerModifier,
+    calcPillar,
+    deepClone,
+    popCost,
+    virtualClearElement
+} from './functions.js';
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
-import { payCosts, setAction, drawTech, bank_vault } from './actions.js';
+import {payCosts, setAction, drawTech, bank_vault, virtualDrawTech, virtualSetAction} from './actions.js';
 import { checkRequirements, incrementStruct } from './space.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -97,7 +122,7 @@ const fortressModules = {
                     global.resource.Infernite.display = true;
                     if (!global.tech['infernite']){
                         global.tech['infernite'] = 1;
-                        drawTech();
+                        virtualDrawTech();
                     }
                     return true;
                 }
@@ -529,8 +554,8 @@ const fortressModules = {
             },
             post(){
                 if (global.portal.vault.count === 2){
-                    drawTech();
-                    renderFortress();
+                    virtualDrawTech();
+                    virtualRenderFortress();
                     clearPopper();
                 }
             }
@@ -605,7 +630,7 @@ const fortressModules = {
             },
             post(){
                 vBind({el: `#srprtl_ruins`},'update');
-                drawTech();
+                virtualDrawTech();
             },
             postPower(){
                 vBind({el: `#srprtl_ruins`},'update');
@@ -857,7 +882,7 @@ const fortressModules = {
                         global.settings.portal.lake = true;
                         global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                 }
             }
@@ -912,7 +937,7 @@ const fortressModules = {
                         global.settings.portal.lake = true;
                         global.portal['harbour'] = { count: 0, on: 0, support: 0, s_max: 0 };
                         messageQueue(loc('portal_gate_open'),'info',false,['progress','hell']);
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                 }
             }
@@ -1218,7 +1243,7 @@ const fortressModules = {
                         global.portal['purifier'] = { count: 0, on: 0, support: 0, s_max: 0, supply: 0, sup_max: 100, diff: 0 };
                         global.portal['port'] = { count: 0, on: 0 };
                         messageQueue(loc('portal_transport_unlocked'),'info',false,['progress','hell']);
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                     return true;
                 }
@@ -1238,12 +1263,12 @@ const fortressModules = {
             filter(v,fix){
                 if(fix){
                     if(Number.isInteger(fix)){
-                        return sizeApproximation(v,fix);
+                        return sizeApproximation(v*global.frameFactor,fix);
                     }else if(fix==="time"){
                         if (v === Infinity || Number.isNaN(v) || v<0){
                             return 'Never';
                         }
-                        v=Math.floor(v);
+                        v=Math.floor(v/global.frameFactor);
                         if (v > 60){
                             let secs = v % 60;
                             let mins = (v - secs) / 60;
@@ -1351,7 +1376,7 @@ const fortressModules = {
                     if (global.tech.hell_spire === 3){
                         global.tech.hell_spire = 4;
                         global.portal['base_camp'] = { count: 0, on: 0 };
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                     return true;
                 }
@@ -1384,7 +1409,7 @@ const fortressModules = {
                         global.tech.hell_spire = 5;
                         global.portal['bridge'] = { count: 0 };
                         messageQueue(loc('portal_spire_bridge_collapse'),'info',false,['progress','hell']);
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                     return true;
                 }
@@ -1427,7 +1452,7 @@ const fortressModules = {
                     if (global.portal.bridge.count >= 10){
                         global.portal['sphinx'] = { count: 0 };
                         global.tech.hell_spire = 6;
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                     return true;
                 }
@@ -1461,12 +1486,12 @@ const fortressModules = {
                     if (global.tech.hell_spire === 6){
                         global.tech.hell_spire = 7;
                         messageQueue(loc('portal_sphinx_msg'),'info',false,['progress','hell']);
-                        renderFortress();
+                        virtualRenderFortress();
                         return true;
                     }
                     else if (global.tech.hell_spire === 7){
                         global.tech.hell_spire = 8;
-                        renderFortress();
+                        virtualRenderFortress();
                         messageQueue(loc('portal_sphinx_answer_msg'),'info',false,['progress','hell']);  
                         return true;
                     }
@@ -1503,8 +1528,8 @@ const fortressModules = {
             },
             post(){
                 if (global.tech['sphinx_bribe']){
-                    drawTech();
-                    renderFortress();
+                    virtualDrawTech();
+                    virtualRenderFortress();
                     clearPopper('portal-bribe_sphinx');
                 }
             }
@@ -1533,7 +1558,7 @@ const fortressModules = {
             },
             post(){
                 if (global.tech['hell_spire'] && global.tech.hell_spire === 9){
-                    renderFortress();
+                    virtualRenderFortress();
                     clearPopper('portal-spire_survey');
                 }
             }
@@ -1698,7 +1723,7 @@ const fortressModules = {
                     if (global.portal.waygate.count >= 10){
                         global.tech.waygate = 2;
                         global.portal.waygate.count = 1;
-                        renderFortress();
+                        virtualRenderFortress();
                     }
                     return true;
                 }
@@ -1752,6 +1777,42 @@ export function fortressTech(){
     return fortressModules;
 }
 
+export function virtualRenderFortress(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 4)){
+        return;
+    }
+    let parent =new virtualElement('portal',null);
+    virtualClearElement('portal');
+    if (!global.tech['portal'] || global.tech['portal'] < 2){
+        return;
+    }
+
+    Object.keys(fortressModules).forEach(function (region){
+        let show = region.replace("prtl_","");
+        if (global.settings.portal[`${show}`]){
+            let name = typeof fortressModules[region].info.name === 'string' ? fortressModules[region].info.name : fortressModules[region].info.name();
+
+            let property = ``;
+            if (fortressModules[region].info.hasOwnProperty('prop')){
+                property = fortressModules[region].info.prop();
+            }
+
+            if (region === 'prtl_fortress'){
+                virtualBuildFortress(parent.id,true);
+            }
+
+            Object.keys(fortressModules[region]).forEach(function (tech){
+                if (tech !== 'info' && checkRequirements(fortressModules,region,tech)){
+                    let c_action = fortressModules[region][tech];
+                    virtualSetAction(c_action,'portal',tech);
+                }
+            });
+        }
+    });
+    if(global.settings.autoRefresh){
+        renderFortress();
+    }
+}
 export function renderFortress(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 4)){
         return;
@@ -1866,6 +1927,131 @@ function fortressData(dt){
     }
 }
 
+export function virtualBuildFortress(parentId,full){
+    if (!global.settings.tabLoad){
+        switch (global.settings.civTabs){
+            case 1:
+                if (global.settings.spaceTabs !== 4){
+                    return;
+                }
+                break;
+            case 2:
+                if (global.settings.govTabs !== 3){
+                    return;
+                }
+                break;
+            default:
+                return;
+        }
+    }
+    if (!global.tech['portal'] || global.tech['portal'] < 2){
+        return;
+    }
+    let id = full ? 'fort' : 'gFort';
+    let fort = full?new virtualElement(id,parentId):virtualTree.find(el=>el.id===id);
+    if(!full) {
+        if (fort){
+            virtualClearElement(id);
+        }
+        else {
+            fort=new virtualElement(id,parentId);
+        }
+    }
+    fort.aLast = function() {
+        let dec = keyMultiplier();
+        let min = global.portal.fortress.patrols * global.portal.fortress.patrol_size;
+        if (p_on['soul_forge']){
+            min += soulForgeSoldiers();
+        }
+        if (global.portal.hasOwnProperty('guard_post')){
+            min += jobScale(global.portal.guard_post.on);
+        }
+        if (global.portal.fortress.garrison > min){
+            global.portal.fortress.garrison -= dec;
+            if (global.portal.fortress.garrison < min){
+                global.portal.fortress.garrison = min;
+            }
+            if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+            }
+            global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+        }
+    };
+    fort.aNext=function(){
+        let inc = keyMultiplier();
+        if (global.portal.fortress.garrison < global.civic.garrison.workers){
+            global.portal.fortress.garrison += inc;
+            if (global.portal.fortress.garrison > global.civic.garrison.workers){
+                global.portal.fortress.garrison = global.civic.garrison.workers;
+            }
+            global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+        }
+    };
+    fort.patInc=function (){
+        let inc = keyMultiplier();
+        if (global.portal.fortress.patrols * global.portal.fortress.patrol_size < global.portal.fortress.garrison){
+            global.portal.fortress.patrols += inc;
+            if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+            }
+        }
+    };
+    fort.patDec=function (){
+        let dec = keyMultiplier();
+        if (global.portal.fortress.patrols > 0){
+            global.portal.fortress.patrols -= dec;
+            if (global.portal.fortress.patrols < 0){
+                global.portal.fortress.patrols = 0;
+            }
+        }
+    };
+    fort.patSizeInc=function (){
+        let inc = keyMultiplier();
+        if (global.portal.fortress.patrol_size < global.portal.fortress.garrison){
+            global.portal.fortress.patrol_size += inc;
+            if (global.portal.fortress.garrison < global.portal.fortress.patrols * global.portal.fortress.patrol_size){
+                global.portal.fortress.patrols = Math.floor(global.portal.fortress.garrison / global.portal.fortress.patrol_size);
+            }
+        }
+    };
+    fort.patSizeDec=function (){
+        let dec = keyMultiplier();
+        if (global.portal.fortress.patrol_size > 1){
+            global.portal.fortress.patrol_size -= dec;
+            if (global.portal.fortress.patrol_size < 1){
+                global.portal.fortress.patrol_size = 1;
+            }
+        }
+    };
+    fort.hire=function (){
+        let repeats = keyMultiplier();
+        let canBuy = true;
+        while (canBuy && repeats > 0){
+            let cost = Math.round((1.24 ** global.civic.garrison.workers) * 75) - 50;
+            if (cost > 25000){
+                cost = 25000;
+            }
+            if (global.civic.garrison.m_use > 0){
+                cost *= 1.1 ** global.civic.garrison.m_use;
+            }
+            if (global.race['brute']){
+                cost = cost / 2;
+            }
+            cost = Math.round(cost);
+            if (global.civic['garrison'].workers < global.civic['garrison'].max && global.resource.Money.amount >= cost){
+                global.resource.Money.amount -= cost;
+                global.civic['garrison'].workers++;
+                global.civic.garrison.m_use++;
+                global.portal.fortress.garrison++;
+                global.portal.fortress['assigned'] = global.portal.fortress.garrison;
+            }
+            else {
+                canBuy = false;
+            }
+            repeats--;
+        }
+    }
+}
 export function buildFortress(parent,full){
     if (!global.settings.tabLoad){
         switch (global.settings.civTabs){
@@ -2560,7 +2746,7 @@ export function bloodwar(){
         global.tech['hell_pit'] = 1;
         global.settings.portal.pit = true;
         messageQueue(loc('portal_hell_pit_found'),'info',false,['progress','hell']);
-        renderFortress();
+        virtualRenderFortress();
     }
 
     if (global.tech['hell_pit']){
@@ -2625,7 +2811,7 @@ export function bloodwar(){
                 global.resource.Corrupt_Gem.display = true;
                 messageQueue(loc('portal_corrupt_gem'),'info',false,['progress','hell']);
                 global.tech['corrupt'] = 1;
-                drawTech();
+                virtualDrawTech();
             }
             else {
                 global.resource.Soul_Gem.amount++;

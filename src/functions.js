@@ -1,4 +1,4 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, virtualTree } from './vars.js';
 import { loc } from './locale.js';
 import { races, traits, genus_traits, traitSkin } from './races.js';
 import { actions, actionDesc } from './actions.js';
@@ -139,12 +139,6 @@ export function gameLoop(act){
                 //webWorker.mt = main_timer;
 
                 calcATime();
-                
-                if (global.settings.at > 0){
-                    main_timer = Math.ceil(main_timer * 0.5);
-                    //mid_timer = Math.ceil(mid_timer * 0.5);
-                    //long_timer = Math.ceil(long_timer * 0.5);
-                }
 
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'short', period: main_timer });
@@ -171,14 +165,6 @@ export function gameLoop(act){
 function calcATime(){
     let dt = Date.now();
     let timeDiff = dt - global.stats.current;
-    if (global.stats.hasOwnProperty('current') && (timeDiff >= 120000 || global.settings.at > 0)){
-        if (timeDiff >= 120000){
-            global.settings.at += Math.floor(timeDiff / 3333);
-        }
-        if (global.settings.at > 11520){
-            global.settings.at = 11520;
-        }
-    }
 }
 
 window.exportGame = function exportGame(){
@@ -470,13 +456,13 @@ export function buildQueue(){
             },
             filters: {
                 time(time){
-                    return timeFormat(time);
+                    return timeFormat(time/global.frameFactor);
                 },
                 count(q){
                     return q > 1 ? ` (${q})`: '';
                 },
                 max_t(max,time){
-                    return time === max || time < 0 ? '' : ` / ${timeFormat(max)}`;
+                    return time === max || time < 0 ? '' : ` / ${timeFormat(max/global.frameFactor)}`;
                 },
                 used_q(){
                     let used = 0;
@@ -953,6 +939,17 @@ export function arpaTimeCheck(project, remain, track){
     return allRemainingSegmentsTime;
 }
 
+export function virtualClearElement(elm,remove){
+    virtualTree.forEach(el=>{
+        if(el.id === elm){
+            if(remove){
+                el.remove()
+            }else{
+                el.empty();
+            }
+        }
+    });
+}
 export function clearElement(elm,remove){
     elm.find('.vb').each(function(){
         try {

@@ -25,8 +25,10 @@ export var global = {
     m_event: {
         t: 499,
         l: false
-    }
+    },
+    frameFactor:0
 };
+export var virtualTree = [];
 export var tmp_vars = {};
 export var breakdown = {
     c: {},
@@ -56,6 +58,84 @@ export var message_logs = {
     view: 'all'
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
+export var virtualHeaders = "";
+const specialIds = ["fleet","fort","gFort"];
+export class virtualElement {
+    constructor(id,parentId) {
+        if(id){
+            let elm = virtualTree.find(el=>el.id === id);
+            if(elm)return elm;
+        }
+        if(parentId){
+            let parent = virtualTree.find(el=>el.id === parentId);
+            if(!parent){return;}
+            if(virtualTree.filter(el=>el.children.indexOf(id)>=0).length>0){return;}
+            parent.children.push(id);
+            this.parentId = parentId;
+        }
+        else{
+            this.parentId = null;
+        }
+        if(id){
+            this.id = id;
+            let head = id.split('-')[0]+"-";
+            if(virtualHeaders.indexOf(head)===-1){
+                if(specialIds.indexOf(id)>-1){
+                    virtualHeaders+="^"+id+"$|";
+                }else{
+                    virtualHeaders+=head+"|";
+                }
+            }
+        }else{
+            this.id = Math.random().toString();
+        }
+        this.children = [];
+        virtualTree.push(this);
+    }
+    setParentId(parentId,checkOldParent){
+        if(parentId){
+            let parent = virtualTree.find(el=>el.id === parentId);
+            if(!parent){return;}
+            if(checkOldParent){
+                virtualTree.forEach(el=>el.children.splice(el.children.indexOf(id),1));
+                //virtualTree.find(el=>el.id === parentId).children.splice(el.children.indexOf(id),1);
+            }
+            parent.children.push(id);
+            this.parentId = parentId;
+        }
+    }
+    empty(){
+        this.children.forEach(childId2=>{
+            virtualTree.splice(virtualTree.findIndex(el=>el.id===childId2), 1);
+        });
+        this.children = [];
+    }
+    remove(childId){
+        if(childId){
+            this.children.splice(this.children.indexOf(childId),1);
+            virtualTree.find(el=>el.id===childId).remove();
+        }else{
+            this.empty();
+            virtualTree.forEach(el=>{
+                if(el.id===this.parentId){
+                    el.children.splice(el.children.indexOf(this.id),1);
+                }
+            });
+            virtualTree.splice(virtualTree.findIndex(el=>el.id===this.id), 1);
+            this.id=null;
+        }
+    }
+    find(childId){
+        if(childId){
+            return this.children.find(childId);
+        }
+    }
+    findIndex(childId){
+        if(childId){
+            return this.children.indexOf(childId);
+        }
+    }
+}
 
 Math.rand = function(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
@@ -1475,6 +1555,9 @@ if (typeof global.settings.checkPeriod === 'undefined'){
 }
 if (typeof global.settings.frameLongLoopCount === 'undefined'){
     global.settings['frameLongLoopCount'] = 1;
+}
+if (typeof global.settings.autoRefresh === 'undefined' || global.settings.autoRefresh !== false){
+    global.settings['autoRefresh'] = false;
 }
 if (!global.settings.hasOwnProperty('mtorder')){
     global.settings['mtorder'] = [];

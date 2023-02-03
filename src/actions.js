@@ -1,14 +1,60 @@
-import { global, save, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level } from './vars.js';
+import {
+    global,
+    save,
+    webWorker,
+    keyMultiplier,
+    keyMap,
+    srSpeak,
+    sizeApproximation,
+    p_on,
+    support_on,
+    gal_on,
+    quantum_level,
+    virtualElement,
+    virtualTree
+} from './vars.js';
 import { loc } from './locale.js';
-import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename } from './functions.js';
+import {
+    timeCheck,
+    timeFormat,
+    vBind,
+    popover,
+    clearPopper,
+    flib,
+    tagEvent,
+    clearElement,
+    costMultiplier,
+    darkEffect,
+    genCivName,
+    powerModifier,
+    powerCostMod,
+    calcPrestige,
+    adjustCosts,
+    modRes,
+    messageQueue,
+    buildQueue,
+    format_emblem,
+    shrineBonusActive,
+    calc_mastery,
+    calcPillar,
+    calcGenomeScore,
+    getShrineBonus,
+    eventActive,
+    easterEgg,
+    getHalloween,
+    trickOrTreat,
+    deepClone,
+    hoovedRename,
+    virtualClearElement
+} from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, job_desc } from './jobs.js';
 import { loadIndustry, nf_resources } from './industry.js';
 import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
-import { spaceTech, interstellarTech, galaxyTech, universe_affixes, renderSpace, piracy } from './space.js';
-import { renderFortress, fortressTech } from './portal.js';
+import { spaceTech, interstellarTech, galaxyTech, universe_affixes,  virtualRenderSpace, piracy } from './space.js';
+import {renderFortress, fortressTech, virtualRenderFortress} from './portal.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -1821,7 +1867,7 @@ export const actions = {
                                     global.stats.plasmid += 100;
                                     messageQueue(loc('city_gift_msg',[100,loc('arpa_genepool_effect_plasmid')]),'info',false,['events']);
                                 }
-                                drawCity();
+                                virtualDrawCity();
                             }
                         }
                         else {
@@ -1904,7 +1950,7 @@ export const actions = {
                                 }
 
                                 messageQueue(loc('city_gift2_msg',[gift.join(", ")]),'info',false,['events']);
-                                drawCity();
+                                virtualDrawCity();
                             }
                         }
                     }
@@ -5542,12 +5588,32 @@ function registerTech(action){
 export function gainTech(action){
     let tech = actions.tech[action].grant[0];
     global.tech[tech] = actions.tech[action].grant[1];
-    drawCity();
-    drawTech();
-    renderSpace();
-    renderFortress();
+    virtualDrawCity();
+    virtualDrawTech();
+    virtualRenderSpace();
+    virtualRenderFortress();
 }
+export function virtualDrawCity(){
+    let city_buildings = {};
+    Object.keys(actions.city).forEach(function (city_name) {
+        virtualRemoveAction(actions.city[city_name].id);
 
+        if(!checkCityRequirements(city_name))
+            return;
+
+        let action = actions.city[city_name];
+        let category = 'category' in action ? action.category : 'utility';
+
+        if(!(category in city_buildings)) {
+            city_buildings[category] = [];
+        }
+
+        virtualAddAction('city', city_name);
+    });
+    if(global.settings.autoRefresh){
+        drawCity();
+    }
+}
 export function drawCity(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 0)){
         return;
@@ -5609,7 +5675,113 @@ export function drawCity(){
         }
     });
 }
+export function virtualDrawTech(){
+    if (!global.settings.tabLoad && global.settings.civTabs !== 3){
+        return;
+    }
+    let techs = {};
+    let old_techs = {};
+    let new_techs = {};
+    let tech_categories = [];
+    let old_categories = [];
+    let all_categories = [];
 
+    ['primitive','civilized','discovery','industrialized','globalized','early_space','deep_space','interstellar','intergalactic'].forEach(function (era){
+        new_techs[era] = [];
+    });
+
+    const tp_era = {
+        interstellar: 'solar'
+    };
+
+    Object.keys(actions.tech).forEach(function (tech_name){
+        if (!checkTechPath(tech_name)){
+            return;
+        }
+        virtualRemoveAction(actions.tech[tech_name].id);
+
+        let isOld = checkOldTech(tech_name);
+
+        let action = actions.tech[tech_name];
+        let category = 'category' in action ? action.category : 'research';
+
+        if (!isOld && tech_categories.indexOf(category) === -1) {
+            tech_categories.push(category);
+        }
+        if (isOld && old_categories.indexOf(category) === -1) {
+            old_categories.push(category);
+        }
+        if (all_categories.indexOf(category) === -1) {
+            all_categories.push(category);
+        }
+
+        if (isOld === true) {
+            if (!(category in old_techs)){
+                old_techs[category] = [];
+            }
+
+            old_techs[category].push(tech_name);
+        }
+        else {
+            if (!checkTechRequirements(tech_name)){
+                return;
+            }
+            let c_action = actions['tech'][tech_name];
+            if (!checkTechQualifications(c_action,tech_name)){
+                return;
+            }
+
+            if (!(category in techs)) {
+                techs[category] = [];
+            }
+
+            let era = global.race['truepath'] && tp_era[c_action.era] ? tp_era[c_action.era] : c_action.era;
+
+            if (!new_techs.hasOwnProperty(era)){
+                new_techs[era] = [];
+            }
+
+            new_techs[era].push(tech_name);
+        }
+    });
+
+    virtualClearElement("tech");
+    Object.keys(new_techs).forEach(function (era){
+        if (new_techs[era].length > 0){
+
+            new_techs[era].sort(function(a, b){
+                if(actions.tech[a].cost.Knowledge == undefined){
+                    return -1;
+                }
+                if(actions.tech[b].cost.Knowledge == undefined){
+                    return 1;
+                }
+                return actions.tech[a].cost.Knowledge() > actions.tech[b].cost.Knowledge() ? 1 : -1;
+            });
+            new_techs[era].forEach(function(tech_name){
+                virtualAddAction('tech', tech_name);
+            });
+        }
+    });
+
+    all_categories.forEach(function(category){
+        virtualClearElement(`tech-dist-${category}`,true);
+        virtualClearElement(`tech-dist-old-${category}`,true);
+    });
+
+    old_categories.forEach(function(category){
+        if(!(category in old_techs)){
+            return;
+        }
+
+        old_techs[category].forEach(function(tech_name) {
+            virtualAddAction('tech', tech_name, true);
+        });
+    });
+    if(global.settings.autoRefresh){
+        drawTech();
+    }
+}
 export function drawTech(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 3){
         return;
@@ -5725,11 +5897,101 @@ export function drawTech(){
     });
 }
 
+export function virtualAddAction(action,type,old){
+    let c_action = actions[action][type];
+    virtualSetAction(c_action,action,type,old)
+}
 export function addAction(action,type,old){
     let c_action = actions[action][type];
     setAction(c_action,action,type,old)
 }
 
+export function virtualSetAction(c_action,action,type,old){
+    if (checkTechQualifications(c_action,type) === false) {
+        return;
+    }
+    let tab = action;
+    if (action === 'outerSol'){
+        action = 'space';
+    }
+    if (c_action['region']){
+        action = c_action.region;
+    }
+    if (c_action['powered'] && !global[action][type]['on']){
+        global[action][type]['on'] = 0;
+    }
+    let id = c_action.id;
+    virtualRemoveAction(id);
+    if(!virtualTree.some(el=>el.id===tab)){
+        new virtualElement(tab,null);
+    }
+    let parent = new virtualElement(id,tab);
+    parent.action = ()=>virtualRunAction(c_action,action,type);
+    if(old){
+        parent.old = old;
+    }
+
+    if (c_action.hasOwnProperty('special') && ((typeof c_action['special'] === 'function' && c_action.special()) || c_action['special'] === true) ){
+        parent.special = function(){
+            if (c_action['sAction'] && typeof c_action['sAction'] === 'function'){
+                c_action.sAction()
+            }
+            else {
+                this.$buefy.modal.open({
+                    parent: this,
+                    component: {
+                        template: '<div id="modalBox" class="modalBox"></div>'
+                    }
+                });
+
+                let checkExist = setInterval(function(){
+                    if ($('#modalBox').length > 0) {
+                        clearInterval(checkExist);
+                        drawModal(c_action,type);
+                    }
+                }, 50);
+            }
+        }
+    }
+    if (c_action['on'] || c_action['off']){
+    }
+    else {
+        if ((c_action['powered'] && global.tech['high_tech'] && global.tech['high_tech'] >= 2 && checkPowerRequirements(c_action)) || (c_action['switchable'] && c_action.switchable())){
+            parent.power_on = function () {
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on < global[action][type].count){
+                        global[action][type].on++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (c_action['postPower']){
+                    setTimeout(function(){
+                        c_action.postPower(true);
+                    }, 0);
+                }
+            }
+            parent.power_off = function (){
+                let keyMult = keyMultiplier();
+                for (let i=0; i<keyMult; i++){
+                    if (global[action][type].on > 0){
+                        global[action][type].on--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                if (c_action['postPower']){
+                    setTimeout(function(){
+                        c_action.postPower(false);
+                    }, 0);
+                }
+            }
+        }
+    }
+}
 export function setAction(c_action,action,type,old){
     if (checkTechQualifications(c_action,type) === false) {
         return;
@@ -5977,6 +6239,143 @@ export function setAction(c_action,action,type,old){
     });
 }
 
+function virtualRunAction(c_action,action,type){
+    if (c_action.id === 'spcdock-launch_ship'){
+        c_action.action();
+    }
+    else {
+        switch (action){
+            case 'tech':
+                if (!(global.settings.qKey && keyMap.q) && c_action.action()){
+                    gainTech(type);
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 0);
+                    }
+                }
+                else {
+                    if (!(c_action['no_queue'] && c_action['no_queue']()) && global.tech['r_queue']){
+                        if (global.r_queue.queue.length < global.r_queue.max){
+                            let queued = false;
+                            for (let tech in global.r_queue.queue){
+                                if (global.r_queue.queue[tech].id === c_action.id){
+                                    queued = true;
+                                    break;
+                                }
+                            }
+                            if (!queued){
+                                global.r_queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0 });
+                                resQueue();
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'genes':
+            case 'blood':
+                if (c_action.action()){
+                    if (action === 'genes'){
+                        gainGene(type);
+                    }
+                    else {
+                        gainBlood(type);
+                    }
+                    if (c_action['post']){
+                        setTimeout(function(){
+                            c_action.post();
+                        }, 0);
+                    }
+                }
+                break;
+            default:
+            {
+                let keyMult = c_action['no_multi'] ? 1 : keyMultiplier();
+                if (c_action['grant']){
+                    keyMult = 1;
+                }
+                let grant = false;
+                let add_queue = false;
+                let loopNum = global.settings.qKey && keyMap.q ? 1 : keyMult;
+                for (let i=0; i<loopNum; i++){
+                    let res = false;
+                    if ((global.settings.qKey && keyMap.q) || (!(res = c_action.action()))){
+                        if (res !== 0 && global.tech['queue'] && (keyMult === 1 || (global.settings.qKey && keyMap.q))){
+                            let used = 0;
+                            let buid_max = c_action['queue_complete'] ? c_action.queue_complete() : Number.MAX_SAFE_INTEGER;
+                            for (let j=0; j<global.queue.queue.length; j++){
+                                used += Math.ceil(global.queue.queue[j].q / global.queue.queue[j].qs);
+                                if (global.queue.queue[j].id === c_action.id) {
+                                    buid_max -= global.queue.queue[j].q;
+                                }
+                            }
+                            if (used < global.queue.max && buid_max > 0){
+                                let repeat = global.settings.qKey ? keyMult : 1;
+                                if (repeat > global.queue.max - used){
+                                    repeat = global.queue.max - used;
+                                }
+                                let q_size = c_action['queue_size'] ? c_action['queue_size'] : 1;
+                                if (c_action['region']){
+                                    action = c_action.id.split("-")[0];
+                                }
+                                if (global.settings.q_merge !== 'merge_never'){
+                                    if (global.queue.queue.length > 0 && global.queue.queue[global.queue.queue.length-1].id === c_action.id){
+                                        global.queue.queue[global.queue.queue.length-1].q += Math.min(buid_max, q_size * repeat);
+                                    }
+                                    else {
+                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size * repeat), qs: q_size, t_max: 0 });
+                                    }
+                                }
+                                else {
+                                    for (let k=0; k<repeat && buid_max > 0; k++){
+                                        global.queue.queue.push({ id: c_action.id, action: action, type: type, label: typeof c_action.title === 'string' ? c_action.title : c_action.title(), cna: false, time: 0, q: Math.min(buid_max, q_size), qs: q_size, t_max: 0 });
+                                        buid_max -= q_size;
+                                    }
+                                }
+                                add_queue = true;
+                            }
+                        }
+                        break;
+                    }
+                    else {
+                        if (global.race['inflation'] && global.tech['primitive']){
+                            if (!c_action.hasOwnProperty('inflation') || c_action.inflation){
+                                global.race.inflation++;
+                            }
+                        }
+                    }
+                    grant = true;
+                }
+                if (grant){
+                    virtualPostBuild(c_action,action,type);
+                    if (global.tech['queue'] && c_action['queue_complete']) {
+                        let buid_max = c_action.queue_complete();
+                        for (let i=0, j=0; j<global.queue.queue.length; i++, j++){
+                            let item = global.queue.queue[j];
+                            if (item.id === c_action.id) {
+                                if (buid_max < 1) {
+                                    global.queue.queue.splice(j--,1);
+                                    add_queue = true;
+                                }
+                                else if (item.q > buid_max) {
+                                    item.q = buid_max;
+                                    buid_max = 0;
+                                }
+                                else {
+                                    buid_max -= item.q;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (add_queue){
+                    buildQueue();
+                }
+                break;
+            }
+        }
+    }
+}
 function runAction(c_action,action,type){
     if (c_action.id === 'spcdock-launch_ship'){
         c_action.action();
@@ -6116,6 +6515,24 @@ function runAction(c_action,action,type){
     }
 }
 
+export function virtualPostBuild(c_action,action,type){
+    if (c_action['grant']){
+        let tech = c_action.grant[0];
+        global.tech[tech] = c_action.grant[1];
+    }
+    if (c_action['grant'] || c_action['refresh']){
+        virtualRemoveAction(c_action.id);
+        virtualDrawCity();
+        virtualDrawTech();
+        virtualRenderSpace();
+        virtualRenderFortress();
+    }
+    if (c_action['post']){
+        setTimeout(function(){
+            c_action.post();
+        }, 0);
+    }
+}
 export function postBuild(c_action,action,type){
     if (!checkAffordable(c_action)){
         let id = c_action.id;
@@ -6126,11 +6543,11 @@ export function postBuild(c_action,action,type){
         global.tech[tech] = c_action.grant[1];
     }
     if (c_action['grant'] || c_action['refresh']){
-        removeAction(c_action.id);
-        drawCity();
-        drawTech();
-        renderSpace();
-        renderFortress();
+        virtualRemoveAction(c_action.id);
+        virtualDrawCity();
+        virtualDrawTech();
+        virtualRenderSpace();
+        virtualRenderFortress();
     }
     if (c_action['post']){
         setTimeout(function(){
@@ -6776,6 +7193,9 @@ export function actionDesc(parent,c_action,obj,old,action,a_type){
     }
 }
 
+export function virtualRemoveAction(id){
+    virtualClearElement(id,true);
+}
 export function removeAction(id){
     clearElement($(`#${id}`),true);
     clearPopper(id);
@@ -7286,7 +7706,7 @@ export function orbitDecayed(){
 
         clearElement($(`#infoTimer`));
 
-        renderSpace();
+         virtualRenderSpace();
     }
 }
 
@@ -7583,7 +8003,7 @@ function sentience(){
     }
     for (var i = 0; i < city_actions.length; i++) {
         if (global.city[city_actions[i]]){
-            addAction('city',city_actions[i]);
+            virtualAddAction('city',city_actions[i]);
         }
     }
 
@@ -7837,7 +8257,7 @@ function sentience(){
 
     calc_mastery(true);
     if (global.settings.tabLoad){
-        drawCity();
+        virtualDrawCity();
         defineGarrison();
         buildGarrison($('#c_garrison'),false);
         foreignGov();
@@ -8068,8 +8488,8 @@ function aiStart(){
             max: 0
         };
 
-        drawCity();
-        drawTech();
+        virtualDrawCity();
+        virtualDrawTech();
         loadFoundry();
     }
 }
@@ -8345,9 +8765,9 @@ function cataclysm(){
             max: 2
         };
 
-        drawCity();
-        drawTech();
-        renderSpace();
+        virtualDrawCity();
+        virtualDrawTech();
+         virtualRenderSpace();
         arpa('Physics');
         loadFoundry();
     }
@@ -8453,7 +8873,7 @@ export function resQueue(){
             },
             filters: {
                 time(time){
-                    return timeFormat(time);
+                    return timeFormat(time/global.frameFactor);
                 }
             }
         });

@@ -1,4 +1,4 @@
-import { global, breakdown } from './vars.js';
+import {global, breakdown, virtualTree, virtualHeaders} from './vars.js';
 import { deepClone, adjustCosts, messageQueue } from './functions.js';
 import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
@@ -32,6 +32,8 @@ export function enableDebug(){
             updateDebugData: deepClone(updateDebugData),
             global: {},
             breakdown: {},
+            virtualTree :virtualTree,
+            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1),
         };
     }
 }
@@ -39,6 +41,8 @@ export function enableDebug(){
 export function updateDebugData(){
     if (global.settings.expose){
         window.evolve.global = deepClone(global);
+        window.evolve.virtualTree = virtualTree;
+        window.evolve.virtualHeaders = virtualHeaders.slice(0,virtualHeaders.length-1);
         window.evolve.craftCost = deepClone(craftCost()),
         window.evolve.breakdown = deepClone(breakdown);
     }

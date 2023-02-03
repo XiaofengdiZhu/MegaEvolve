@@ -1,8 +1,18 @@
 import { global, keyMultiplier, sizeApproximation, srSpeak } from './vars.js';
 import { clearElement, popover, clearPopper, flib, eventActive, timeFormat, vBind, messageQueue, adjustCosts, calcQueueMax, calcRQueueMax, buildQueue, calcPrestige, calc_mastery, darkEffect, easterEgg, getTraitDesc, removeFromQueue } from './functions.js';
-import { actions, updateQueueNames, drawTech, drawCity, addAction, removeAction, wardenLabel, checkCosts } from './actions.js';
+import {
+    actions,
+    updateQueueNames,
+    drawTech,
+    drawCity,
+    addAction,
+    removeAction,
+    wardenLabel,
+    checkCosts,
+    virtualDrawCity, virtualDrawTech
+} from './actions.js';
 import { races, traits, cleanAddTrait, cleanRemoveTrait, traitSkin } from './races.js';
-import { renderSpace } from './space.js';
+import {  virtualRenderSpace } from './space.js';
 import { drawMechLab } from './portal.js';
 import { govActive, defineGovernor } from './governor.js';
 import { unlockFeat } from './achieve.js';
@@ -901,7 +911,7 @@ export const genePool = {
         action(){
             if (payCrispr('ancients')){
                 global.genes['ancients'] = 1;
-                drawTech();
+                virtualDrawTech();
                 return true;
             }
             return false;
@@ -974,7 +984,7 @@ export const genePool = {
         action(){
             if (payCrispr('transcendence')){
                 global.genes['transcendence'] = 1;
-                drawTech();
+                virtualDrawTech();
                 return true;
             }
             return false;
@@ -2040,8 +2050,8 @@ function genetics(){
                         }
                         cleanRemoveTrait(t,rank);
                         genetics();
-                        drawTech();
-                        drawCity();
+                        virtualDrawTech();
+                        virtualDrawCity();
 
                         let count = 0;
                         Object.keys(global.race).forEach(function (trait){
@@ -2084,8 +2094,8 @@ function genetics(){
                         }
                         cleanAddTrait(t);
                         genetics();
-                        drawTech();
-                        drawCity();
+                        virtualDrawTech();
+                        virtualDrawCity();
                     }
                 },
                 geneCost(t){
@@ -2391,13 +2401,13 @@ export function buildArpa(pro,num,update){
                     });
                     removeFromQueue(['arpalaunch_facility']);
                     physics();
-                    renderSpace();
+                     virtualRenderSpace();
                     messageQueue(loc('arpa_projects_launch_facility_msg'),'info',false,['progress']);
                 }
                 if (global.race['inflation']){
                     global.race.inflation += 10;
                 }
-                drawTech();
+                virtualDrawTech();
             }
         }
     }
