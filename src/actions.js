@@ -61,6 +61,7 @@ import { techList, techPath } from './tech.js';
 import { govActive, removeTask } from './governor.js';
 import { bioseed } from './resets.js';
 import { loadTab } from './index.js';
+import { ModalProgrammatic as Modal } from '../lib/buefy.min'
 
 export const actions = {
     evolution: {
@@ -5937,8 +5938,8 @@ export function virtualSetAction(c_action,action,type,old){
                 c_action.sAction()
             }
             else {
-                this.$buefy.modal.open({
-                    parent: this,
+                Modal.open({
+                    parent: null,
                     component: {
                         template: '<div id="modalBox" class="modalBox"></div>'
                     }
