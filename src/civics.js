@@ -2067,7 +2067,7 @@ function defineMad(){
             methods: {
                 launch(){
                     if (!global.civic.mad.armed && !global.race['cataclysm']){
-                        $('body').addClass('nuke');
+                        /*$('body').addClass('nuke');
                         let nuke = $('<div class="nuke"></div>');
                         $('body').append(nuke);
                         setTimeout(function(){
@@ -2078,7 +2078,8 @@ function defineMad(){
                         }, 600);
                         setTimeout(function(){
                             warhead();
-                        }, 4000);
+                        }, 4000);*/
+                        warhead();
                     }
                 },
                 arm(){
