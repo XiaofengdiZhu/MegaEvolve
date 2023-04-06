@@ -3,6 +3,149 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.4`,
+        revision: `b`,
+        date: `3/30/2023`,
+        changes: [
+            `Prevented some bugs caused by distributed power mode from occurring.`,
+            `You can now unlock World Domination, Illuminati, Syndicate, and Pacifist in Truepath.`
+        ]
+    },
+    {
+        version: `1.3.4`,
+        revision: `a`,
+        date: `3/25/2023`,
+        changes: [
+            `A restore point is now made if you select isolation protocal.`,
+        ]
+    },
+    {
+        version: `1.3.4`,
+        date: `3/24/2023`,
+        changes: [
+            `Evolving Synth can now chose imitation race from any species killed by an AI Apocalypse.`,
+            `Fixed issue with miscalculating low fuel usage for various power generating structures.`,
+            `Extractor Ship Isolation output boosted by 20%.`,
+            `Added additional Hooved reskins.`,
+            `Fixed various issues with Preload Tab Content.`,
+            `Explorer Ship config is now locked down for Engine, Sensor, and Weapon components.`,
+            `Skilled Servants assigned to craft inactive resources will now be refunded.`,
+        ]
+    },
+    {
+        version: `1.3.3`,
+        revision: `a`,
+        date: `3/20/2023`,
+        changes: [
+            `Fixed a bug that could cause the Test Launch to be unavailable.`,
+        ]
+    },
+    {
+        version: `1.3.3`,
+        date: `3/15/2023`,
+        changes: [
+            `Rebalanced Soul Gem drop mechanics.`,
+            `Added Annihilation Feat.`,
+            `Added additional Mass Ejector Optimizer config mode.`,
+            `Servants are no longer affected by most racial traits.`,
+            `The Lone Survivor can no longer benefit from Hivemind.`,
+            `Fixed High Pop issue with Pit Miners.`,
+            `Fixed bug with unlocking Replicator without a Governor.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
+        revision: `c`,
+        date: `3/8/2023`,
+        changes: [
+            `Fixed cataclysm reset while having preload tab content enabled.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
+        revision: `b`,
+        date: `3/5/2023`,
+        changes: [
+            `Fixed Rock Quarry under industry tab for Smoldering players.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
+        revision: `a`,
+        date: `3/5/2023`,
+        changes: [
+            `Adjusted hell calculation.`,
+        ]
+    },
+    {
+        version: `1.3.2`,
+        date: `3/4/2023`,
+        changes: [
+            `High-Tech Factory changed back to tool modifier, however value is increased from original 25% to 90%.`,
+            `Advanced Material Synthesis increased from 50% to 65%.`,
+            `Added new interaction between Hell Surveyors and Drone victims.`,
+            `Fixed bug that would cause Replicator Governor task to swap resources when focusing a resource without a cap.`,
+            `Fixed inability to produce Chrysotile in Isolation.`
+        ]
+    },
+    {
+        version: `1.3.1`,
+        date: `3/3/2023`,
+        changes: [
+            `Added Advanced Material Synthesis tech to Isolation path.`,
+            `High-Tech Factory crafting bonus changed from a Tool modifier to a direct multiplier.`,
+            `Updated Mass Ejector Optimizer logic.`,
+            `Fixed a bug that broke Cataclysm reset.`,
+            `Fixed fuel calculation bug with Moon Bases and Spaceports.`,
+            `Fixed issue with self replicating Synth and Nano.`,
+            `Fixed bugs with purchasing CRISPR techs in Antimatter universe.`,
+        ]
+    },
+    {
+        version: `1.3.0`,
+        revision: `b`,
+        date: `3/1/2023`,
+        changes: [
+            `Fixed issue with Mass Ejector Optimizer gov task breaking the governor subtab.`,
+        ]
+    },
+    {
+        version: `1.3.0`,
+        revision: `a`,
+        date: `3/1/2023`,
+        changes: [
+            `Fixed Antimatter universe.`,
+        ]
+    },
+    {
+        version: `1.3.0`,
+        date: `3/1/2023`,
+        changes: [
+            `The True Path has been extended, explore Tau Ceti and expand your civilization.`,
+            `Added Perks: Evolve Master and Evolve Grandmaster.`,
+            `Added Distributed Low Power mode setting.`,
+            `Added Precognition CRISPR upgrade.`,
+            `Strong trait now buffs basic jobs but has a weaker effect on manual resource collection.`,
+            `Ships in Truepath can now only be scrapped at the Shipyard.`,
+            `Truepath Sensor Range and Costs adjusted. Range now depends partly on base ship class.`,
+            `Queue stacks now indicate first block vs last blocking resource with a gradient indicator.`,
+            `Added screen reader improvements for blocking resources.`,
+            `You can no longer unlock Anarchist by Cataclysm.`,
+            `Syndicate will now also steal food from Biodomes.`,
+            `Reinforced Shed upgrade now requires unlocking Iron Mining.`,
+            `You must now construct a Titan Habitat before a Titan Mine.`,
+            `Removed dark background effect from modal popups.`,
+            `Increased Entrepreneur Governor trade bonus from 75% to 125% and Bank capacity boost from 10% to 12%.`,
+            `Increased Media Governor morale bonuses and Library bonus.`,
+            `Increased Soldier Governor combat bonus from 5% to 25%.`,
+            `Increased Educator Governor knowledge bonus from 5% to 6%.`,
+            `Increased Spiritualist Governor worker bonus from 10% to 20% and tourism bonus from $2 to $5 per Temple.`,
+            `Increased Noble Governor tax cap bonus from 10% to 20%.`,
+            `Bluecollar Governor now increases output of Coal and Oil power plants and boosts Miners, Smelter, and Oil Derrick.`,
+            `Bureaucrat Governor now provides a slight boost to government effects.`,
+        ]
+    },
+    {
         version: `1.2.21`,
         date: `1/10/2023`,
         changes: [
@@ -31,7 +174,7 @@ const changeList = [
         revision: `a`,
         date: `8/21/2022`,
         changes: [
-            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Catacylsm.`,
+            `Home Planet Orbital structures are now merged with the Moon instead of Red Planet in Cataclysm.`,
         ]
     },
     {

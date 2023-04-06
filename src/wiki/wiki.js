@@ -107,7 +107,8 @@ function initPage(){
             submenu: [
                 { key: 'prehistoric' },
                 { key: 'planetary' },
-                { key: 'space' }
+                { key: 'space' },
+                { key: 'tauceti' }
             ]
         },
         {
@@ -120,7 +121,8 @@ function initPage(){
                 { key: 'globalized' },
                 { key: 'early_space' },
                 { key: 'deep_space' },
-                { key: 'solar' }
+                { key: 'solar' },
+                { key: 'tauceti' }
             ]
         },
         {
@@ -315,7 +317,6 @@ function mainPage(){
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
     content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`,['Demagorddon'])}</div>`);
-    content.append(`<div class="paragraph has-text-advanced">此版本由销锋镝铸修改，详见<a href="https://github.com/XiaofengdiZhu/MegaEvolve" target="_blank">Github</a></div>`);
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
     content.append(`<div class="paragraph has-text-warning">${loc(`wiki_main_contribution`,[contribute])}</div>`);

@@ -1,6 +1,8 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 import { gmen, gov_traits, gov_tasks } from './../governor.js';
+import { hoovedRename } from './../functions.js';
+import { hoovedReskin } from './../races.js';
 
 export function governPage(content){
     let mainContent = sideMenu('create',content);
@@ -209,29 +211,33 @@ export function governPage(content){
                     2: `wiki_governor_task_trait`
                 },
                 para_data: {
-                    2: [loc(`trait_hooved_name`)],
+                    1: [loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]),hoovedRename(false)],
+                    2: [hoovedReskin(false)],
                 },
                 data_link: {
                     2: ['wiki.html#traits-species-major_hooved']
                 }
             });
-            sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));
+            sideMenu('add',`governor-gameplay`,task,loc(`city_${hoovedRename(true)}`,[hoovedRename(false)]));
         }
 
         {
             let task = 'trash';
-            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 4, break: [3,4], h_level: 3,
+            infoBoxBuilder(govern,{ name: task, template: 'government', label: loc(`gov_task_${task}`), paragraphs: 7, break: [3,5,7], h_level: 3,
                 text: {
                     1: `wiki_governor_task_${task}1`,
                     2: `wiki_governor_task_${task}2`,
                     3: `wiki_governor_task_${task}3`,
-                    4: `wiki_governor_task_${task}4`
+                    4: `wiki_governor_task_${task}3min`,
+                    5: `wiki_governor_task_${task}3a`,
+                    6: `wiki_governor_task_${task}3max`,
+                    7: `wiki_governor_task_${task}4`
                 },
                 para_data: {
-                    4: [loc(`interstellar_mass_ejector`)],
+                    7: [loc(`interstellar_mass_ejector`)],
                 },
                 data_link: {
-                    4: ['wiki.html#interstellar-structures-mass_ejector']
+                    7: ['wiki.html#interstellar-structures-mass_ejector']
                 }
             });
             sideMenu('add',`governor-gameplay`,task,loc(`gov_task_${task}`));

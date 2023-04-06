@@ -5,3 +5,4 @@ strings/last-strings.json
 node_modules/*
 docs
 .idea
+evolve/main.js.LICENSE.txt

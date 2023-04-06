@@ -229,7 +229,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov0`) && global.civic.foreign.gov0.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov0`);
@@ -242,7 +242,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov1`) && global.civic.foreign.gov1.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov1`);
@@ -255,7 +255,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && !checkControlling(`gov2`) && global.civic.foreign.gov2.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov2`);
@@ -267,7 +267,7 @@ export const events = {
         },
         type: 'major',
         condition(){
-            return global.race['truepath'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
+            return global.race['truepath'] && !global.tech['isolation'] && global.tech['rival'] && global.civic.foreign.gov3.hstl > 60 ? true : false;
         },
         effect(){
             return pillaged(`gov3`,true);
@@ -831,7 +831,7 @@ function slaveLoss(type,string){
             tech: 'slaves'
         },
         condition(){
-            return global.race['cataclysm'] || global.race['orbit_decayed'] ? false : true;
+            return global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation'] ? false : true;
         },
         type: type,
         effect(){
@@ -986,7 +986,7 @@ export function eventList(type){
 }
 
 function tax_revolt(){
-    let special_res = ['Soul_Gem', 'Corrupt_Gem', 'Codex', 'Demonic_Essence', 'Blood_Stone', 'Artifact']
+    let special_res = ['Soul_Gem', 'Corrupt_Gem', 'Codex', 'Demonic_Essence']
     let ramp = global.civic.govern.type === 'oligarchy' ? 45 : 25;
     let aristoVal = govActive('aristocrat',2);
     if (aristoVal){
