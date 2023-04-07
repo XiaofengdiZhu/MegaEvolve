@@ -839,7 +839,7 @@ const spaceProjects = {
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
                         desc = desc + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
                 }
-
+                };
                 desc = desc + '</div>';
                 return desc;
             },

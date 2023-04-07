@@ -7,8 +7,8 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild } from './actions.js';
-import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace, virtualDrawCity, virtualDrawTech } from './space.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, virtualDrawCity, virtualDrawTech } from './actions.js';
+import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, virtualRenderFortress } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
@@ -459,8 +459,12 @@ vBind({
         pausedesc(){
             return global.settings.pause ? loc('game_play') : loc('game_pause');
         },
-        checkPeriodChanged(event){
+        checkPeriodChanged(event) {
             global.settings.checkPeriod = event.target.value;
+            if (!global.settings.pause) {
+                gameLoop('stop');
+                gameLoop('start');
+            }
         },
         frameLongLoopCountChanged(event){
             global.settings.frameLongLoopCount = event.target.value;
@@ -844,6 +848,7 @@ function fastLoop(){
         }
         breakdown.p['Global'][loc('job_scavenger')] = bonus+'%';
         global_multiplier *= 1 + (bonus / 100);
+    }
     }
     if (global.city.ptrait.includes('mellow')){
         breakdown.p['Global'][loc('planet_mellow_bd')] = '-10%';
@@ -9225,6 +9230,7 @@ function midLoop(){
                             stop = true;
                         }
                         struct['time'] = time;
+                        let br = false;
                         for (let j=1; j<struct.q; j++){
                             let tc = timeCheck(t_action, spent, true);
                             time += tc.t;

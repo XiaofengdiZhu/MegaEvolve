@@ -5,20 +5,13 @@ import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popove
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
-import { setPowerGrid, gridDefs, clearGrids } from './industry.js';
-import { defineGovernment, defineIndustry, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
+import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
+import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
 import { races, shapeShift } from './races.js';
-import {drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
+import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
 import {  virtualRenderSpace, ascendLab, terraformLab, deepSpace, galaxySpace, space } from './space.js';
-import {
-    renderFortress,
-    buildFortress,
-    drawMechLab,
-    clearMechDrag,
-    drawHellObservations,
-    virtualBuildFortress, virtualRenderFortress
-} from './portal.js';
-import { drawShipYard, clearShipDrag } from './truepath.js';
+import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations, virtualRenderFortress, virtualBuildFortress } from './portal.js';
+import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
 export function mainVue(){
@@ -319,6 +312,7 @@ export function loadTab(tab){
         case 0:
             if (!global.settings.tabLoad){
                 tagEvent('page_view',{ page_title: `Evolve - Evolution` });
+                drawEvolution();
             }
             break;
         case 1:
@@ -364,6 +358,12 @@ export function loadTab(tab){
                             <span aria-hidden="true" @click="outerSol">{{ 'outer_local_space' | label }}</span>
                         </template>
                     </b-tab-item>
+                    <b-tab-item id="tauceti" :visible="s.showTau">
+                        <template slot="header">
+                            <h2 class="is-sr-only">{{ 'tab_tauceti' | label }}</h2>
+                            <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
+                        </template>
+                    </b-tab-item>
                 </b-tabs>`);
                 vBind({
                     el: `#mTabCivil`,
@@ -397,6 +397,7 @@ export function loadTab(tab){
                                 clearElement($(`#galaxy`));
                                 clearElement($(`#portal`));
                                 clearElement($(`#outerSol`));
+                                clearElement($(`#tauCeti`));
                                 switch (tab){
                                     case 0:
                                         virtualDrawCity();
@@ -409,6 +410,9 @@ export function loadTab(tab){
                                         break;
                                     case 4:
                                         virtualRenderFortress();
+                                        break;
+                                    case 6:
+                                        renderTauCeti();
                                         break;
                                 }
                             }
@@ -425,6 +429,7 @@ export function loadTab(tab){
                     virtualDrawCity();
                     virtualRenderSpace();
                     virtualRenderFortress();
+                    renderTauCeti();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){
@@ -948,7 +953,7 @@ export function index(){
             <h2 class="is-sr-only">Race Info</h2>
             <div class="column is-one-quarter name">{{ name() }}</div>
             <div class="column is-half morale-contain"><span id="morale" v-show="city.morale.current" class="morale">${loc('morale')} <span class="has-text-warning">{{ city.morale.current | mRound }}%</span></div>
-            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | approx }}</span></span></div>
+            <div class="column is-one-quarter power"><span id="powerStatus" class="has-text-warning" v-show="city.powered"><span>MW</span> <span id="powerMeter" class="meter">{{ city.power | replicate | approx }}</span></span></div>
         </div>
         <div id="sideQueue">
             <div id="buildQueue" class="bldQueue has-text-info" v-show="display"></div>
@@ -1254,6 +1259,7 @@ export function index(){
         {i: 'turtle',       f: 'finish_line',       r: 2 },
         {i: 'floppy',       f: 'digital_ascension', r: 2 },
         {i: 'slime',        f: 'slime_lord',        r: 2 },
+        {i: 'lightning',    f: 'annihilation',      r: 2 },
         {i: 'heart',        f: 'valentine',         r: 1 },
         {i: 'clover',       f: 'leprechaun',        r: 1 },
         {i: 'bunny',        f: 'easter',            r: 1 },
