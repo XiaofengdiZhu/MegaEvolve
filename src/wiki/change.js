@@ -3,6 +3,35 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.5`,
+        revision: `b`,
+        date: `4/9/2023`,
+        changes: [
+            `Increased egg accessibility with certain traits or challenge modes.`,
+        ]
+    },
+    {
+        version: `1.3.5`,
+        revision: `a`,
+        date: `4/8/2023`,
+        changes: [
+            `Fixed a bug that caused eggs 16-18 not to count for unlocking the egg hunt feat.`,
+        ]
+    },
+    {
+        version: `1.3.5`,
+        date: `4/7/2023`,
+        changes: [
+            `Avian species now have the Flier trait.`,
+            `Avian Rigid trait replaced with Sky Lover.`,
+            `Added Wireless storage to High-Tech farm in isolation`,
+            `Fixed truepath dreadnought power costs.`,
+            `Fixed a bug that could assign extra challenge genes.`,
+            `Fixed a bug with changing languages with active Tau Ceti content.`,
+            `Fixed many issues with preload tab content in the early game.`,
+        ]
+    },
+    {
         version: `1.3.4`,
         revision: `b`,
         date: `3/30/2023`,
@@ -16,14 +45,14 @@ const changeList = [
         revision: `a`,
         date: `3/25/2023`,
         changes: [
-            `A restore point is now made if you select isolation protocal.`,
+            `A restore point is now made if you select isolation protocol.`,
         ]
     },
     {
         version: `1.3.4`,
         date: `3/24/2023`,
         changes: [
-            `Evolving Synth can now chose imitation race from any species killed by an AI Apocalypse.`,
+            `Evolving Synth can now choose imitation race from any species killed by an AI Apocalypse.`,
             `Fixed issue with miscalculating low fuel usage for various power generating structures.`,
             `Extractor Ship Isolation output boosted by 20%.`,
             `Added additional Hooved reskins.`,

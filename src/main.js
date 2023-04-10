@@ -1,4 +1,4 @@
-import { global, save, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, clearElement, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEgg, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, virtualDrawCity, virtualDrawTech } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, virtualRenderFortress } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
@@ -990,6 +990,7 @@ function fastLoop(){
         Bolognium: {},
         Vitreloy: {},
         Orichalcum: {},
+        Unobtainium: {},
         Plywood: {},
         Brick: {},
         Wrought_Iron: {},
@@ -1991,8 +1992,8 @@ function fastLoop(){
                 }
             }
 
-            if (global.space[sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
-                global.space[sup.s].s_max = 0;
+            if (global[sup.a][sup.s] && sup.r === 'spc_eris' && !p_on['ai_core2']){
+                global[sup.a][sup.s].s_max = 0;
             }
 
             if (global[sup.a][sup.s]){
@@ -2645,7 +2646,10 @@ function fastLoop(){
 
                     let workers = global.civic[job].workers;
                     if (global.race['high_pop']){
-                        workers /= traits.high_pop.vars()[0]
+                        workers /= traits.high_pop.vars()[0];
+                    }
+                    if (global.race['sky_lover'] && ['miner','coal_miner','crystal_miner','pit_miner'].includes(job)){
+                        workers *= 1 + (traits.sky_lover.vars()[0] / 100);
                     }
 
                     stress -= workers / stress_level;
@@ -6825,7 +6829,7 @@ function fastLoop(){
 
     let easter = eventActive('easter');
     if (easter.active){
-        for (i=1; i<=15; i++){
+        for (i=1; i<=18; i++){
             let $egg = $(`#egg${i}`);
             if ($egg.length > 0 && !$egg.hasClass('binded')){
                 easterEggBind(i);
@@ -6975,6 +6979,7 @@ function midLoop(){
             space_miner: 0,
             hell_surveyor: 0,
             archaeologist: 0,
+            pit_miner: 0,
             crew: 0
         };
 
@@ -7544,6 +7549,11 @@ function midLoop(){
                 caps['Crates'] += (global.tauceti.repository.count * containers);
                 bd_Crates[loc('tech_repository')] = (global.tauceti.repository.count * containers) + 'v';
             }
+        }
+        if (global.tech['isolation'] && p_on['tau_farm'] && global.race['artifical']){
+            let gain = p_on['tau_farm'] * spatialReasoning(350);
+            caps['Food'] += gain;
+            bd_Food[loc('tau_home_tau_farm')] = gain+'v';
         }
 
         if (global.galaxy['gateway_depot']){
@@ -8207,6 +8217,9 @@ function midLoop(){
             if (global.tech['trade'] && global.tech['trade'] >= 3){
                 routes--;
             }
+            if (global.race['flier']){
+                routes += traits.flier.vars()[1];
+            }
             global.city.market.mtrade += routes * global.city.trade.count;
             breakdown.t_route[loc('city_trade')] = routes * global.city.trade.count;
             if (global.tech['fanaticism'] && global.tech['fanaticism'] >= 3){
@@ -8600,11 +8613,11 @@ function midLoop(){
                 if (global.civic.foreign[`gov${i}`].sab === 0){
                     switch (global.civic.foreign[`gov${i}`].act){
                         case 'influence':
-                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 6 : 4)) === 0){
+                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 6 : 4)) === 0){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].hstl -= covert;
                                 if (global.civic.foreign[`gov${i}`].hstl < 0){
                                     global.civic.foreign[`gov${i}`].hstl = 0;
@@ -8613,11 +8626,11 @@ function midLoop(){
                             }
                             break;
                         case 'sabotage':
-                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 5 : 3)) === 0){
+                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 5 : 3)) === 0){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].mil -= covert;
                                 if (global.civic.foreign[`gov${i}`].mil < 50){
                                     global.civic.foreign[`gov${i}`].mil = 50;
@@ -8626,11 +8639,11 @@ function midLoop(){
                             }
                             break;
                         case 'incite':
-                            if (Math.floor(Math.seededRandom(0,global.race['blurry'] ? 3 : 2)) === 0){
+                            if (Math.floor(seededRandom(0,global.race['blurry'] ? 3 : 2)) === 0){
                                 spyCaught(i);
                             }
                             else {
-                                let covert = Math.floor(Math.seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
+                                let covert = Math.floor(seededRandom(global.tech['spy'] >= 5 ? 2 : 1, global.tech['spy'] >= 5 ? 8 : 6));
                                 global.civic.foreign[`gov${i}`].unrest += covert;
                                 if (global.civic.foreign[`gov${i}`].unrest > 100){
                                     global.civic.foreign[`gov${i}`].unrest = 100;
@@ -10345,7 +10358,7 @@ function longLoop(){
         if (Math.rand(0,global.event.t) === 0){
             let event_pool = eventList('major');
             if (event_pool.length > 0){
-                let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
                 let msg = events[event].effect();
                 messageQueue(msg,'caution',false,['events','major_events']);
                 global.event.l = event;
@@ -10360,7 +10373,7 @@ function longLoop(){
             if (Math.rand(0,global.m_event.t) === 0){
                 let event_pool = eventList('minor');
                 if (event_pool.length > 0){
-                    let event = event_pool[Math.floor(Math.seededRandom(0,event_pool.length))];
+                    let event = event_pool[Math.floor(seededRandom(0,event_pool.length))];
                     let msg = events[event].effect();
                     messageQueue(msg,false,false,['events','minor_events']);
                     global.m_event.l = event;
@@ -10748,13 +10761,13 @@ function setWeather(){
             }
             break;
         case 15:
-            clearElement($moon);
             global.city.ptrait.includes('retrograde')
                 ? $moon.removeClass('wi-moon-waning-gibbous-2')
                 : $moon.removeClass('wi-moon-full');
             $moon.addClass('wi-moon-waning-gibbous-1');
             break;
         case 16:
+            clearElement($moon);
             global.city.ptrait.includes('retrograde')
                 ? $moon.removeClass('wi-moon-waning-gibbous-3')
                 : $moon.removeClass('wi-moon-waning-gibbous-1');
@@ -10883,14 +10896,14 @@ function resourceAlt(){
 }
 
 function spyCaught(i){
-    let escape = global.race['elusive'] || Math.floor(Math.seededRandom(0,3)) === 0 ? true : false;
+    let escape = global.race['elusive'] || Math.floor(seededRandom(0,3)) === 0 ? true : false;
     if (!escape && global.civic.foreign[`gov${i}`].spy > 0){
         global.civic.foreign[`gov${i}`].spy -= 1;
     }
-    if (!escape && Math.floor(Math.seededRandom(0,4)) === 0){
+    if (!escape && Math.floor(seededRandom(0,4)) === 0){
         messageQueue(loc('event_spy_sellout',[govTitle(i)]),'danger',false,['spy']);
         let max = global.race['mistrustful'] ? 5 + traits.mistrustful.vars()[0] : 5;
-        global.civic.foreign[`gov${i}`].hstl += Math.floor(Math.seededRandom(1,max));
+        global.civic.foreign[`gov${i}`].hstl += Math.floor(seededRandom(1,max));
         if (global.civic.foreign[`gov${i}`].hstl > 100){
             global.civic.foreign[`gov${i}`].hstl = 100;
         }
