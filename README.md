@@ -1,17 +1,23 @@
 # MegaEvolve 超进化
 
 ## Play 开玩
-
 https://xiaofengdizhu.github.io/MegaEvolve/
-
+## Top Announcement 置顶公告
+Developing and not completed, if you have any questions, please submit an issue or start a discussion.
+开发中，未完成，有任何问题请先看此说明后提交issue或Discussions中发帖询问。
 ## About 关于
-
 This Version is based on [pmotschmann/Evolve](https://github.com/pmotschmann/Evolve), I add speed-up feature and make some small UI changes to this awesome game(no values changed). I hope you will enjoy it!
 这个版本基于[pmotschmann/Evolve](https://github.com/pmotschmann/Evolve)，我给这个超赞的游戏添加了加速功能，还做了一点界面调整（没有数值调整），希望你能享受它。
 
 Thanks to [g8hh/Evolve](https://github.com/g8hh/evolve), I used it's `strings.zh-CN.json`(not totally).感谢[g8hh/Evolve](https://github.com/g8hh/evolve)，我使用了它的`strings.zh-CN.json`（不完全照抄）。
 
 For faster speed, you will need a powerful CPU with higher Single-Core performance.如果你想要更快的加速，需要有更强劲单核性能的CPU。
+
+To display buildings, click the title of second row of tabs to refresh the building list.显示建筑的方法是点击第二行标签栏的标题，这将刷新建筑列表。  
+Or set the "自动刷新" option to "是" on the right top, but this will affect the speed factor.或者设置右上角的“自动刷新”选项为“是”，但是会影响加速。
+
+I also make an offline client for this我还为它做了一个离线客户端: [evolve-electron](https://github.com/XiaofengdiZhu/evolve-electron/)  
+Tampermonkey scripts for the client客户端用的油猴脚本: [Click me](https://github.com/XiaofengdiZhu/evolve-electron/tree/main/tampermonkeyScripts)
 
 Below is original readme.以下是原版介绍。
 
