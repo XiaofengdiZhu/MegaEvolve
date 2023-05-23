@@ -1243,8 +1243,8 @@ if (convertVersion(global['version']) < 103002){
         global.portal.observe.stats.total.gems['surveyors'] = 0;
     }
 }
-global['version'] = '1.3.5';
-global['revision'] = 'b';
+global['version'] = '1.3.6';
+delete global['revision'];
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){

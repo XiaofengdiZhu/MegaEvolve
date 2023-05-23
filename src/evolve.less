@@ -1178,6 +1178,9 @@ Misc ---------> Main template
             border-top: @primary-border solid .0625rem;
             border-bottom: @primary-border solid .0625rem;
         }
+        .current.infoOnly {
+            border: @primary-border solid .0625rem;
+        }
 
         // UI Bars
         .topBar,
@@ -1856,7 +1859,6 @@ html.redgreen {
         .calendar {
             .wi-thermometer-exterior {
                 color: #00e6d2;
-                ;
             }
 
             .wi-thermometer {
@@ -1979,6 +1981,9 @@ html.gruvboxDark {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
     }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
+    }
     .popper {
         .grad-from-left {
             background-image: linear-gradient(90deg, @has-text-danger 45%, @popper 55%);
@@ -2058,6 +2063,9 @@ html.dracula {
     .current {
         border-top: @secondary-border solid .0625rem;
         border-bottom: @secondary-border solid .0625rem;
+    }
+    .current.infoOnly {
+        border: @secondary-border solid .0625rem;
     }
     .popper {
         .grad-from-left {
@@ -2254,6 +2262,10 @@ a {
     line-height: 1rem;
     padding: 0 .125rem;
     cursor: default;
+}
+.current.infoOnly {
+    border-radius: .375rem;
+    padding: 0 .5rem;
 }
 
 .factory .current svg {
@@ -4173,6 +4185,10 @@ span.inline {
 
         .infoTimer {
             margin-right: 1rem;
+        }
+        .astro {
+            font-size: 0.8125rem;
+            margin-right: .25rem;
         }
     }
 
