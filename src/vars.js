@@ -44,6 +44,7 @@ export var spire_on = {};
 export var quantum_level = 0;
 export var achieve_level = 0;
 export var universe_level = 0;
+export var atrack = {t:0};
 export function set_qlevel(q_level){
     quantum_level = q_level;
 }
@@ -82,8 +83,10 @@ export class virtualElement {
             let head = id.split('-')[0]+"-";
             if(virtualHeaders.indexOf(head)===-1){
                 let speciaHead = "^"+id+"$|";
-                if(specialIds.indexOf(id)>-1 &&virtualHeaders.indexOf(speciaHead)===-1){
-                    virtualHeaders+=speciaHead;
+                if(specialIds.indexOf(id)>-1){
+                    if(virtualHeaders.indexOf(speciaHead)===-1){
+                        virtualHeaders+=speciaHead;
+                    }
                 }else{
                     virtualHeaders+=head+"|";
                 }
@@ -1244,8 +1247,8 @@ if (convertVersion(global['version']) < 103002){
         global.portal.observe.stats.total.gems['surveyors'] = 0;
     }
 }
-global['version'] = '1.3.6';
-delete global['revision'];
+global['version'] = '1.3.8';
+global['revision'] = 'a';
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -1257,9 +1260,8 @@ if (!global.hasOwnProperty('prestige')){
     }
 });
 if (!global.hasOwnProperty('power')){
-    global['power'] = [];       
+    global['power'] = [];
 }
-
 if (!global.hasOwnProperty('support')){
     global['support'] = {};
 }
@@ -1518,6 +1520,7 @@ export function setupStats(){
         'sac','tsac','know','tknow','portals','dkills','attacks','cfood','tfood','cstone','tstone',
         'clumber','tlumber','mad','bioseed','cataclysm','blackhole','ascend','descend','terraform',
         'aiappoc','matrix','retire','eden','geck','dark','harmony','blood','cores','artifact',
+        'cattle','tcattle','murders','tmurders','psykill','tpsykill'
     ].forEach(function(k){
         if (!global.stats.hasOwnProperty(k)){
             global.stats[k] = 0;
@@ -2212,7 +2215,7 @@ window.soft_reset = function reset(source){
 
     global.stats['current'] = Date.now();
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 export var webWorker = { w: false, s: false, mt: 250 };
@@ -2234,7 +2237,7 @@ function setRegionStates(reset){
             'showCiv','showCity','showIndustry','showPowerGrid','showMechLab','showShipYard',
             'showResearch','showCivic','showMil','showResources','showMarket','showStorage',
             'showGenetics','showSpace','showDeep','showGalactic','showPortal','showOuter',
-            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa'
+            'showTau','showEjector','showCargo','showAlchemy','showGovernor','arpa','showPsychic'
         ],
         space: [
             'moon','red','hell','sun','gas','gas_moon','belt','dwarf','alpha','proxima',
@@ -2348,6 +2351,8 @@ export function clearStates(){
     global.stats.cstone = 0;
     global.stats.clumber = 0;
     global.stats.sac = 0;
+    global.stats.cattle = 0;
+    global.stats.murders = 0;
     global.settings.at = 0;
 
     global.settings.showEvolve = true;
@@ -2375,5 +2380,5 @@ window.reset = function reset(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    window.location.reload();
+    window.location.reload(true);
 }

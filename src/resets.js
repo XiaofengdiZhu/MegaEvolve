@@ -75,7 +75,7 @@ export function warhead(){
         });
         
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        window.location.reload();
+        window.location.reload(true);
     }
 }
 
@@ -211,7 +211,7 @@ export function bioseed(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Cataclysm
@@ -296,7 +296,7 @@ export function cataclysm_end(){
         global.race['start_cataclysm'] = 1;
         global.race['cataclysm'] = 1;
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        window.location.reload();
+        window.location.reload(true);
     }
 }
 
@@ -406,7 +406,7 @@ export function big_bang(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 export function vacuumCollapse(){
@@ -502,7 +502,7 @@ export function vacuumCollapse(){
         });
 
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-        window.location.reload();
+        window.location.reload(true);
     }
 }
 
@@ -604,7 +604,7 @@ export function ascend(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Demonic Infusion
@@ -620,7 +620,12 @@ export function descension(){
 
     unlockAchieve(`squished`,true);
     unlockAchieve(`extinct_${global.race.species}`);
+    if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+        unlockAchieve(`nightmare`);
+    }
+    else {
     unlockAchieve(`corrupted`);
+    }
     if (races[global.race.species].type === 'angelic'){
         unlockFeat('twisted');
     }
@@ -697,7 +702,7 @@ export function descension(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Terraform
@@ -787,7 +792,7 @@ export function terraform(planet){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // AI Appocalypse
@@ -861,7 +866,7 @@ export function aiApocalypse(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Matrix
@@ -945,7 +950,7 @@ export function matrix(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Retirement
@@ -1029,7 +1034,7 @@ export function retirement(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 // Garden of Eden
@@ -1113,7 +1118,7 @@ export function gardenOfEden(){
     });
 
     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-    window.location.reload();
+    window.location.reload(true);
 }
 
 function resetCommon(args){

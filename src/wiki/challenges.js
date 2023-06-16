@@ -158,7 +158,7 @@ export function challengesPage(content){
         {   // Joyless
             let joyless = infoBoxBuilder(modes,{ name: 'modes_joyless', template: 'challenges', paragraphs: 4, break: [3,4], h_level: 2,
                 para_data: {
-                    1: [loc(`evo_challenge_joyless`),loc(`wiki_challenges_mode`),loc(`tech_theatre`),loc(`job_entertainer`)],
+                    1: [loc(`evo_challenge_joyless`),loc(`wiki_challenges_mode`),loc(`tech_theatre`)],
                     2: [loc(`job_entertainer`),loc(`morale_broadcast`),wardenLabel(),loc(`morale`)],
                     3: [loc(`wiki_challenges_mode`),actions.space.spc_red.biodome.title(),loc(`tech_theatre`)],
                     4: [loc(`wiki_challenges_scenarios_cataclysm`),loc(`wiki_challenges_scenario`)]
@@ -356,11 +356,6 @@ export function challengesPage(content){
                     13: [loc(`interstellar_alpha_starport_title`), 100],
 
                     14: [loc(`wiki_challenges_scenarios_cataclysm`)]
-                },
-                data_link: {
-                    1: [false,false,'wiki.html#races-species-sludge'],
-                    3: [false,false,'wiki.html#traits-species-major_ooze'],
-                    5: [false,'wiki.html#resets-prestige-mad']
                 }
             });
             addAchievements(orbit,false,['lamentis']);
@@ -382,6 +377,29 @@ export function challengesPage(content){
                 }
             ]);
             subSideMenu('add',`challenges-gameplay`,'modes_orbitdecay',loc('wiki_challenges_modes_orbitdecay'));
+        }
+        {   // Witch Hunter
+            let witch = infoBoxBuilder(modes,{ name: 'modes_witchhunter', template: 'challenges', paragraphs: 7, break: [4], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_witch_hunter`)],
+                    4: [`300%`,`150%`,`75%`],
+                    7: [100]
+                }
+            });
+            addAchievements(witch,false,['soul_sponge','nightmare']);
+            addRequirements(witch,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: `${loc(`wiki_universe_magic`)} ${loc(`wiki_resets_ascension`)}`,
+                            color: global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg'] ? true : false,
+                            link: 'wiki.html#resets-prestige-ascension'
+                        }
+                    ]
+                }
+            ]);
+            subSideMenu('add',`challenges-gameplay`,'modes_witchhunter',loc('wiki_challenges_modes_witchhunter'));
         }
     }
     
@@ -611,7 +629,7 @@ export function challengesPage(content){
                     4: [loc(`wiki_challenges_scenario`),loc(`wiki_resets_eden`)],
                 },
                 data_link: {
-                    3: [false,'wiki.html#resets-prestige-eden']
+                    4: [false,'wiki.html#resets-prestige-eden']
                 }
             });
             addAchievements(lone,false,['adam_eve']);

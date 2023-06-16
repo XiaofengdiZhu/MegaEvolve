@@ -1,5 +1,5 @@
 import { global, p_on } from './vars.js';
-import { biomes, traits } from './races.js';
+import { biomes, traits, fathomCheck } from './races.js';
 import { govRelationFactor } from './civics.js';
 import { jobScale } from './jobs.js';
 import { hellSupression } from './portal.js';
@@ -333,6 +333,10 @@ export function production(id,val){
             if (global.race['tough']){
                 mats *= 1 + (traits.tough.vars()[0] / 100);
             }
+            let fathom = fathomCheck('ogre');
+            if (fathom > 0){
+                mats *= 1 + (traits.tough.vars(1)[0] / 100 * fathom);
+            }
             if (global.tech['tau_pit_mining']){
                 mats *= 1.18;
             }
@@ -473,6 +477,36 @@ export function production(id,val){
         case 'alien_outpost':
         {
             return 0.01;
+        }
+        case 'psychic_boost':
+        {
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.boost.r === val && global.race.psychicPowers.hasOwnProperty('boostTime')){
+                let boost = 0;
+                if (global.race.psychicPowers.boostTime > 0){
+                    boost += traits.psychic.vars()[3] / 100;
+                }
+                if (global.tech.psychic >= 4 && global.race.psychicPowers['channel']){
+                    let rank = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0;
+                    boost += +(traits.psychic.vars()[3] / 50000 * rank * global.race.psychicPowers.channel.boost).toFixed(3);
+                }
+                return 1 + boost;
+            }
+            return 1;
+        }
+        case 'psychic_cash':
+        {
+            if (global.tech['psychic'] && global.race['psychic'] && global.race['psychicPowers'] && global.race.psychicPowers.hasOwnProperty('cash')){
+                let boost = 0;
+                if (global.race.psychicPowers.cash > 0){
+                    boost += traits.psychic.vars()[3] / 100;
+                }
+                if (global.tech.psychic >= 4 && global.race.psychicPowers['channel']){
+                    let rank = global.stats.achieve['nightmare'] && global.stats.achieve.nightmare['mg'] ? global.stats.achieve.nightmare.mg : 0;
+                    boost += +(traits.psychic.vars()[3] / 50000 * rank * global.race.psychicPowers.channel.cash).toFixed(3);
+                }
+                return 1 + boost;
+            }
+            return 1;
         }
     }
 }

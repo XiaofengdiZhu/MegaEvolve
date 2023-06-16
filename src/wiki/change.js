@@ -3,6 +3,50 @@ import { clearElement } from './../functions.js';
 
 const changeList = [
     {
+        version: `1.3.8`,
+        revision: `a`,
+        date: `6/1/2023`,
+        changes: [
+            `Fixed high pop scaling.`,
+        ]
+    },
+    {
+        version: `1.3.8`,
+        date: `6/1/2023`,
+        changes: [
+            `Unfathomable bug fixes.`,
+            `Psychic powers up time now scale with rank of Ancient Nightmare.`,
+            `Additional Psychic power upgrades.`,
+            `Intergalactic Raider renamed to Corsair.`,
+        ]
+    },
+    {
+        version: `1.3.7`,
+        revision: `a`,
+        date: `5/30/2023`,
+        changes: [
+            `Fixed issue with drawing the same alien species twice in intergalactic content.`,
+            `Adjusted Mana costs for some research techs in Witch Hunter.`,
+        ]
+    },
+    {
+        version: `1.3.7`,
+        date: `5/29/2023`,
+        changes: [
+            `Added Magic universe exclusive challenge: Witch Hunter.`,
+            `Reduced Encrypted Data cost of Data Analysis, Advanced Medkits, Automated Warehousing, Elerium Extraction, and Drone Warfare techs.`,
+            `Star Forge smelting bonus rebalanced.`,
+            `Antimatter Dark Energy effect now applies to Truepath Ship power generation.`,
+            `Fixed Magocracy Crystal bonus.`,
+            `Reduced Crystal cost of Alchemy.`,
+            `Fixed Humpback trait rank scaling.`,
+            `Infiltrator can now steal Alien Biotech on Truepath.`,
+            `Fixed brownout issue with using Replicator Gov task when constructing a new powered building.`,
+            `Fixed rejuvenated trashed planet bonus.`,
+            `Fixed orbit period on reterraformed planets.`,
+        ]
+    },
+    {
         version: `1.3.6`,
         date: `4/22/2023`,
         changes: [

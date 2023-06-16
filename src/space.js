@@ -514,6 +514,7 @@ const spaceProjects = {
                 return false;
             }
         },
+        captive_housing: buildTemplate(`captive_housing`,'space'),
         terraformer: {
             id: 'space-terraformer',
             title: loc('space_terraformer'),
@@ -3975,7 +3976,7 @@ const interstellarProjects = {
     }
 };
 
-function astrialProjection(){
+export function astrialProjection(){
     let gains = calcPrestige('ascend');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.harmony,loc('resource_Harmony_name')])}</div><div>${loc('interstellar_ascension_trigger_effect3')}</div>`;
@@ -4397,7 +4398,7 @@ const galaxyProjects = {
             support(){ return 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
             powerBalancer(){
-                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+                return global.galaxy.hasOwnProperty('starbase') ? false : [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
             },
             refresh: true,
             action(){
@@ -4441,7 +4442,7 @@ const galaxyProjects = {
             support(){ return global.tech['telemetry'] ? 0.75 : 0.5; },
             powered(){ return powerCostMod(p_on['s_gate'] ? 4 : 0); },
             powerBalancer(){
-                return [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
+                return global.galaxy.hasOwnProperty('starbase') ? false : [{ s: global.galaxy.starbase.s_max - global.galaxy.starbase.support }];
             },
             postPower(o){
                 let powered = o ? p_on['telemetry_beacon'] + keyMultiplier() : p_on['telemetry_beacon'] - keyMultiplier();
@@ -4817,7 +4818,7 @@ const galaxyProjects = {
             },
             effect(){
                 let money = spatialReasoning(global.tech['world_control'] ? 1875000 : 1500000);
-                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[2])}</div>`;
+                let joy = global.race['joyless'] ? '' : `<div>${loc('city_max_entertainer',[jobScale(2)])}</div>`;
                 let desc = `<div>${loc('plus_max_resource',[`\$${money.toLocaleString()}`,loc('resource_Money_name')])}</div>${joy}<div>${loc('space_red_vr_center_effect2',[2])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('minus_power',[this.powered()])}</div>`;
             },
@@ -5319,7 +5320,7 @@ const galaxyProjects = {
                 let vitreloy = 0.05;
                 let polymer = 2.3;
                 let neutronium = 0.8;
-                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[this.ship.rating()])}</div><div>${loc('galaxy_raider_effect')}</div><div>${loc('gain',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('gain',[vitreloy,loc('resource_Vitreloy_name')])}</div><div>${loc('gain',[polymer,loc('resource_Polymer_name')])}</div><div>${loc('gain',[neutronium,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[this.ship.mil()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
+                return `<div class="has-text-advanced">${loc('galaxy_ship_rating',[$(this)[0].ship.rating()])}</div><div>${loc('gain',[deuterium,loc('resource_Deuterium_name')])}</div><div>${loc('gain',[vitreloy,loc('resource_Vitreloy_name')])}</div><div>${loc('gain',[polymer,loc('resource_Polymer_name')])}</div><div>${loc('gain',[neutronium,loc('resource_Neutronium_name')])}</div><div class="has-text-caution">${loc('galaxy_starbase_mil_crew',[$(this)[0].ship.mil()])}</div><div class="has-text-caution">${loc('spend',[helium,global.resource.Helium_3.name])}</div>`;
             },
             ship: {
                 civ(){ return 0; },
@@ -5444,26 +5445,25 @@ export function piracy(region,rating,raw){
 }
 
 function xeno_race(){
-    while (typeof global.galaxy['alien1'] === 'undefined'){
-        let key = randomKey(races);
-        if (key !== 'protoplasm' && key !== global.race.species && races[key].type !== 'demonic'){
-            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
+    let skip = ['protoplasm',global.race.species];
+    if (global.city.hasOwnProperty('surfaceDwellers')){
+        skip.push(...global.city.surfaceDwellers);
+    }
+    if (!global.custom.hasOwnProperty('race0')){
+        skip.push('custom');
+    }
+    let list = Object.keys(races).filter(function(r){ return !['demonic','eldritch'].includes(races[r].type) && !skip.includes(r) });
+    let key1 = randomKey(list);
                 global.galaxy['alien1'] = {
-                    id: key
+        id: list[key1]
                 };
-            }
-        }
-    }
-    while (typeof global.galaxy['alien2'] === 'undefined'){
-        let key = randomKey(races);
-        if (key !== 'protoplasm' && key !== global.race.species && key !== global.galaxy.alien1.id && races[key].type !== 'angelic'){
-            if (key !== 'custom' || (key === 'custom' && global.custom.hasOwnProperty('race0'))){
+    skip.push(list[key1]);
+
+    list = Object.keys(races).filter(function(r){ return !['angelic'].includes(races[r].type) && !skip.includes(r) });
+    let key2 = randomKey(list);
                 global.galaxy['alien2'] = {
-                    id: key
+        id: list[key2]
                 };
-            }
-        }
-    }
 }
 
 export function gatewayStorage(){
@@ -6532,12 +6532,17 @@ export function ascendLab(wiki){
 
         unlockAchieve(`biome_${global.city.biome}`);
         unlockAchieve(`genus_${races[global.race.species].type}`);
-        unlockAchieve(`ascended`);
-        if (global.race.species === 'junker'){
-            unlockFeat('the_misery');
+        if (global.race['witch_hunter'] && global.race.universe === 'magic'){
+            unlockAchieve(`soul_sponge`);
         }
+        else {
+            unlockAchieve(`ascended`);
         if (global.interstellar.thermal_collector.count === 0){
             unlockFeat(`energetic`);
+            }
+        }
+        if (global.race.species === 'junker'){
+            unlockFeat('the_misery');
         }
         if (!global.race['modified'] && global.race['junker'] && global.race.species === 'junker'){
             unlockFeat(`garbage_pie`);
@@ -6932,7 +6937,7 @@ export function ascendLab(wiki){
     Object.keys(genus_traits).forEach(function (type){
         if (global.stats.achieve[`genus_${type}`] && global.stats.achieve[`genus_${type}`].l > 0){
             popover(`celestialLabgenusSelection${type}`, function(){
-                let desc = $(`<div></div>`);
+                let desc = $(`<div><div>${loc(`genelab_genus_${type}_desc`)}</div></div>`);
                 Object.keys(genus_traits[type]).forEach(function (t){
                     if (traits[t]){
                         let des = $(`<div></div>`);
@@ -7068,6 +7073,7 @@ export function terraformLab(wiki){
             let type = 's';
             if (global.custom.planet[uni][type]){
                 planet = deepClone(global.custom.planet[uni][type]);
+                planet.orbit = global.city.calendar.orbit;
                 geoList.forEach(function (res){
                     if (planet.geology.hasOwnProperty(res)){
                         planet.geology[res] *= 100;

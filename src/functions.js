@@ -1,6 +1,6 @@
-import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, virtualTree } from './vars.js';
+import { global, save, message_logs, message_filters, webWorker, keyMultiplier, intervals, resizeGame, atrack , virtualTree } from './vars.js';
 import { loc } from './locale.js';
-import { races, traits, genus_traits, traitSkin } from './races.js';
+import { races, traits, genus_traits, traitSkin, fathomCheck } from './races.js';
 import { actions, actionDesc } from './actions.js';
 import { jobScale } from './jobs.js';
 import { universe_affixes } from './space.js';
@@ -203,7 +203,7 @@ window.importGame = function importGame(data,utf16){
             }
         }
         save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(saveState)));
-        window.location.reload();
+        window.location.reload(true);
     }
 }
 
@@ -227,7 +227,7 @@ export function powerGrid(type,reset){
                 'prtl_lake:cooling_tower','prtl_lake:harbour','prtl_spire:purifier','prtl_ruins:archaeology','prtl_pit:gun_emplacement','prtl_gate:gate_turret','prtl_pit:soul_attractor',
                 'prtl_gate:infernite_mine','int_sirius:ascension_trigger','spc_kuiper:orichalcum_mine','spc_kuiper:elerium_mine','spc_kuiper:uranium_mine','spc_kuiper:neutronium_mine','spc_dwarf:m_relay',
                 'tau_home:tau_factory','tau_home:infectious_disease_lab','tau_home:alien_outpost','tau_gas:womling_station','spc_red:atmo_terraformer','tau_star:matrix','tau_home:tau_cultural_center',
-                'city:replicator'
+                'prtl_pit:soul_capacitor','city:replicator'
             ];
             break;
         case 'moon':
@@ -685,6 +685,9 @@ export function costMultiplier(structure,offset,base,mutiplier,cat){
     if (global.race['tunneler'] && (structure === 'mine' || structure === 'coal_mine')){ mutiplier -= traits.tunneler.vars()[0]; }
     if (global.tech['housing_reduction'] && (structure === 'basic_housing' || structure === 'cottage')){
         mutiplier -= global.tech['housing_reduction'] * 0.02;
+    }
+    if (global.tech['housing_reduction'] && structure === 'captive_housing'){
+        mutiplier -= global.tech['housing_reduction'] * 0.01;
     }
     if (structure === 'basic_housing'){
         if (global.race['solitary']){
@@ -1568,6 +1571,7 @@ export function adjustCosts(c_action, offset, wiki){
         });
         return newCosts;
     }
+    costs = bloatAdjust(costs, offset, wiki);
     costs = truthAdjust(costs, c_action, offset, wiki);
     costs = loneAdjust(costs, offset, wiki);
     costs = inflationAdjust(costs, offset, wiki);
@@ -1580,6 +1584,22 @@ export function adjustCosts(c_action, offset, wiki){
     costs = extraAdjust(costs, offset, wiki);
     costs = heavyAdjust(costs, offset, wiki);
     return craftAdjust(costs, offset, wiki);
+}
+function bloatAdjust(costs, offset, wiki){
+    if (global.race['bloated']){
+        let adjustRate = 1 + (traits.bloated.vars()[0] / 100);
+        var newCosts = {};
+        Object.keys(costs).forEach(function (res){
+            if (['Food','Lumber','Stone','Furs','Copper','Iron','Aluminium','Cement','Coal','Steel','Titanium','Alloy','Polymer','Iridium'].includes(res)){
+                newCosts[res] = function(){ return costs[res](offset, wiki) * adjustRate; }
+            }
+            else {
+                newCosts[res] = function(){ return costs[res](offset, wiki); }
+            }
+        });
+        return newCosts;
+    }
+    return costs;
 }
 function loneAdjust(costs, offset, wiki){
     if (global.race['lone_survivor']){
@@ -1683,7 +1703,8 @@ function technoAdjust(costs, offset, wiki){
 
 function scienceAdjust(costs, offset, wiki){
     let pragVal = govActive('pragmatist',1);
-    if ((global.race['smart'] || global.race['dumb'] || pragVal) && costs['Knowledge']){
+    let fathom = fathomCheck('gnome');
+    if ((global.race['smart'] || global.race['dumb'] || pragVal || fathom > 0) && costs['Knowledge']){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Knowledge'){
@@ -1691,6 +1712,9 @@ function scienceAdjust(costs, offset, wiki){
                     let cost = costs[res](offset, wiki);
                     if (global.race['smart']){
                         cost *= 1 - (traits.smart.vars()[0] / 100);
+                    }
+                    if (fathom > 0){
+                        cost *= 1 - (traits.smart.vars(1)[0] / 100 * fathom);
                     }
                     if (global.race['dumb']){
                         cost *= 1 + (traits.dumb.vars()[0] / 100);
@@ -1718,7 +1742,7 @@ function smolderAdjust(costs, offset, wiki){
                 let adjustRate = res === 'Plywood' ? 2 : 1;
                 newCosts['Chrysotile'] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
             }
-            else if (['HellArmy','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe'].includes(res)){
+            else if (['HellArmy','Structs','Chrysotile','Knowledge','Custom','Soul_Gem','Plasmid','Phage','Dark','Harmony','Blood_Stone','Artifact','Corrupt_Gem','Codex','Demonic_Essence','Horseshoe','Mana','Energy'].includes(res)){
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
             }
             else {
@@ -1750,6 +1774,22 @@ function kindlingAdjust(costs, offset, wiki){
         });
         return newCosts;
     }
+    else if (global.race['unfathomable'] && global.city['captive_housing']){
+        let fathom = fathomCheck('entish');
+        if (fathom > 0){
+            var newCosts = {};
+            let adjustRate = 1 - (0.4 * fathom);
+            Object.keys(costs).forEach(function (res){
+                if (res === 'Lumber' && res === 'Plywood'){
+                    newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * adjustRate) || 0; }
+                }
+                else {
+                    newCosts[res] = function(){ return costs[res](offset, wiki); }
+                }
+            });
+            return newCosts;
+        }
+    }
     return costs;
 }
 
@@ -1778,11 +1818,21 @@ function flierAdjust(costs, offset, wiki){
     return costs;
 }
 function craftAdjust(costs, offset, wiki){
-    if (global.race['hollow_bones'] && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'] || costs['Quantium'])){
+    let fathom = fathomCheck('pterodacti');
+    if ((global.race['hollow_bones'] || fathom > 0) && (costs['Plywood'] || costs['Brick'] || costs['Wrought_Iron'] || costs['Sheet_Metal'] || costs['Mythril'] || costs['Aerogel'] || costs['Nanoweave'] || costs['Scarletite'] || costs['Quantium'])){
         var newCosts = {};
         Object.keys(costs).forEach(function (res){
             if (res === 'Plywood' || res === 'Brick' || res === 'Wrought_Iron' || res === 'Sheet_Metal' || res === 'Mythril' || res === 'Aerogel' || res === 'Nanoweave' || res === 'Scarletite' || res === 'Quantium'){
-                newCosts[res] = function(){ return Math.round(costs[res](offset, wiki) * (1 - (traits.hollow_bones.vars()[0] / 100))); }
+                newCosts[res] = function(){
+                    let cost = costs[res](offset, wiki);
+                    if (global.race['hollow_bones']){
+                        cost *= 1 - (traits.hollow_bones.vars()[0] / 100);
+                    }
+                    if (fathom > 0){
+                        cost *= 1 - (traits.hollow_bones.vars(3)[0] / 100 * fathom);
+                    }
+                    return Math.round(cost);
+                }
             }
             else {
                 newCosts[res] = function(){ return costs[res](offset, wiki); }
@@ -2185,6 +2235,12 @@ export function format_emblem(achieve,size,baseIcon,fool,universe){
     return emblem;
 }
 
+export function fibonacci(num, memo){
+    memo = memo || {};
+    if (memo[num]) return memo[num];
+    if (num <= 1) return 1;
+    return memo[num] = fibonacci(num - 1, memo) + fibonacci(num - 2, memo);
+}
 export function randomKey(obj){
     var keys = Object.keys(obj);
     return keys[ keys.length * Math.random() << 0];
@@ -2261,6 +2317,12 @@ export function updateResetStats(){
     global.stats.died = 0;
     global.stats.tsac += global.stats.sac;
     global.stats.sac = 0;
+    global.stats.tcattle += global.stats.cattle;
+    global.stats.cattle = 0;
+    global.stats.tmurders += global.stats.murders;
+    global.stats.murders = 0;
+    global.stats.tpsykill += global.stats.psykill;
+    global.stats.psykill = 0;
 }
 
 export function deepClone(obj){
@@ -2588,6 +2650,10 @@ const valAdjust = {
     blood_thirst: true,
     selenophobia: true,
     hooved: true,
+    anthropophagite: true,
+    unfathomable: false,
+    darkness: false,
+    living_tool: false,
 };
 
 function getTraitVals(trait,rank){
@@ -2616,6 +2682,9 @@ function getTraitVals(trait,rank){
         }
         else if (trait === 'hooved'){
             vals.unshift(hoovedRename());
+        }
+        else if (trait === 'anthropophagite'){
+            vals = [vals[0] * 10000];
         }
         else if (!valAdjust[trait]){
             vals = [];
@@ -2728,6 +2797,10 @@ const traitExtra = {
     ],
     flier: [
         loc(`wiki_trait_effect_flier_ex1`)
+    ],
+    unfathomable: [
+        loc(`wiki_trait_effect_unfathomable_ex1`),
+        loc(`wiki_trait_effect_unfathomable_ex2`)
     ]
 };
 
