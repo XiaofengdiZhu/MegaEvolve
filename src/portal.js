@@ -6,7 +6,11 @@ import { defineResources, spatialReasoning } from './resources.js';
 import { loadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
 import {payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, virtualDrawTech, virtualSetAction} from './actions.js';
-import { checkRequirements, incrementStruct } from './space.js';
+import {
+    checkRequirements,
+    incrementStruct,
+    renderSpace
+} from './space.js';
 import { production } from './prod.js';
 import { govActive } from './governor.js';
 import { loadTab } from './index.js';
@@ -3544,7 +3548,19 @@ function bossResists(boss){
     }
     return { w: weak, r: resist };
 }
-
+export function virtualDrawMechLab(){
+    let lab = new virtualElement("mechLab");
+    virtualClearElement(lab);
+    if (!global.portal.mechbay.hasOwnProperty('blueprint')){
+        global.portal.mechbay['blueprint'] = {
+            size: 'small',
+            hardpoint: ['laser'],
+            chassis: 'tread',
+            equip: [],
+            infernal: false
+        };
+    }
+}
 export function drawMechLab(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
         return;
@@ -3857,10 +3873,36 @@ export function drawMechLab(){
 
         let mechs = $(`<div id="mechList" class="sticky mechList"></div>`);
         lab.append(mechs);
+        virtualDrawMechs();
+    }
+}
+function virtualDrawMechs(){
+    let list = new virtualElement("mechList");
+    virtualClearElement("mechList");
+    list.scrap = (id)=> {
+        if (global.portal.mechbay.mechs[id]) {
+            let costs = mechCost(global.portal.mechbay.mechs[id].size, global.portal.mechbay.mechs[id].infernal);
+            let size = mechSize(global.portal.mechbay.mechs[id].size);
+            global.portal.purifier.supply += Math.floor(costs.c / 3);
+            global.resource.Soul_Gem.amount += Math.floor(costs.s / 2);
+
+            if (global.portal.purifier.supply > global.portal.purifier.sup_max) {
+                global.portal.purifier.supply = global.portal.purifier.sup_max;
+            }
+            global.portal.mechbay.mechs.splice(id, 1);
+            global.portal.mechbay.bay -= size;
+            global.portal.mechbay.active--;
+        }
+    }
+    list.drag = (oldDraggableIndex,newDraggableIndex)=>{
+        let order = global.portal.mechbay.mechs;
+        order.splice(newDraggableIndex, 0, order.splice(oldDraggableIndex, 1)[0]);
+        updateMechbay();
+    }
+    if(global.settings.autoRefresh){
         drawMechs();
     }
 }
-
 function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));

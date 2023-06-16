@@ -60,7 +60,7 @@ export var message_logs = {
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 export var virtualHeaders = "";
-const specialIds = ["fleet","fort","gFort"];
+const specialIds = ["fleet","fort","gFort","mechList"];
 export class virtualElement {
     constructor(id,parentId) {
         if(id){
@@ -81,8 +81,9 @@ export class virtualElement {
             this.id = id;
             let head = id.split('-')[0]+"-";
             if(virtualHeaders.indexOf(head)===-1){
-                if(specialIds.indexOf(id)>-1){
-                    virtualHeaders+="^"+id+"$|";
+                let speciaHead = "^"+id+"$|";
+                if(specialIds.indexOf(id)>-1 &&virtualHeaders.indexOf(speciaHead)===-1){
+                    virtualHeaders+=speciaHead;
                 }else{
                     virtualHeaders+=head+"|";
                 }
