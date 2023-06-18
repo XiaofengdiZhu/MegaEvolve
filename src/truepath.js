@@ -806,7 +806,7 @@ const outerTruth = {
             syndicate_cap(){ return global.tech['outer'] && global.tech.outer >= 4 ? 5000 : 3000; },
             extra(region){
                 if (global.tech['triton'] && global.tech.triton >= 3){
-                    $(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
+                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
                     vBind({
                         el: `#${region}resist`,
                         data: global.space.fob,
@@ -1133,7 +1133,7 @@ const outerTruth = {
             syndicate_cap(){ return 7500; },
             extra(region){
                 if (global.tech['eris'] && global.tech['eris'] === 1){
-                    $(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
+                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
                     vBind({
                         el: `#${region}scanned`,
                         data: global.tech
@@ -1486,7 +1486,7 @@ const tauCetiModules = {
             support: 'orbital_station',
             extra(region){
                 if (global.tech['tau_home'] && global.tech.tau_home >= 2 && !tauEnabled()){
-                    $(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
+                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
                     vBind({
                         el: `#${region}Mats`,
                         data: global.resource.Materials,
@@ -2341,7 +2341,7 @@ const tauCetiModules = {
             support: 'orbital_platform',
             extra(region){
                 if (global.tech['tau_red'] && global.tech.tau_red >= 5){
-                    $(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
+                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
                     vBind({
                         el: `#${region}Womlings`,
                         data: global.tauceti.overseer,

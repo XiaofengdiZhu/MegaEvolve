@@ -12191,7 +12191,7 @@ const techs = {
         effect(){ return loc('tech_shipyard_effect',[planetName().dwarf]); },
         action(){
             if (payCosts($(this)[0])){
-                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: true, sort: true };
+                global.space['shipyard'] = { count: 0, on: 0, ships: [], expand: false, sort: false };
                 setOrbits();
                 return true;
             }
