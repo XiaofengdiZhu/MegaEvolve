@@ -9849,7 +9849,7 @@ function longLoop(){
             if (webWorker.w){
                 webWorker.w.terminate();
             }
-            let bang = $('<div class="bigbang"></div>');
+            /*let bang = $('<div class="bigbang"></div>');
             $('body').append(bang);
             setTimeout(function(){
                 bang.addClass('burn');
@@ -9859,10 +9859,10 @@ function longLoop(){
             }, 150);
             setTimeout(function(){
                 bang.addClass('c');
-            }, 2000);
+            }, 2000);*/
             setTimeout(function(){
                 vacuumCollapse();
-            }, 4000);
+            }, 0);
         }
 
         if (global.portal['fortress']){

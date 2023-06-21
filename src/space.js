@@ -589,7 +589,7 @@ const spaceProjects = {
                     setTimeout(function(){
                         global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
                          virtualRenderSpace();
-                    }, 250);
+                    }, 0);
                 }
                 else {
                     global.tech.terraforming = 2;
@@ -3905,7 +3905,7 @@ const interstellarProjects = {
                     setTimeout(function(){
                         global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
                         virtualDeepSpace();
-                    }, 250);
+                    }, 0);
                 }
                 else {
                     global.tech.ascension = 7;

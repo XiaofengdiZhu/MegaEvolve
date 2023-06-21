@@ -5733,7 +5733,7 @@ export function setAction(c_action,action,type,old,prediction){
                 if (c_action['postPower']){
                     setTimeout(function(){
                         c_action.postPower(true);
-                    }, 250);
+                    }, 0);
                 }
             },
             power_off(){
@@ -5749,7 +5749,7 @@ export function setAction(c_action,action,type,old,prediction){
                 if (c_action['postPower']){
                     setTimeout(function(){
                         c_action.postPower(false);
-                    }, 250);
+                    }, 0);
                 }
             },
             repair(){
@@ -5973,7 +5973,7 @@ function runAction(c_action,action,type){
                     if (c_action['post']){
                         setTimeout(function(){
                             c_action.post();
-                        }, 250);
+                        }, 0);
                     }
                 }
                 else {
@@ -6007,7 +6007,7 @@ function runAction(c_action,action,type){
                     if (c_action['post']){
                         setTimeout(function(){
                             c_action.post();
-                        }, 250);
+                        }, 0);
                     }
                 }
                 break;
@@ -6148,7 +6148,7 @@ export function postBuild(c_action,action,type){
     if (c_action['post']){
         setTimeout(function(){
             c_action.post();
-        }, 1);
+        }, 0);
     }
     updateDesc(c_action,action,type);
 }

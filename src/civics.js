@@ -2197,11 +2197,10 @@ function defineMad(){
                         }, 500);
                         setTimeout(function(){
                             nuke.addClass('b');
-                        }, 600);
+                        }, 600);*/
                         setTimeout(function(){
                             warhead();
-                        }, 4000);*/
-                        warhead();
+                        }, 0);
                     }
                 },
                 arm(){

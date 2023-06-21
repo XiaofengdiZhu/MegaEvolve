@@ -4371,7 +4371,7 @@ const techs = {
                 if (global.race.universe === 'antimatter' && global.race['amexplode']){
                     unlockFeat('annihilation');
                     save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
-                    $('body').addClass('nuke');
+                    /*$('body').addClass('nuke');
                     let nuke = $('<div class="nuke"></div>');
                     $('body').append(nuke);
                     setTimeout(function(){
@@ -4379,10 +4379,10 @@ const techs = {
                     }, 500);
                     setTimeout(function(){
                         nuke.addClass('b');
-                    }, 600);
+                    }, 600);*/
                     setTimeout(function(){
                         window.soft_reset();
-                    }, 4000);
+                    }, 0);
                 }
                 else {
                     global.race['replicator'] = { res: 'Stone', pow: 1 };
@@ -9414,7 +9414,7 @@ const techs = {
                     return;
                 }
                 global.tech['whitehole'] = 4;
-                let bang = $('<div class="bigbang"></div>');
+                /*let bang = $('<div class="bigbang"></div>');
                 $('body').append(bang);
                 setTimeout(function(){
                     bang.addClass('burn');
@@ -9424,10 +9424,10 @@ const techs = {
                 }, 150);
                 setTimeout(function(){
                     bang.addClass('c');
-                }, 2000);
+                }, 2000);*/
                 setTimeout(function(){
                     big_bang();
-                }, 4000);
+                }, 0);
                 return false;
             }
             return false;
@@ -10482,11 +10482,11 @@ const techs = {
             return `<div>${loc('tech_dial_it_to_11_effect',[planetName().dwarf,global.race['cataclysm'] ? planetName().red : races[global.race.species].home])}</div><div class="has-text-danger">${loc('tech_dial_it_to_11_effect2')}</div><div class="has-text-special">${loc('star_dock_genesis_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-special">${loc('star_dock_genesis_effect3',[gains.phage])}</div>`; },
         action(){
             if (payCosts($(this)[0])){
-                $('#main').addClass('earthquake');
+                //$('#main').addClass('earthquake');
                 setTimeout(function(){
-                    $('#main').removeClass('earthquake');
+                    //$('#main').removeClass('earthquake');
                     cataclysm_end();
-                }, 4000);
+                }, 0);
                 return true;
             }
             return false;
@@ -11402,11 +11402,11 @@ const techs = {
                     webWorker.w.terminate();
                 }
                 clearPopper();
-                $(`body`).append(`<div id="aiAppoc"><div></div></div>`);
+                /*$(`body`).append(`<div id="aiAppoc"><div></div></div>`);
                 $(`#aiAppoc`).addClass('noise-wrapper');
-                $(`#aiAppoc > div`).addClass('noise');
+                $(`#aiAppoc > div`).addClass('noise');*/
 
-                setTimeout(function(){
+                /*setTimeout(function(){
                     $(`body`).append(`<div id="deadAirTop" class="signal-lost-top"></div>`);
                     $(`body`).append(`<div id="deadAirBottom" class="signal-lost-bottom"></div>`);
 
@@ -11419,10 +11419,10 @@ const techs = {
                         height: "50%",
                         opacity: 1
                     }, 400);
-                }, 3000);
+                }, 3000);*/
                 setTimeout(function(){
                     aiApocalypse();
-                }, 4000);
+                }, 0);
                 return true;
             }
             return false;

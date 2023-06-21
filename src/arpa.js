@@ -1755,7 +1755,7 @@ function genetics(){
                 },
                 novo(){
                     let keyMult = keyMultiplier();
-                    for (let i=0; i<keyMult; i++){
+                    /*for (let i=0; i<keyMult; i++){
                         if (global.resource.Knowledge.amount >= 200000){
                             global.resource.Knowledge.amount -= 200000;
                             global.resource.Genes.amount++;
@@ -1763,7 +1763,10 @@ function genetics(){
                         else {
                             break;
                         }
-                    }
+                    }*/
+                    let temp = Math.min(keyMult, Math.floor(global.resource.Knowledge.amount/200000));
+                    global.resource.Genes.amount += temp;
+                    global.resource.Knowledge.amount -= temp * 200000;
                 },
                 novoLabel(){
                     return loc(global.race['artifical'] ? 'arpa_novo_artifical_label' : 'arpa_novo_label',['200k']);

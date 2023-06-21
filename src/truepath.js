@@ -1378,7 +1378,7 @@ const tauCetiModules = {
                     setTimeout(function(){
                         global.tech.matrix = p_on['matrix'] ? 4 : 3;
                         renderTauCeti();
-                    }, 250);
+                    }, 0);
                 }
                 else {
                     global.tech.matrix = 3;
@@ -1410,7 +1410,7 @@ const tauCetiModules = {
             },
             action(){
                 if (payCosts($(this)[0])){
-                    $(`body`).append(`<canvas id="matrix" class="font-overlay"/>`);
+                    /*$(`body`).append(`<canvas id="matrix" class="font-overlay"/>`);
                     const canvas = document.getElementById('matrix');
                     const ctx = canvas.getContext('2d');
                     const w = canvas.width = document.body.offsetWidth;
@@ -1432,10 +1432,10 @@ const tauCetiModules = {
                         });
                     }
 
-                    setInterval(pill, 50);
+                    setInterval(pill, 50);*/
                     setTimeout(function(){
                         matrix();
-                    }, 5000);
+                    }, 0);
 
                     return true;
                 }

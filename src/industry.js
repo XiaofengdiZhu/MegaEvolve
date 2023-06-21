@@ -1630,7 +1630,7 @@ export function setPowerGrid(){
                             if (c_action['postPower']){
                                 setTimeout(function(){
                                     c_action.postPower(true);
-                                }, 250);
+                                }, 0);
                             }
                         },
                         power_off(){
@@ -1646,7 +1646,7 @@ export function setPowerGrid(){
                             if (c_action['postPower']){
                                 setTimeout(function(){
                                     c_action.postPower(false);
-                                }, 250);
+                                }, 0);
                             }
                         },
                         higher(){
