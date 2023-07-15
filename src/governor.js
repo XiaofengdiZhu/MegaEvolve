@@ -620,6 +620,12 @@ export function drawnGovernOffice(){
             },
             trashLabel(r){
                 return loc(global.race.governor.config.trash[r].s ? `gov_task_trash_max` : `gov_task_trash_min`,[global.resource[r].name]);
+            },
+            setReplicatePowCap(e){
+                global.race.governor.config.replicate.pow.cap = e;
+            },
+            setReplicatePowBuffer(e){
+                global.race.governor.config.replicate.pow.buffer = e;
             }
         },
         filters: {

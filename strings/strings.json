@@ -860,7 +860,7 @@
   "evo_sentience_desc": "Evolve Sentience",
   "evo_sentience_effect": "Complete your evolution by evolving into a species which has achieved sentience.",
   "evo_sentience_ai_effect": "Use a random number generator to design your synthetic race.",
-  "evo_evolve": "Mega Evolve",
+  "evo_evolve": "Evolve",
   "evo_imitate": "Imitate",
   "evo_pick_race": "Evolve into a %0. This completes evolution.",
   "evo_complete": "This completes evolution.",
@@ -7177,7 +7177,7 @@
   "wiki_menu_tracker": "Tracker",
   "wiki_menu_changelog": "Changelog",
   "wiki_main_title": "Mega Evolve Incremental",
-  "wiki_main_author": "Created by %0",
+  "wiki_main_author": "Evolve is Created by %0",
   "wiki_main_spoiler": "The contents contained in this wiki will spoil the game. Proceed only if you do not wish to discover everything for yourself.",
   "wiki_main_blurb": "Evolve Incremental is a web-based game about first evolving a species from primordial ooze into a sentient species, then guiding that new species into a mighty civilization that will eventually take to the stars and colonize space.",
   "wiki_main_contribution": "Special thanks to %0 for their contributions to the game.",
@@ -10074,5 +10074,7 @@
   "wiki_achievements_missing": "Missing",
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
-  "wiki_achievements_completed": "Completed"
+  "wiki_achievements_completed": "Completed",
+  "MegaEvolve": "Mega Evolve",
+  "wiki_megaevolve_author": "Mega Evolve is Created by 销锋镝铸"
 }

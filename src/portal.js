@@ -3690,19 +3690,6 @@ function bossResists(boss){
     }
     return { w: weak, r: resist };
 }
-export function virtualDrawMechLab(){
-    let lab = new virtualElement("mechLab");
-    virtualClearElement(lab);
-    if (!global.portal.mechbay.hasOwnProperty('blueprint')){
-        global.portal.mechbay['blueprint'] = {
-            size: 'small',
-            hardpoint: ['laser'],
-            chassis: 'tread',
-            equip: [],
-            infernal: false
-        };
-    }
-}
 export function drawMechLab(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 4)){
         return;
@@ -4045,7 +4032,7 @@ function virtualDrawMechs(){
         drawMechs();
     }
 }
-function drawMechs(){
+export function drawMechs(){
     clearMechDrag();
     clearElement($('#mechList'));
     let list = $('#mechList');

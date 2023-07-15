@@ -7122,7 +7122,7 @@
   "month9": "10月",
   "month10": "11月",
   "month11": "12月",
-  "wiki_menu_evolve": "进化维基",
+  "wiki_menu_evolve": "超进化维基",
   "wiki_menu_intro": "简介",
   "wiki_menu_faq": "FAQ",
   "wiki_menu_gameplay": "游戏玩法",
@@ -7178,7 +7178,7 @@
   "wiki_menu_tracker": "追踪器",
   "wiki_menu_changelog": "更新日志",
   "wiki_main_title": "游戏名称：超进化",
-  "wiki_main_author": "游戏作者：%0",
+  "wiki_main_author": "原游戏作者：%0",
   "wiki_main_spoiler": "本wiki可能含有剧透内容。如果您想要自己探索游戏内容的话，请谨慎选择查阅。",
   "wiki_main_blurb": "进化是一款网页游戏，在本游戏中，您首先由原生质选择进化为某种智慧生物，然后带领他们走向繁荣昌盛，最后迈向星空，征服宇宙。",
   "wiki_main_contribution": "感谢%0对游戏的贡献。",
@@ -10077,5 +10077,7 @@
   "wiki_achievements_missing": "未获得",
   "wiki_achievements_obtained": "已获得",
   "wiki_achievements_incomplete": "未圆满",
-  "wiki_achievements_completed": "已圆满"
+  "wiki_achievements_completed": "已圆满",
+  "MegaEvolve": "超进化",
+  "wiki_megaevolve_author": "超进化作者：销锋镝铸"
 }

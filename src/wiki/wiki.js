@@ -317,15 +317,24 @@ function mainPage(){
     let version = global['beta'] ? `beta v${global.version}.${global.beta}` : 'v'+global.version;
     content.append(`<div class="title has-text-warning">${loc(`wiki_main_title`)} - ${version}</div>`);
     content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_main_author`,['Demagorddon'])}</div>`);
+    content.append(`<div class="paragraph has-text-advanced">${loc(`wiki_megaevolve_author`)}</div>`);
     content.append(`<div class="paragraph has-text-danger">${loc(`wiki_main_spoiler`)}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_main_blurb`)}</div>`);
+    content.append(`<div class="paragraph" style="line-height: 1.6em">This Version is based on pmotschmann/Evolve, I add speed-up feature and make some small UI changes to this awesome game(no values changed). I hope you will enjoy it! 这个版本基于pmotschmann/Evolve，我给这个超赞的游戏添加了加速功能，还做了一点界面调整（没有数值调整），希望你能享受它。<br/>
+Thanks to g8hh/Evolve, I used it's strings.zh-CN.json(not totally).感谢g8hh/Evolve，我使用了它的strings.zh-CN.json（不完全照抄）。<br/>
+For faster speed, you will need a powerful CPU with higher Single-Core performance.如果你想要更快的加速，需要有更强劲单核性能的CPU。<br/>
+To display buildings, click the title of second row of tabs to refresh the building list. Other Tabs are same.显示建筑的方法是点击第二行标签栏的标题，这将刷新建筑列表，其他页面同理。<br/>
+Or set the "自动刷新" option to "是" on the right top, but this will affect the speed factor.或者设置右上角的“自动刷新”选项为“是”，但是会影响加速。</div>`);
     content.append(`<div class="paragraph has-text-warning">${loc(`wiki_main_contribution`,[contribute])}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_resources`)}</div>`);
     
     let list = $(`<ul class="paragraph"></ul>`);
     content.append(list);
 
-    list.append(`<li><a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">${loc(`wiki_resources_begin_guide`)}</a> ${loc(`wiki_resources_by`,['GreyCat'])}</li>`);
-    list.append(`<li><a href="https://karsen777.github.io/" target="_blank">${loc(`wiki_resources_tracker`)}</a> ${loc(`wiki_resources_by`,['Karsen777'])}</li>`);
+    list.append(`<li class="paragraph"><a href="https://wooledge.org/~greg/evolve/guide.html" target="_blank">${loc(`wiki_resources_begin_guide`)}</a> ${loc(`wiki_resources_by`,['GreyCat'])}</li>`);
+    list.append(`<li class="paragraph"><a href="https://shimo.im/sheets/1Q6Qt8BHhKYp12XH" target="_blank">${loc(`wiki_resources_begin_guide`)}</a> ${loc(`wiki_resources_by`,['季涟'])}</li>`);
+    //list.append(`<li class="paragraph"><a href="https://karsen777.github.io/" target="_blank">${loc(`wiki_resources_tracker`)}</a> ${loc(`wiki_resources_by`,['Karsen777'])}</li>`);
     //list.append(`<li><a href="https://zarakon.github.io/EvolveHellSim/" target="_blank">${loc(`wiki_resources_hell_sim`)}</a> ${loc(`wiki_resources_by`,['Jotun'])}</li>`);
+    list.append(`<li class="paragraph" style="font-size: 1.6rem"><a href="https://github.com/XiaofengdiZhu/evolve-electron/releases" target="_blank" style="font-weight: bold;">High speed desktop client 高速桌面客户端</a> ${loc(`wiki_resources_by`,['销锋镝铸'])}</li>`);
+    list.append(`<li class="paragraph"><a href="https://github.com/XiaofengdiZhu/evolve-electron/tree/main/tampermonkeyScripts" target="_blank">Automate scripts for above client 上面客户端用的自动脚本</a> ${loc(`wiki_resources_by`,['销锋镝铸等'])}</li>`);
 }

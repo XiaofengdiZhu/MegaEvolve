@@ -9,7 +9,6 @@ export function loc(key, variables) {
         console.trace();
         if (global.settings.expose){
             console.error(`string ${key} not found`);
-            console.log(strings);
         }
         return key;
     }

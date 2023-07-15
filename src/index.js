@@ -1,6 +1,6 @@
 import { global, tmp_vars, save, message_logs, message_filters, webWorker } from './vars.js';
 import { loc, locales } from './locale.js';
-import { setupStats, alevel } from './achieve.js';
+import { setupStats, alevel, drawPerks, drawAchieve } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
 import { defineJobs, } from './jobs.js';
@@ -826,7 +826,7 @@ export function loadTab(tab){
                         </template>
                     </b-tab-item>
                     <b-tab-item id="perks">
-                        <template slot="header">
+                        <template slot="header" @click="drawPerks">
                             {{ 'tab_perks' | label }}
                         </template>
                     </b-tab-item>
@@ -839,6 +839,18 @@ export function loadTab(tab){
                     filters: {
                         label(lbl){
                             return tabLabel(lbl);
+                        }
+                    },
+                    methods: {
+                        drawAchive(){
+                            if ($(`body`).hasClass('fool')){
+                                drawAchieve({fool: true,flag: true});
+                            }else{
+                                drawAchieve({flag: true});
+                            }
+                        },
+                        drawPerks(){
+                            drawPerks(true);
                         }
                     }
                 });
@@ -1448,13 +1460,19 @@ export function index(){
                     <span class="has-text-warning">${egg15.length > 0 ? `Ev${egg15}lve` : `Evolve`}</span>
                     by
                     <span class="has-text-success">Demagorddon</span>
+                    |
+                    <span class="has-text-warning">${loc("MegaEvolve")}</span>
+                    by
+                    <span class="has-text-success">销锋镝铸</span>
                 </h1>
             </span>
             <span class="right">
                 <h2 class="is-sr-only">External Links</h2>
                 <ul class="external-links">
-                    <li><a href="wiki.html" target="_blank">Wiki</a></li>
-                    <li><a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a></li>
+                    <li>${loc("MegaEvolve")}: <a href="wiki.html" target="_blank">Wiki</a></li>
+                    <li><a href="https://github.com/XiaofengdiZhu/MegaEvolve" target="_blank">GitHub</a></li>
+                    <li></li>
+                    <li>Evolve: <a href="https://www.reddit.com/r/EvolveIdle/" target="_blank">Reddit</a></li>
                     <li><a href="https://discord.gg/dcwdQEr" target="_blank">Discord</a></li>
                     <li><a href="https://github.com/XiaofengdiZhu/MegaEvolve" target="_blank">GitHub</a></li>
                     <li><a href="https://www.patreon.com/demagorddon" target="_blank">Patreon</a></li>

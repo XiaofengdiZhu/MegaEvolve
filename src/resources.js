@@ -828,7 +828,9 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
         },
         methods: {
             resRate(n){
-                let diff = sizeApproximation(global.resource[n].diff*global.frameFactor,2);
+                let resource = global.resource[n];
+                if(resource==null)return `${n} NaN per second`;
+                let diff = sizeApproximation(resource.diff*global.frameFactor,2);
                 return `${n} ${diff} per second`;
             },
             trigModal(){
@@ -845,7 +847,8 @@ function loadResource(name,wiki,max,rate,tradable,stackable,color){
                 }, 50);
             },
             showTrigger(){
-                return global.resource.Crates.display;
+                let crates = global.resource.Crates;
+                return crates?crates.display:false;
             },
             craft(res,vol){
                 if (!global.race['no_craft']){

@@ -1541,7 +1541,10 @@ export function gridEnabled(c_action,region,p0,p1){
     return global[region][p1] && isOk && checkPowerRequirements(c_action) ? true : false;
 }
 
-export function setPowerGrid(){
+export function setPowerGrid(flag=false) {
+    if(!flag){
+        return;
+    }
     if (!global.settings.tabLoad && (global.settings.civTabs !== 2 || global.settings.govTabs !== 2)){
         return;
     }

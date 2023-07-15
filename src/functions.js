@@ -1681,6 +1681,9 @@ function extraAdjust(costs, offset, wiki){
 }
 
 function technoAdjust(costs, offset, wiki){
+    if(!global.civic.govern){
+        return costs;
+    }
     if (global.civic.govern.type === 'technocracy'){
         let adjust = 1 + (govEffect.technocracy()[1] / 100);
         var newCosts = {};

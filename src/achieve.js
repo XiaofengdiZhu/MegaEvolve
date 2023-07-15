@@ -3,7 +3,7 @@ import { clearElement, popover, flib, calc_mastery, masteryType, calcPillar, svg
 import { races, genus_traits } from './races.js';
 import { universe_affixes, universe_types, piracy } from './space.js';
 import { monsters } from './portal.js';
-import { loc } from './locale.js'
+import { loc } from './locale.js';
 
 const achieve_list = {
     misc: [
@@ -389,6 +389,9 @@ export function setupStats(){
 }
 
 export function drawAchieve(args){
+    if(!args || !args.flag){
+        return;
+    }
     clearElement($('#achievePanel'));
     let achieve = $('#achievePanel');
     let earned = 0;
@@ -2511,7 +2514,10 @@ export const perkList = {
     },
 };
 
-export function drawPerks(){
+export function drawPerks(flag=false){
+    if(!flag){
+        return;
+    }
     clearElement($('#perksPanel'));
     let perks = $('#perksPanel');
 

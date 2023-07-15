@@ -13,7 +13,7 @@ import { loc } from './locale.js';
 export function enableDebug(){
     if (global.settings.expose){
         window.evolve = {
-            actions: deepClone(actions),
+            /*actions: deepClone(actions),
             races: deepClone(races),
             traits: deepClone(traits),
             tradeRatio: deepClone(tradeRatio),
@@ -35,17 +35,45 @@ export function enableDebug(){
             global: {},
             breakdown: {},
             virtualTree :virtualTree,
-            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1),
+            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1)*/
+            actions: actions,
+            races: races,
+            traits: traits,
+            tradeRatio: tradeRatio,
+            craftCost: craftCost(),
+            atomic_mass: atomic_mass,
+            f_rate: f_rate,
+            checkAffordable: checkAffordable,
+            adjustCosts: adjustCosts,
+            armyRating: armyRating,
+            tradeBuyPrice: tradeBuyPrice,
+            tradeSellPrice: tradeSellPrice,
+            fuel_adjust: fuel_adjust,
+            int_fuel_adjust: int_fuel_adjust,
+            alevel: alevel,
+            messageQueue: messageQueue,
+            loc: loc,
+            shipCosts: shipCosts,
+            updateDebugData: updateDebugData,
+            global: {},
+            breakdown: {},
+            virtualTree :virtualTree,
+            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1)
         };
     }
 }
 
 export function updateDebugData(){
     if (global.settings.expose){
-        window.evolve.global = deepClone(global);
+        /*window.evolve.global = deepClone(global);
         window.evolve.virtualTree = virtualTree;
         window.evolve.virtualHeaders = virtualHeaders.slice(0,virtualHeaders.length-1);
-        window.evolve.craftCost = deepClone(craftCost()),
-        window.evolve.breakdown = deepClone(breakdown);
+        window.evolve.craftCost = deepClone(craftCost());
+        window.evolve.breakdown = deepClone(breakdown);*/
+        window.evolve.global = global;
+        window.evolve.virtualTree = virtualTree;
+        window.evolve.virtualHeaders = virtualHeaders.slice(0,virtualHeaders.length-1);
+        window.evolve.craftCost = craftCost();
+        window.evolve.breakdown = breakdown;
     }
 }
