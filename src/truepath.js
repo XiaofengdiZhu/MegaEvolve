@@ -1,12 +1,12 @@
-import { global, p_on, support_on, sizeApproximation, quantum_level } from './vars.js';
-import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts } from './functions.js';
+import {global, p_on, support_on, sizeApproximation, quantum_level, virtualElement, virtualTree} from './vars.js';
+import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, virtualClearElement} from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
 import { jobScale, job_desc, loadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
-import { actions, payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, buildTemplate, casinoEffect, housingLabel, virtualDrawTech } from './actions.js';
-import { fuel_adjust, int_fuel_adjust, spaceTech, renderSpace, checkRequirements, planetName, virtualRenderSpace } from './space.js';
+import { actions, payCosts, powerOnNewStruct, setAction, bank_vault, buildTemplate, casinoEffect, housingLabel, virtualDrawTech, virtualSetAction} from './actions.js';
+import { fuel_adjust, int_fuel_adjust, spaceTech, checkRequirements, planetName, virtualRenderSpace} from './space.js';
 import { removeTask, govActive } from './governor.js';
 import { defineIndustry, nf_resources } from './industry.js';
 import { arpa } from './arpa.js';
@@ -806,19 +806,23 @@ const outerTruth = {
             syndicate_cap(){ return global.tech['outer'] && global.tech.outer >= 4 ? 5000 : 3000; },
             extra(region){
                 if (global.tech['triton'] && global.tech.triton >= 3){
-                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
-                    vBind({
-                        el: `#${region}resist`,
-                        data: global.space.fob,
-                        methods: {
-                            threat(e,t){
-                                let wounded = global.civic.garrison.wounded - garrisonSize();
-                                if (wounded < 0){ wounded = 0; }
-                                let d = +(e - armyRating(t,'army',wounded)).toFixed(0);
-                                return d < 0 ? 0 : d;
+                    if(global.settings.autoRefresh) {
+                        $(`#${region}`).append(`<div id="${region}resist" v-show="${region}" class="syndThreat has-text-caution">${loc('space_ground_resist')} <span class="has-text-danger" v-html="threat(enemy,troops)"></span></div>`);
+                        vBind({
+                            el: `#${region}resist`,
+                            data: global.space.fob,
+                            methods: {
+                                threat(e, t) {
+                                    let wounded = global.civic.garrison.wounded - garrisonSize();
+                                    if (wounded < 0) {
+                                        wounded = 0;
+                                    }
+                                    let d = +(e - armyRating(t, 'army', wounded)).toFixed(0);
+                                    return d < 0 ? 0 : d;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         },
@@ -1133,11 +1137,13 @@ const outerTruth = {
             syndicate_cap(){ return 7500; },
             extra(region){
                 if (global.tech['eris'] && global.tech['eris'] === 1){
-                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
-                    vBind({
-                        el: `#${region}scanned`,
-                        data: global.tech
-                    });
+                    if(global.settings.autoRefresh) {
+                        $(`#${region}`).append(`<div id="${region}scanned" v-show="${region}" class="syndThreat has-text-caution">${loc('space_scanned')} <span class="has-text-info">{{ eris_scan }}%</span></div>`);
+                        vBind({
+                            el: `#${region}scanned`,
+                            data: global.tech
+                        });
+                    }
                 }
             }
         },
@@ -1353,7 +1359,7 @@ const tauCetiModules = {
                                 global.tech.matrix = 3;
                                 global.tauceti['matrix'] = { count: 1, on: 0 };
                             }
-                            renderTauCeti();
+                            virtualRenderTauCeti();
                             clearPopper();
                         }
                         return true;
@@ -1377,12 +1383,12 @@ const tauCetiModules = {
                 if (o){
                     setTimeout(function(){
                         global.tech.matrix = p_on['matrix'] ? 4 : 3;
-                        renderTauCeti();
+                        virtualRenderTauCeti();
                     }, 0);
                 }
                 else {
                     global.tech.matrix = 3;
-                    renderTauCeti();
+                    virtualRenderTauCeti();
                 }
             },
             effect(){
@@ -1486,21 +1492,23 @@ const tauCetiModules = {
             support: 'orbital_station',
             extra(region){
                 if (global.tech['tau_home'] && global.tech.tau_home >= 2 && !tauEnabled()){
-                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
-                    vBind({
-                        el: `#${region}Mats`,
-                        data: global.resource.Materials,
-                        methods: {
-                            tauShow(){
-                                return !tauEnabled();
+                    if(global.settings.autoRefresh) {
+                        $(`#${region}`).append(`<div id="${region}Mats" v-show="tauShow()" class="syndThreat has-text-warning">${loc('resource_Materials_name')} <span class="has-text-info">{{ amount | round }}</span> / <span class="has-text-info">{{ max }}</span></div>`);
+                        vBind({
+                            el: `#${region}Mats`,
+                            data: global.resource.Materials,
+                            methods: {
+                                tauShow() {
+                                    return !tauEnabled();
+                                }
+                            },
+                            filters: {
+                                round(v) {
+                                    return +v.toFixed(0);
+                                }
                             }
-                        },
-                        filters: {
-                            round(v){
-                                return +v.toFixed(0);
-                            }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         },
@@ -1571,7 +1579,7 @@ const tauCetiModules = {
                         global.civic[global.civic.d_job].workers -= jRequest;
                     }
                     if (global.settings.tabLoad){
-                        drawShips();
+                        virtualDrawShips();
                     }
                     return true;
                 }
@@ -2341,11 +2349,13 @@ const tauCetiModules = {
             support: 'orbital_platform',
             extra(region){
                 if (global.tech['tau_red'] && global.tech.tau_red >= 5){
-                    if(global.settings.autoRefresh)$(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
-                    vBind({
-                        el: `#${region}Womlings`,
-                        data: global.tauceti.overseer,
-                    });
+                    if(global.settings.autoRefresh) {
+                        $(`#${region}`).append(`<div id="${region}Womlings" class="syndThreat has-text-warning">${loc('tau_red_womling_prod')} <span class="has-text-info">{{ prod }}%</span></div>`);
+                        vBind({
+                            el: `#${region}Womlings`,
+                            data: global.tauceti.overseer,
+                        });
+                    }
                 }
             }
         },
@@ -2984,7 +2994,7 @@ const tauCetiModules = {
             post(){
                 if (global.tech.tau_roid === 3){
                     global.tech.tau_roid = 4;
-                    renderTauCeti();
+                    virtualRenderTauCeti();
                     virtualDrawTech();
                 }
             }
@@ -3025,7 +3035,7 @@ const tauCetiModules = {
             post(){
                 if (global.tech.tau_whale === 1){
                     global.tech.tau_whale = 2;
-                    renderTauCeti();
+                    virtualRenderTauCeti();
                 }
             }
         },
@@ -3302,7 +3312,7 @@ const tauCetiModules = {
                 if (global.resource.Elerium.diff >= 10){
                     global.tauceti.alien_space_station.on = 1;
                 }
-                renderTauCeti();
+                virtualRenderTauCeti();
             }
         },
         alien_space_station: {
@@ -3566,7 +3576,32 @@ export function checkPathRequirements(era,region,action){
             return checkRequirements(tauCetiModules,region,action);
     }
 }
-
+export function virtualRenderTauCeti(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 6)){
+        return;
+    }
+    let parent = new virtualElement("tauceti");
+    virtualClearElement(parent);
+    if (!global.tech['tauceti'] || global.tech.tauceti < 2){
+        return;
+    }
+    Object.keys(tauCetiModules).forEach(function (region){
+        if (global.settings.tau[region.replace("tau_","")]){
+            Object.keys(tauCetiModules[region]).forEach(function (tech){
+                if (tech !== 'info' && checkRequirements(tauCetiModules,region,tech)){
+                    let c_action = tauCetiModules[region][tech];
+                    virtualSetAction(c_action,'tauceti',tech);
+                }
+            });
+            if (tauCetiModules[region].info.hasOwnProperty('extra')){
+                tauCetiModules[region].info.extra(region);
+            }
+        }
+    });
+    if(global.settings.autoRefresh){
+        renderTauCeti();
+    }
+}
 export function renderTauCeti(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 1 || global.settings.spaceTabs !== 6)){
         return;
@@ -3808,7 +3843,7 @@ export function drawShipYard(){
                             ship.name = name;
 
                             global.space.shipyard.ships.push(ship);
-                            drawShips();
+                            virtualDrawShips();
                             updateCosts();
                             global.space.shipyard.blueprint.name = getRandomShipName();
                         }
@@ -3828,7 +3863,7 @@ export function drawShipYard(){
                     }, 50);
                 },
                 redraw(){
-                    drawShips();
+                    virtualDrawShips();
                 }
             },
             filters: {
@@ -3852,7 +3887,7 @@ export function drawShipYard(){
         });
 
         yard.append($(`<div id="shipList" class="sticky"></div>`));
-        drawShips();
+        virtualDrawShips();
     }
 }
 
@@ -4368,12 +4403,65 @@ function dragShipList(){
             let order = global.space.shipyard.ships;
             order.splice(e.newDraggableIndex, 0, order.splice(e.oldDraggableIndex, 1)[0]);
             global.space.shipyard.ships = order;
-            drawShips();
+            virtualDrawShips();
         }
     });
 }
-
-function drawShips(){
+function virtualDrawShips(){
+    let list = new virtualElement("shipList");
+    virtualClearElement("shipList");
+    if (global.space.shipyard.sort){
+        let rerank = {spc_dwarf: 'a'};
+        global.space.shipyard.ships = global.space.shipyard.ships.sort((a, b) => (rerank[a.location] ? rerank[a.location] : a.location).localeCompare((rerank[b.location] ? rerank[b.location] : b.location)));
+    }
+    const spaceRegions = spaceTech();
+    for (let i=0; i<global.space.shipyard.ships.length; i++){
+        let ship = global.space.shipyard.ships[i];
+        if (!ship['xy']){ ship['xy'] = genXYcoord(ship.location); }
+        if (!ship.hasOwnProperty('dist')){ ship['dist'] = ship['transit']; }
+        if (!ship.hasOwnProperty('origin')){ ship['origin'] = ship['xy']; }
+        if (!ship.hasOwnProperty('destination')){ ship['destination'] = genXYcoord(ship.location); }
+    }
+    list.scrap = (id)=>{
+        if (global.space.shipyard.ships[id] && global.space.shipyard.ships[id].location === 'spc_dwarf'){
+            global.space.shipyard.ships.splice(id,1);
+            virtualDrawShips();
+            updateCosts();
+        }
+    }
+    list.scrapAllowed=(id)=>{
+        return !!(global.space.shipyard.ships[id] && global.space.shipyard.ships[id].location === 'spc_dwarf');
+    }
+    list.setLoc=(l,id)=>{
+        let ship = global.space.shipyard.ships[id];
+        if (l !== ship.location){
+            let crew = shipCrewSize(ship);
+            let manned = ship.transit > 0 || ship.location !== 'spc_dwarf';
+            if (manned || global.civic.garrison.workers - global.civic.garrison.crew >= crew){
+                let dest = calcLandingPoint(ship, l);
+                let distance = transferWindow(ship.xy,dest);
+                let speed = shipSpeed(ship);
+                ship.location = l;
+                ship.transit = Math.round(distance / speed);
+                ship.dist = Math.round(distance / speed);
+                ship.origin = deepClone(ship.xy);
+                ship.destination = {x: dest.x, y: dest.y};
+                if (!manned){
+                    global.civic.garrison.crew += crew;
+                }
+                virtualDrawShips();
+                clearPopper(`ship${id}loc${l}`);
+            }
+        }
+    }
+    list.show=(id)=>{
+        return global.space.shipyard.ships[id].transit > 0;
+    }
+    if(global.settings.autoRefresh){
+        drawShips();
+    }
+}
+export function drawShips(){
     clearShipDrag();
     clearElement($('#shipList'));
     if (global.tech['isolation']){
@@ -5489,7 +5577,7 @@ export function loneSurvivor(){
         global.race['truepath'] = 1;
         global.arpa['m_type'] = arpa('Monument');
         virtualDrawTech();
-        renderTauCeti();
+        virtualRenderTauCeti();
         arpa('Physics');
         loadFoundry();
     }

@@ -10,7 +10,7 @@ import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEff
 import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, virtualRenderFortress } from './portal.js';
-import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled } from './truepath.js';
+import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, virtualRenderTauCeti } from './truepath.js';
 import { arpa, buildArpa } from './arpa.js';
 import { events, eventList } from './events.js';
 import { govern, govActive, removeTask } from './governor.js';
@@ -10427,7 +10427,7 @@ function longLoop(){
                         global.settings.tau.gas = false;
                         global.settings.tau.roid = false;
                         messageQueue(loc('tau_scan',[tShip]),'info',false,['progress']);
-                        renderTauCeti();
+                        virtualRenderTauCeti();
                     }
                 }
                 if (global.space.hasOwnProperty('position')){
@@ -10792,7 +10792,7 @@ function longLoop(){
             global.resource.Materials.display = false;
             global.resource.Bolognium.display = true;
             virtualRenderSpace();
-            renderTauCeti();
+            virtualRenderTauCeti();
             virtualDrawTech();
         }
         if (global.race['truepath'] && global.tech['tauceti'] && !global.race['lone_survivor']){

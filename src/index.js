@@ -10,8 +10,8 @@ import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, for
 import { races, shapeShift, renderPsychicPowers } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
 import {  virtualRenderSpace, ascendLab, terraformLab, deepSpace, galaxySpace, space } from './space.js';
-import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations, virtualRenderFortress, virtualBuildFortress } from './portal.js';
-import { drawShipYard, clearShipDrag, renderTauCeti } from './truepath.js';
+import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations, virtualRenderFortress, virtualBuildFortress, drawMechs} from './portal.js';
+import {drawShipYard, clearShipDrag, renderTauCeti, virtualRenderTauCeti, drawShips} from './truepath.js';
 import { arpa, clearGeneticsDrag } from './arpa.js';
 
 export function mainVue(){
@@ -361,7 +361,7 @@ export function loadTab(tab){
                     <b-tab-item id="tauceti" :visible="s.showTau">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_tauceti' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_tauceti' | label }}</span>
+                            <span aria-hidden="true" @click="renderTauCeti">{{ 'tab_tauceti' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -389,6 +389,9 @@ export function loadTab(tab){
                         renderFortress(){
                             renderFortress();
                         },
+                        renderTauCeti(){
+                            renderTauCeti();
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearElement($(`#city`));
@@ -412,7 +415,7 @@ export function loadTab(tab){
                                         virtualRenderFortress();
                                         break;
                                     case 6:
-                                        renderTauCeti();
+                                        virtualRenderTauCeti();
                                         break;
                                 }
                             }
@@ -429,7 +432,7 @@ export function loadTab(tab){
                     virtualDrawCity();
                     virtualRenderSpace();
                     virtualRenderFortress();
-                    renderTauCeti();
+                    virtualRenderTauCeti();
                 }
                 if (global.race['noexport']){
                     if (global.race['noexport'] === 'Race'){
@@ -465,7 +468,7 @@ export function loadTab(tab){
                     <b-tab-item id="powerGrid" class="powerGridTab" :visible="s.showPowerGrid">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_power_grid' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_power_grid' | label }}</span>
+                            <span aria-hidden="true" @click="setPowerGrid">{{ 'tab_power_grid' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="military" class="militaryTab" :visible="s.showMil">
@@ -477,13 +480,13 @@ export function loadTab(tab){
                     <b-tab-item id="mechLab" class="mechTab" :visible="s.showMechLab">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_mech' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_mech' | label }}</span>
+                            <span aria-hidden="true" @click="drawMechs">{{ 'tab_mech' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="dwarfShipYard" class="ShipYardTab" :visible="s.showShipYard">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_shipyard' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_shipyard' | label }}</span>
+                            <span aria-hidden="true" @click="drawShips">{{ 'tab_shipyard' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="psychicPowers" class="psychicTab" :visible="s.showPsychic">
@@ -499,6 +502,15 @@ export function loadTab(tab){
                         s: global.settings
                     },
                     methods: {
+                        setPowerGrid(){
+                          setPowerGrid(true);
+                        },
+                        drawMechs(){
+                            drawMechs();
+                        },
+                        drawShips(){
+                            drawShips();
+                        },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
                                 clearGrids();

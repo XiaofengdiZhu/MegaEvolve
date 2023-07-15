@@ -9,7 +9,7 @@ import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes,  virtualRenderSpace, piracy } from './space.js';
 import {renderFortress, fortressTech, virtualRenderFortress} from './portal.js';
-import { tauCetiTech, renderTauCeti, loneSurvivor } from './truepath.js';
+import {tauCetiTech, renderTauCeti, loneSurvivor, virtualRenderTauCeti} from './truepath.js';
 import { arpa, gainGene, gainBlood } from './arpa.js';
 import { production, highPopAdjust } from './prod.js';
 import { techList, techPath } from './tech.js';
@@ -5149,7 +5149,7 @@ export function gainTech(action){
     virtualDrawTech();
     virtualRenderSpace();
     virtualRenderFortress();
-    renderTauCeti();
+    virtualRenderTauCeti();
 }
 export function virtualDrawCity(){
     let city_buildings = {};
@@ -6114,6 +6114,7 @@ export function virtualPostBuild(c_action,action,type){
         virtualDrawTech();
         virtualRenderSpace();
         virtualRenderFortress();
+        virtualRenderTauCeti();
     }
     if (c_action['post']){
         setTimeout(function(){
@@ -6142,7 +6143,7 @@ export function postBuild(c_action,action,type){
         virtualDrawTech();
         virtualRenderSpace();
         virtualRenderFortress();
-            renderTauCeti();
+            virtualRenderTauCeti();
         }
     }
     if (c_action['post']){
@@ -6976,6 +6977,7 @@ function checkMaxCosts(costs){
         else {
             var testCost = Number(costs[res]()) || 0;
             let f_res = res === 'Species' ? global.race.species : res;
+            if(!global.resource[f_res])return;
             if ((!global.resource[f_res].display && testCost > 0) || (global.resource[f_res].max >= 0 && testCost > Number(global.resource[f_res].max) && Number(global.resource[f_res].max) !== -1)){
                 test = false;
                 return;
