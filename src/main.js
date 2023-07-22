@@ -385,7 +385,7 @@ vBind({
         checkPeriod:global.settings.checkPeriod??20,
         frameLongLoopCount:global.settings.frameLongLoopCount??1,
         autoRefresh:"0",
-        days: global.stats.days
+        stats: global.stats
     },
     methods: {
         sign(){
