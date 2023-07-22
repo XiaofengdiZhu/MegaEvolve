@@ -822,12 +822,12 @@ export function loadTab(tab){
                     </b-tab-item>
                     <b-tab-item id="achieve">
                         <template slot="header">
-                            {{ 'tab_achieve' | label }}
+                            <span @click="drawAchive">{{ 'tab_achieve' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="perks">
-                        <template slot="header" @click="drawPerks">
-                            {{ 'tab_perks' | label }}
+                        <template slot="header">
+                            <span @click="drawPerks">{{ 'tab_perks' | label }}</span>
                         </template>
                     </b-tab-item>
                 </b-tabs>`);
@@ -893,9 +893,9 @@ export function index(){
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
                 <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>
+                <span class="day">${loc('total')} <span class="has-text-warning">{{ days }}</span></span>
                 <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
                 <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
-                <b-tooltip :label="atRemain()" v-show="s.at" :aria-label="atRemain()" position="is-bottom" size="is-small" multilined animated><span class="atime has-text-caution">{{ s.at | remain }}</span></b-tooltip>
             </span>
         </span>
         <span>当前倍速：<span id="realFactor">1</span></span>
