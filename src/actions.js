@@ -7049,6 +7049,10 @@ export function checkCosts(costs){
                 return;
             }
             let f_res = res === 'Species' ? global.race.species : res;
+            if(!global.resource[f_res]){
+                test = false;
+                return;
+            }
             let fail_max = global.resource[f_res].max >= 0 && testCost > global.resource[f_res].max ? true : false;
             if (testCost > Number(global.resource[f_res].amount) + global.resource[f_res].diff || fail_max){
                 test = false;

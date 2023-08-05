@@ -140,7 +140,7 @@ export function gameLoop(act){
                 }*/
                 //webWorker.mt = main_timer;
 
-                calcATime();
+                //calcATime();
 
                 if (webWorker.w){
                     webWorker.w.postMessage({ loop: 'short', period: main_timer });
@@ -582,6 +582,7 @@ export function tagEvent(event, data){
 }
 
 export function modRes(res,val,notrack,buffer){
+    if(!global.resource[res])return false;
     let count = global.resource[res].amount + val;
     let success = true;
     if (count > global.resource[res].max && global.resource[res].max != -1){
@@ -837,9 +838,10 @@ export function timeCheck(c_action,track,detailed,reqMet){
                 var testCost = offset ? Number(costs[res](offset)) : Number(costs[res]());
                 if (testCost > 0){
                     let f_res = res === 'Species' ? global.race.species : res;
-                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(global.resource[f_res].amount);
-                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : global.resource[f_res].max;
-                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : global.resource[f_res].diff;
+                    let resExists = !!global.resource[f_res];
+                    let res_have = res === 'Supply' ? global.portal.purifier.supply : Number(resExists?global.resource[f_res].amount:0);
+                    let res_max = res === 'Supply' ? global.portal.purifier.sup_max : (resExists?global.resource[f_res].max:0);
+                    let res_diff = res === 'Supply' ? global.portal.purifier.diff : (resExists?global.resource[f_res].diff:0);
 
                     if (hasTrash && global.interstellar.mass_ejector[res]){
                         res_diff += global.interstellar.mass_ejector[res];
@@ -1019,13 +1021,21 @@ export function virtualClearElement(elm,remove){
 export function clearElement(elm,remove){
     elm.find('.vb').each(function(){
         try {
-            $(this)[0].__vue__.$destroy();
+            let temp = $(this)[0];
+           if(temp){
+               temp = temp.__vue__;
+               if(temp)temp.$destroy();
+           }
         }
         catch(e){}
     });
     if (remove){
         try {
-            elm[0].__vue__.$destroy();
+            let temp = elm[0];
+            if(temp){
+                temp = temp.__vue__;
+                if(temp)temp.$destroy();
+            }
         }
         catch(e){}
         elm.remove();

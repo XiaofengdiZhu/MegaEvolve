@@ -1,5 +1,5 @@
 import {global, breakdown, virtualTree, virtualHeaders} from './vars.js';
-import { deepClone, adjustCosts, messageQueue } from './functions.js';
+import { deepClone, adjustCosts, messageQueue, gameLoop } from './functions.js';
 import { races, traits } from './races.js';
 import { craftCost, tradeRatio, atomic_mass, tradeBuyPrice, tradeSellPrice } from './resources.js';
 import { actions, checkAffordable } from './actions.js';
@@ -58,7 +58,8 @@ export function enableDebug(){
             global: {},
             breakdown: {},
             virtualTree :virtualTree,
-            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1)
+            virtualHeaders: virtualHeaders.slice(0,virtualHeaders.length-1),
+            gameLoop: gameLoop
         };
     }
 }

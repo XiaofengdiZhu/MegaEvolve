@@ -2830,6 +2830,7 @@ const tauCetiModules = {
                         {
                             switch (Math.round(global.stats.bioseed + ns) % 3){
                                 case 1:
+                                    if(global.race.gods==="none")return loc('tau_gas_title3c',[races[global.race.species].name]);
                                     return loc('tau_gas_title3a',[races[global.race.gods].solar.gas]);
                                 case 2:
                                     return loc('tau_gas_title3b',[races[global.race.old_gods].name]);

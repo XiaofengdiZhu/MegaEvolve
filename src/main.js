@@ -945,6 +945,7 @@ function fastLoop(){
         breakdown.p['Global'][loc('cold')] = `-${cold}%`;
         global_multiplier *= 1 - (cold / 100);
     }
+    if(global.civic.govern){
     if (global.civic.govern.type === 'anarchy' && global.resource[global.race.species].amount >= jobScale(10)){
         let chaos = (global.resource[global.race.species].amount - (jobScale(10) - 1)) * (global.race['high_pop'] ? (0.25 / traits.high_pop.vars()[0]) : 0.25);
         breakdown.p['Global'][loc('govern_anarchy')] = `-${chaos}%`;
@@ -960,6 +961,7 @@ function fastLoop(){
             breakdown.p['Global'][loc('event_scandal')] = `-${muckVal}%`;
             global_multiplier *= 1 - (muckVal / 100);
         }
+    }
     }
     let capyFathom = fathomCheck('capybara');
     if (capyFathom > 0 || (global.race['calm'] && global.city['meditation'] && global.resource.Zen.display)){
@@ -1057,7 +1059,7 @@ function fastLoop(){
         if (((global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0) || global['sim']) && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
             let rank = global['sim'] ? 5 : Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']);
             modRes('RNA', (rank / 2) * time_multiplier * global_multiplier);
-            if (global.resource.DNA.display){
+            if (global.resource.DNA?global.resource.DNA.display:false){
                 modRes('DNA', (rank / 4) * time_multiplier * global_multiplier);
             }
         }
