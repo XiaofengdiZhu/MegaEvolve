@@ -8979,6 +8979,13 @@ function midLoop(){
                         global.race.servants.jobs[job] = 0;
                     }
                     else {
+                        let temp = global.race.servants.jobs[job];
+                        if(typeof temp==="number" && isNaN(temp)){
+                            global.race.servants.jobs[job] = 0;
+                        }
+                        if(typeof total_servants==="number" && isNaN(total_servants)){
+                            total_servants = 0;
+                        }
                         total_servants += global.race.servants.jobs[job];
                     }
                     if (total_servants > global.race.servants.max && global.race.servants.jobs[job] > 0){
@@ -9001,6 +9008,13 @@ function midLoop(){
             Object.keys(global.race.servants.sjobs).forEach(function(res){
                 if (!global.resource[res].display){
                     global.race.servants.sjobs[res] = 0;
+                }
+                let temp = global.race.servants.sjobs[res];
+                if(typeof temp==="number" && isNaN(temp)){
+                    global.race.servants.sjobs[res] = 0;
+                }
+                if(typeof used==="number" && isNaN(used)){
+                    used = 0;
                 }
                 used += global.race.servants.sjobs[res];
                 if (used > global.race.servants.smax){

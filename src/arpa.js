@@ -1981,6 +1981,7 @@ function genetics(){
         };
 
         let mGeneCost = function(t){
+            if(!global.race.minor)return loc("arpa_gene_buy",["(error)","(error)","(error)"]);
             let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
             if (t === 'mastery'){ cost *= 5; }
             return loc('arpa_gene_buy',[traitSkin('name',t),sizeApproximation(cost),global.resource.Genes.name]);
@@ -2141,6 +2142,7 @@ function genetics(){
                     return addCost(t);
                 },
                 genePurchasable(t){
+                    if(!global.race.minor)return false;
                     let cost = fibonacci(global.race.minor[t] ? global.race.minor[t] + 4 : 4);
                     if (t === 'mastery'){ cost *= 5; }
                     return global.resource.Genes.amount >= cost;
