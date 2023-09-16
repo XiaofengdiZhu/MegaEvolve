@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, virtualClearElement } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, drawResourceTab, marketItem, containerItem, tradeSummery } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualDrawResourceTab } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -2260,7 +2260,7 @@ export const actions = {
                         clearElement($('#resources'));
                         defineResources();
                         if (global.settings.tabLoad){
-                            drawResourceTab('storage');
+                            virtualDrawResourceTab('storage');
                             defineGovernor();
                         }
                     }
@@ -2318,7 +2318,7 @@ export const actions = {
                         clearElement($('#resources'));
                         defineResources();
                         if (global.settings.tabLoad){
-                            drawResourceTab('storage');
+                            virtualDrawResourceTab('storage');
                         }
                     }
                     return true;
@@ -8044,16 +8044,19 @@ function sentience(){
             defineGovernment();
             defineIndustry();
             initResourceTabs('market');
-            initResourceTabs('storage');
+            virtualInitResourceTabs('storage');
             if (tmp_vars.hasOwnProperty('resource')){
                 Object.keys(tmp_vars.resource).forEach(function(name){
                     let color = tmp_vars.resource[name].color;
                     let tradable = tmp_vars.resource[name].tradable;
                     let stackable = tmp_vars.resource[name].stackable;
                     if (stackable){
+                        virtualContainerItem(name);
+                        if(global.settings.autoRefresh) {
                         var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
                         $('#resStorage').append(market_item);
                         containerItem(`#stack-${name}`,market_item,name,color,true);
+                        }
                     }
                     if (tradable){
                         var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
@@ -8062,7 +8065,9 @@ function sentience(){
                     }
                 });
             }
+            if(global.settings.autoRefresh) {
             tradeSummery();
+            }
             arpa('Genetics');
             arpa('Crispr');
             arpa('Blood');

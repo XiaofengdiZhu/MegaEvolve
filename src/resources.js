@@ -1,5 +1,5 @@
-import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on } from './vars.js';
-import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename } from './functions.js';
+import { global, tmp_vars, keyMultiplier, breakdown, sizeApproximation, p_on, support_on, virtualElement } from './vars.js';
+import { vBind, clearElement, modRes, flib, calc_mastery, calcPillar, eventActive, easterEgg, trickOrTreat, popover, harmonyEffect, darkEffect, hoovedRename, virtualClearElement } from './functions.js';
 import { traits, fathomCheck } from './races.js';
 import { hellSupression } from './portal.js';
 import { syndicate } from './truepath.js';
@@ -522,7 +522,37 @@ export const craftingRatio = (function(){
         }
     }
 })();
-
+export function virtualInitResourceTabs(tab){
+    if (tab){
+        switch (tab){
+            case 'market':
+                initMarket();
+                break;
+            case 'storage':
+                virtualInitStorage();
+                break;
+            case 'ejector':
+                initEjector();
+                break;
+            case 'supply':
+                initSupply();
+                break;
+            case 'alchemy':
+                initAlchemy();
+                break;
+        }
+    }
+    else {
+        initMarket();
+        virtualInitStorage();
+        initEjector();
+        initSupply();
+        initAlchemy();
+    }
+    if(global.settings.autoRefresh){
+        initResourceTabs(tab);
+    }
+}
 export function initResourceTabs(tab){
     if (tab){
         switch (tab){
@@ -551,7 +581,22 @@ export function initResourceTabs(tab){
         initAlchemy();
     }
 }
-
+export function virtualDrawResourceTab(tab){
+    if (tab === 'storage'){
+        virtualInitResourceTabs('storage');
+        if (tmp_vars.hasOwnProperty('resource')){
+            Object.keys(tmp_vars.resource).forEach(function(name){
+                let stackable = tmp_vars.resource[name].stackable;
+                if (stackable){
+                    virtualContainerItem(name);
+                }
+            });
+        }
+    }
+    if(global.settings.autoRefresh){
+        drawResourceTab(tab);
+    }
+}
 export function drawResourceTab(tab){
     if (tab === 'market'){
         initResourceTabs('market');
@@ -1758,7 +1803,16 @@ function assignContainer(res){
         global.resource[res].max += (cap * keyMutipler);
     }
 }
-
+export function virtualContainerItem(name){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
+        return;
+    }
+    let item = new virtualElement("stack-"+name,"createHead");
+    item.addCrate=(res)=>{assignCrate(res);};
+    item.subCrate=(res)=>{unassignCrate(res);};
+    item.addCon=(res)=>{assignContainer(res);};
+    item.subCon=(res)=>{unassignContainer(res);};
+}
 export function containerItem(mount,market_item,name,color){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;
@@ -2240,7 +2294,6 @@ function loadRouteCounter(){
         elm: `#tradeTotalPopover > span`
     });
 }
-
 function loadContainerCounter(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;
@@ -2514,7 +2567,21 @@ function initMarket(){
     $('#market').append(market);
     loadMarket();
 }
+function virtualInitStorage() {
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
+        return;
+    }
+    let store = new virtualElement("createHead");
+    virtualClearElement("createHead");
+    store.crate = ()=>{buildCrate();};
+    store.container = ()=>{buildContainer();};
+    store.buildCrateDesc = ()=>buildCrateLabel();
+    store.buildContainerDesc = ()=>buildContainerLabel();
 
+    if(global.settings.autoRefresh){
+        initStorage();
+    }
+}
 function initStorage(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;

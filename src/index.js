@@ -2,7 +2,7 @@ import { global, tmp_vars, save, message_logs, message_filters, webWorker } from
 import { loc, locales } from './locale.js';
 import { setupStats, alevel, drawPerks, drawAchieve } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
-import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, initResourceTabs, drawResourceTab, tradeSummery } from './resources.js';
+import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, drawResourceTab, tradeSummery, virtualContainerItem, virtualInitResourceTabs } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -674,7 +674,7 @@ export function loadTab(tab){
                     </b-tab-item>
                     <b-tab-item id="resStorage" :visible="s.showStorage">
                         <template slot="header">
-                            {{ 'tab_storage' | label }}
+                            <label @click="drawResourceTabStorage">{{ 'tab_storage' | label }}</label>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="resEjector" :visible="s.showEjector">
@@ -735,7 +735,8 @@ export function loadTab(tab){
                                 }
                             }
                             return tab;
-                        }
+                        },
+                        drawResourceTabStorage() {drawResourceTab('storage');}
                     },
                     filters: {
                         label(lbl){
@@ -744,7 +745,7 @@ export function loadTab(tab){
                     }
                 });
 
-                initResourceTabs();
+                virtualInitResourceTabs();
                 if (tmp_vars.hasOwnProperty('resource')){
                     Object.keys(tmp_vars.resource).forEach(function(name){
                         let color = tmp_vars.resource[name].color;
@@ -752,9 +753,12 @@ export function loadTab(tab){
                         let stackable = tmp_vars.resource[name].stackable;
 
                         if (stackable){
+                            virtualContainerItem(name);
+                            if(global.settings.autoRefresh) {
                             var market_item = $(`<div id="stack-${name}" class="market-item" v-show="display"></div>`);
                             $('#resStorage').append(market_item);
                             containerItem(`#stack-${name}`,market_item,name,color,true);
+                            }
                         }
 
                         if (tradable){
@@ -777,7 +781,9 @@ export function loadTab(tab){
                         }
                     });
                 }
+                if(global.settings.autoRefresh) {
                 tradeSummery();
+                }
             }
             break;
         case 5:

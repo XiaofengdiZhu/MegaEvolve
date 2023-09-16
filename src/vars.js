@@ -61,7 +61,7 @@ export var message_logs = {
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 export var virtualHeaders = "";
-const specialIds = ["fleet","fort","gFort","mechList","shipList"];
+const specialIds = ["fleet","fort","gFort","mechList","shipList","createHead"];
 export class virtualElement {
     constructor(id,parentId) {
         if(id){
