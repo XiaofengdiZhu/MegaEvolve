@@ -2,7 +2,7 @@ import { global, tmp_vars, save, message_logs, message_filters, webWorker } from
 import { loc, locales } from './locale.js';
 import { setupStats, alevel, drawPerks, drawAchieve } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
-import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, drawResourceTab, tradeSummery, virtualContainerItem, virtualInitResourceTabs } from './resources.js';
+import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, drawResourceTab, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualMarketItem, virtualTradeSummary } from './resources.js';
 import { defineJobs, } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
@@ -669,7 +669,7 @@ export function loadTab(tab){
                 $(`#mTabResource`).append(`<b-tabs class="resTabs" v-model="s.marketTabs" :animated="s.animated" @input="swapTab">
                     <b-tab-item id="market" :visible="s.showMarket">
                         <template slot="header">
-                            {{ 'tab_market' | label }}
+                            <label @click="drawResourceTabMarket">{{ 'tab_market' | label }}</label>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="resStorage" :visible="s.showStorage">
@@ -736,6 +736,7 @@ export function loadTab(tab){
                             }
                             return tab;
                         },
+                        drawResourceTabMarket() {drawResourceTab('market');},
                         drawResourceTabStorage() {drawResourceTab('storage');}
                     },
                     filters: {
@@ -762,9 +763,12 @@ export function loadTab(tab){
                         }
 
                         if (tradable){
+                            virtualMarketItem(name);
+                            if(global.settings.autoRefresh) {
                             var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
                             $('#market').append(market_item);
                             marketItem(`#market-${name}`,market_item,name,color,true);
+                            }
                         }
                     
                         if (atomic_mass[name]){
@@ -781,9 +785,7 @@ export function loadTab(tab){
                         }
                     });
                 }
-                if(global.settings.autoRefresh) {
-                tradeSummery();
-                }
+                virtualTradeSummary();
             }
             break;
         case 5:

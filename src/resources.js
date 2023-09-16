@@ -526,7 +526,7 @@ export function virtualInitResourceTabs(tab){
     if (tab){
         switch (tab){
             case 'market':
-                initMarket();
+                virtualInitMarket();
                 break;
             case 'storage':
                 virtualInitStorage();
@@ -543,7 +543,7 @@ export function virtualInitResourceTabs(tab){
         }
     }
     else {
-        initMarket();
+        virtualInitMarket();
         virtualInitStorage();
         initEjector();
         initSupply();
@@ -582,7 +582,19 @@ export function initResourceTabs(tab){
     }
 }
 export function virtualDrawResourceTab(tab){
-    if (tab === 'storage'){
+    if (tab === 'market'){
+        virtualInitResourceTabs('market');
+        if (tmp_vars.hasOwnProperty('resource')){
+            Object.keys(tmp_vars.resource).forEach(function(name){
+                let tradable = tmp_vars.resource[name].tradable;
+                if (tradable){
+                    virtualmarketItem(name);
+                }
+            });
+        }
+        virtualTradeSummary();
+    }
+    else if (tab === 'storage'){
         virtualInitResourceTabs('storage');
         if (tmp_vars.hasOwnProperty('resource')){
             Object.keys(tmp_vars.resource).forEach(function(name){
@@ -592,6 +604,7 @@ export function virtualDrawResourceTab(tab){
                 }
             });
         }
+        virtualTradeSummary();
     }
     if(global.settings.autoRefresh){
         drawResourceTab(tab);
@@ -745,7 +758,14 @@ export function defineResources(wiki){
     loadSpecialResource('Harmony');
     loadSpecialResource('AICore');
 }
-
+export function virtualTradeSummary(){
+    if (global.race.species !== 'protoplasm'){
+        virtualInitGalaxyTrade();
+    }
+    if(global.settings.autoRefresh){
+        tradeSummery();
+    }
+}
 export function tradeSummery(){
     if (global.race.species !== 'protoplasm'){
         loadRouteCounter();
@@ -1313,7 +1333,130 @@ function importRouteEnabled(route){
     }
     return true;
 }
+export function virtualMarketItem(name){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
+        return;
+    }
+    if (global.race['artifical'] && name === 'Food'){
+        return;
+    }
 
+    let item = new virtualElement("market-"+name,"market-qty");
+    item.purchase=(res)=>{
+        if (!global.race['no_trade'] && !global.settings.pause){
+            let qty = global.city.market.qty;
+            let value = global.resource[res].value;
+            if (global.race['arrogant']){
+                value *= 1 + (traits.arrogant.vars()[0] / 100);
+            }
+            if (global.race['conniving']){
+                value *= 1 - (traits.conniving.vars()[0] / 100);
+            }
+            let fathom = fathomCheck('imp');
+            if (fathom > 0){
+                value *= 1 - (traits.conniving.vars(1)[0] / 100 * fathom);
+            }
+            let amount = Math.floor(Math.min(qty, global.resource.Money.amount / value,
+                global.resource[res].max - global.resource[res].amount));
+            if (amount > 0){
+                global.resource[res].amount += amount;
+                global.resource.Money.amount -= Math.round(value * amount);
+
+                global.resource[res].value += Number((amount / Math.rand(1000,10000)).toFixed(2));
+            }
+        }
+    };
+    item.sell=(res)=>{
+        if (!global.race['no_trade'] && !global.settings.pause){
+            let qty = global.city.market.qty;
+            let divide = 4;
+            if (global.race['merchant']){
+                divide *= 1 - (traits.merchant.vars()[0] / 100);
+            }
+            let gobFathom = fathomCheck('goblin');
+            if (gobFathom > 0){
+                divide *= 1 - (traits.merchant.vars(1)[0] / 100 * gobFathom);
+            }
+            if (global.race['asymmetrical']){
+                divide *= 1 + (traits.asymmetrical.vars()[0] / 100);
+            }
+            if (global.race['conniving']){
+                divide *= 1 - (traits.conniving.vars()[1] / 100);
+            }
+            let impFathom = fathomCheck('imp');
+            if (impFathom > 0){
+                divide *= 1 - (traits.conniving.vars(1)[1] / 100 * impFathom);
+            }
+            let price = global.resource[res].value / divide;
+            let amount = Math.floor(Math.min(qty, global.resource[res].amount,
+                (global.resource.Money.max - global.resource.Money.amount) / price));
+            if (amount > 0) {
+                global.resource[res].amount -= amount;
+                global.resource.Money.amount += Math.round(price * amount);
+
+                global.resource[res].value -= Number((amount / Math.rand(1000,10000)).toFixed(2));
+                if (global.resource[res].value < Number(resource_values[res] / 2)){
+                    global.resource[res].value = Number(resource_values[res] / 2);
+                }
+            }
+        }
+    };
+    item.autoBuy=(res)=>{
+        let keyMult = keyMultiplier();
+        for (let i=0; i<keyMult; i++){
+            if (govActive('dealmaker',0)){
+                let exporting = 0;
+                let importing = 0;
+                Object.keys(global.resource).forEach(function(res){
+                    if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade < 0){
+                        exporting -= global.resource[res].trade;
+                    }
+                    if (global.resource[res].hasOwnProperty('trade') && global.resource[res].trade > 0){
+                        importing += global.resource[res].trade;
+                    }
+                });
+                if (exporting <= importing){
+                    break;
+                }
+            }
+            if (global.resource[res].trade >= 0){
+                if (importRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
+                    global.city.market.trade++;
+                    global.resource[res].trade++;
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                global.city.market.trade--;
+                global.resource[res].trade++;
+            }
+        }
+    };
+    item.autoSell=(res)=>{
+        let keyMult = keyMultiplier();
+        for (let i=0; i<keyMult; i++){
+            if (global.resource[res].trade <= 0){
+                if (exportRouteEnabled(res) && global.city.market.trade < global.city.market.mtrade){
+                    global.city.market.trade++;
+                    global.resource[res].trade--;
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                global.city.market.trade--;
+                global.resource[res].trade--;
+            }
+        }
+    };
+    item.zero=(res)=>{
+        global.city.market.trade -= Math.abs(global.resource[res].trade);
+        global.resource[res].trade = 0;
+    }
+}
 export function marketItem(mount,market_item,name,color,full){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
@@ -1560,7 +1703,12 @@ export function marketItem(mount,market_item,name,color,full){
         }
     });
 }
-
+function virtualInitGalaxyTrade(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
+        return;
+    }
+    virtualGalacticTrade();
+}
 function initGalaxyTrade(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
@@ -1610,7 +1758,49 @@ export function galaxyOffers(){
     ];
     return offers;
 }
-
+export function virtualGalacticTrade(){
+    let galaxyTrade = new virtualElement("galaxyTrade");
+    virtualClearElement("galaxyTrade");
+    if (global.galaxy['trade']){
+        galaxyTrade.less=(idx)=>{
+            let keyMutipler = keyMultiplier();
+            if (global.galaxy.trade[`f${idx}`] >= keyMutipler){
+                global.galaxy.trade[`f${idx}`] -= keyMutipler;
+                global.galaxy.trade.cur -= keyMutipler;
+            }
+            else {
+                global.galaxy.trade.cur -= global.galaxy.trade[`f${idx}`];
+                global.galaxy.trade[`f${idx}`] = 0;
+            }
+        };
+        galaxyTrade.more=(idx)=>{
+            let keyMutipler = keyMultiplier();
+            if (global.galaxy.trade.cur < global.galaxy.trade.max){
+                if (keyMutipler > global.galaxy.trade.max - global.galaxy.trade.cur){
+                    keyMutipler = global.galaxy.trade.max - global.galaxy.trade.cur;
+                }
+                global.galaxy.trade[`f${idx}`] += keyMutipler;
+                global.galaxy.trade.cur += keyMutipler;
+            }
+        };
+        galaxyTrade.zero=(idx)=>{
+            if (idx){
+                global.galaxy.trade.cur -= global.galaxy.trade[`f${idx}`];
+                global.galaxy.trade[`f${idx}`] = 0;
+            }
+            else {
+                let offers = galaxyOffers();
+                for (let i=0; i<offers.length; i++){
+                    global.galaxy.trade.cur -= global.galaxy.trade[`f${i}`];
+                    global.galaxy.trade[`f${i}`] = 0;
+                }
+            }
+        };
+        galaxyTrade.desc=(s)=>{
+            return s;
+        }
+    }
+}
 export function galacticTrade(modal){
     let galaxyTrade = modal ? modal : $(`#galaxyTrade`);
     if (!modal){
@@ -2558,6 +2748,23 @@ export function containerValue(){
     return Math.round(spatialReasoning(container_value));
 }
 
+function virtualInitMarket(){
+    if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
+        return;
+    }
+    let market = new virtualElement("market-qty");
+    virtualClearElement("market-qty");
+    market.limit=()=>tradeMax();
+    market.less=()=>{
+        global.city.market.qty -= keyMultiplier();
+    };
+    market.more=()=>{
+        global.city.market.qty += keyMultiplier();
+    }
+    if(global.settings.autoRefresh){
+        initMarket();
+    }
+}
 function initMarket(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
@@ -2617,7 +2824,6 @@ function initStorage(){
         });
     }
 }
-
 function loadMarket(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;

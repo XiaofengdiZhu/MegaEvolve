@@ -3,7 +3,7 @@ import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, virtualClearElement } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
-import { defineResources, galacticTrade, spatialReasoning, resource_values, initResourceTabs, marketItem, containerItem, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualDrawResourceTab } from './resources.js';
+import { defineResources, galacticTrade, spatialReasoning, resource_values, marketItem, containerItem, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualDrawResourceTab, virtualMarketItem, virtualTradeSummary } from './resources.js';
 import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
@@ -8043,7 +8043,7 @@ function sentience(){
             clearElement($(`#r_civics`));
             defineGovernment();
             defineIndustry();
-            initResourceTabs('market');
+            virtualInitResourceTabs('market');
             virtualInitResourceTabs('storage');
             if (tmp_vars.hasOwnProperty('resource')){
                 Object.keys(tmp_vars.resource).forEach(function(name){
@@ -8059,15 +8059,16 @@ function sentience(){
                         }
                     }
                     if (tradable){
+                        virtualMarketItem(name);
+                        if(global.settings.autoRefresh) {
                         var market_item = $(`<div id="market-${name}" class="market-item" v-show="r.display"></div>`);
                         $('#market').append(market_item);
                         marketItem(`#market-${name}`,market_item,name,color,true);
+                        }
                     }
                 });
             }
-            if(global.settings.autoRefresh) {
-            tradeSummery();
-            }
+            virtualTradeSummary();
             arpa('Genetics');
             arpa('Crispr');
             arpa('Blood');

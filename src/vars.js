@@ -61,7 +61,7 @@ export var message_logs = {
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 export var virtualHeaders = "";
-const specialIds = ["fleet","fort","gFort","mechList","shipList","createHead"];
+const specialIds = ["fleet","fort","gFort","mechList","shipList","createHead","market-qty","galaxyTrade"];
 export class virtualElement {
     constructor(id,parentId) {
         if(id){
@@ -81,13 +81,18 @@ export class virtualElement {
         if(id){
             this.id = id;
             let head = id.split('-')[0]+"-";
-            if(virtualHeaders.indexOf(head)===-1){
+            let index = virtualHeaders.indexOf(head);
+            if(specialIds.indexOf(id)>-1){
                 let speciaHead = "^"+id+"$|";
-                if(specialIds.indexOf(id)>-1){
-                    if(virtualHeaders.indexOf(speciaHead)===-1){
-                        virtualHeaders+=speciaHead;
+                if(virtualHeaders.indexOf(speciaHead)===-1){
+                    virtualHeaders+=speciaHead;
+                    if(id.indexOf('-')>-1){
+                        virtualHeaders+=id.split('-')[0]+"-|";
                     }
-                }else{
+                }
+            }else if(id.indexOf('-')>-1){
+                let head = id.split('-')[0]+"-";
+                if(virtualHeaders.indexOf(head)===-1){
                     virtualHeaders+=head+"|";
                 }
             }
