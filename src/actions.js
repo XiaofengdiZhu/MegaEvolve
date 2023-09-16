@@ -2,9 +2,9 @@ import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, 
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, virtualClearElement } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
-import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, shapeShift, basicRace, fathomCheck } from './races.js';
+import { races, traits, genus_traits, neg_roll_traits, randomMinorTrait, cleanAddTrait, biomes, planetTraits, setJType, altRace, setTraitRank, setImitation, virtualShapeShift, basicRace, fathomCheck } from './races.js';
 import { defineResources, galacticTrade, spatialReasoning, resource_values, marketItem, containerItem, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualDrawResourceTab, virtualMarketItem, virtualTradeSummary } from './resources.js';
-import { loadFoundry, defineJobs, jobScale, workerScale, job_desc } from './jobs.js';
+import { virtualLoadFoundry, virtualDefineJobs, jobScale, workerScale, job_desc } from './jobs.js';
 import { loadIndustry, defineIndustry, nf_resources } from './industry.js';
 import { govEffect, defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov, armyRating } from './civics.js';
 import { spaceTech, interstellarTech, galaxyTech, universe_affixes,  virtualRenderSpace, piracy } from './space.js';
@@ -2684,7 +2684,7 @@ export const actions = {
                     if (global.resource.Aluminium.display){
                         global.resource.Sheet_Metal.display = true;
                     }
-                    loadFoundry();
+                    virtualLoadFoundry();
                     return true;
                 }
                 return false;
@@ -2814,7 +2814,7 @@ export const actions = {
                     global.resource.Aluminium.display = true;
                     if (global.city['foundry'] && global.city.foundry.count > 0 && !global.resource.Sheet_Metal.display){
                         global.resource.Sheet_Metal.display = true;
-                        loadFoundry();
+                        virtualLoadFoundry();
                     }
                     if (global.tech['alumina'] >= 2){
                         powerOnNewStruct($(this)[0]);
@@ -7952,12 +7952,12 @@ function sentience(){
         global.tech['b_stone'] = 2;
     }
 
-    defineJobs(true);
+    virtualDefineJobs(true);
     commisionGarrison();
     defineGovernment(true);
 
     if (global.race['shapeshifter']){
-        shapeShift(false,true);
+        virtualShapeShift(false,true);
     }
 
     if (global.race['carnivore'] || global.race['soul_eater'] || global.race['unfathomable']){
@@ -8323,7 +8323,7 @@ function aiStart(){
 
         virtualDrawCity();
         virtualDrawTech();
-        loadFoundry();
+        virtualLoadFoundry();
     }
 }
 
@@ -8603,9 +8603,9 @@ function cataclysm(){
 
         virtualDrawCity();
         virtualDrawTech();
-         virtualRenderSpace();
+        virtualRenderSpace();
         arpa('Physics');
-        loadFoundry();
+        virtualLoadFoundry();
     }
 }
 
@@ -8652,7 +8652,7 @@ function fanaticTrait(trait){
             setImitation(true);
         }
         else if (trait === 'shapeshifter'){
-            shapeShift(global.race['ss_genus']);
+            virtualShapeShift(global.race['ss_genus']);
         }
     }
     else {

@@ -3,7 +3,7 @@ import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerMod
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
 import { spatialReasoning, defineResources } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { virtualLoadFoundry, jobScale } from './jobs.js';
 import { defineIndustry } from './industry.js';
 import { garrisonSize, describeSoldier, checkControlling, govTitle } from './civics.js';
 import { actions, payCosts, powerOnNewStruct, setAction, setPlanet, storageMultipler, drawTech, bank_vault, updateDesc, actionDesc, templeEffect, casinoEffect, wardenLabel, buildTemplate, virtualDrawTech, virtualSetAction } from './actions.js';
@@ -309,7 +309,7 @@ const spaceProjects = {
                     incrementStruct('iridium_mine');
                     if (!global.resource['Mythril'].display){
                         global.resource['Mythril'].display = true;
-                        loadFoundry();
+                        virtualLoadFoundry();
                     }
                     if (global.space.moon_base.support < global.space.moon_base.s_max){
                         global.space['iridium_mine'].on++;

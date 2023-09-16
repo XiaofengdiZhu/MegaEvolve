@@ -1,8 +1,8 @@
-import { global, seededRandom, save, webWorker, power_generated, keyMultiplier } from './vars.js';
+import { global, seededRandom, save, webWorker, power_generated, keyMultiplier, virtualElement } from './vars.js';
 import { loc } from './locale.js';
 import { defineIndustry } from './industry.js';
-import { setJobName, jobScale, loadFoundry } from './jobs.js';
-import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes } from './functions.js';
+import { setJobName, jobScale, virtualLoadFoundry } from './jobs.js';
+import { vBind, clearElement, popover, removeFromQueue, removeFromRQueue, calc_mastery, gameLoop, getEaster, getHalloween, randomKey, modRes , virtualClearElement } from './functions.js';
 import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
@@ -4832,7 +4832,7 @@ function releaseResource(res) {
         global.civic.craftsman.workers -= global.city.foundry[res];
         global.city.foundry.crafting -= global.city.foundry[res];
         global.city.foundry[res] = 0;
-        loadFoundry();
+        virtualLoadFoundry();
     }
     if (global.resource[res].hasOwnProperty('trade')) {
         global.city.market.trade -= Math.abs(global.resource[res].trade);
@@ -5213,7 +5213,7 @@ export function cleanAddTrait(trait){
             });
             break;
         case 'shapeshifter':
-            shapeShift(false,true);
+            virtualShapeShift(false,true);
             break;
         case 'imitation':
             setImitation(true);
@@ -5400,8 +5400,7 @@ export function cleanRemoveTrait(trait,rank){
             setPurgatory('city','nanite_factory');
             break;
         case 'shapeshifter':
-            clearElement($('#sshifter'));
-            shapeShift();
+            virtualShapeShift();
             break;
         case 'imitation':
             if (global.race['iTraits']){
@@ -5444,7 +5443,7 @@ export function setImitation(mod){
             global.race['iTraits'] = {};
         }
         if (global.race['shapeshifter']){
-            shapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true);
+            virtualShapeShift(global.race['ss_genus'] === races[global.race['srace']].type ? 'none' : false, true);
         }
 
         let i_traits = [];
@@ -5483,7 +5482,75 @@ export function setImitation(mod){
         }
     }
 }
+export function virtualShapeShift(genus,setup){
+    let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
+    if (!setup){
+        shifted.forEach(function(trait){
+            let rank = global.race[trait];
+            delete global.race[trait];
+            cleanRemoveTrait(trait,rank);
+        });
+        shifted = [];
+    }
 
+    if (genus){
+        if (genus !== 'none'){
+            Object.keys(genus_traits[genus]).forEach(function (trait) {
+                if (!global.race[trait] && trait !== 'high_pop'){
+                    if (traits[trait].val >= 0){
+                        global.race[trait] = traits.shapeshifter.vars()[0];
+                    }
+                    else {
+                        global.race[trait] = traits.shapeshifter.vars()[1];
+                    }
+                    cleanAddTrait(trait);
+                    shifted.push(trait);
+                }
+            });
+        }
+        global.race['ss_genus'] = genus;
+    }
+
+    if (setup){
+        global.race['ss_genus'] = global.race.hasOwnProperty('ss_genus') ? global.race.ss_genus : 'none';
+        virtualClearElement("sshifter");
+        let e = new virtualElement("sshifter");
+        e.setShape = (s)=>{virtualShapeShift(s);};
+        if(global.settings.autoRefresh){
+        clearElement($('#sshifter'));
+        let drop = ``;
+        Object.keys(genus_traits).forEach(function (gen) {
+            if (gen !== 'synthetic' && gen !== 'eldritch' && gen !== races[global.race.species].type && (!global.race['imitation'] || gen !== races[global.race['srace']].type) && global.stats.achieve[`genus_${gen}`] && global.stats.achieve[`genus_${gen}`].l > 0){
+                drop += `<b-dropdown-item v-on:click="setShape('${gen}')">{{ '${gen}' | genus }}</b-dropdown-item>`;
+            }
+        });
+
+        $('#sshifter').append(
+            `<span>${loc(`trait_shapeshifter_name`)}</span>: <b-dropdown hoverable scrollable>
+            <button class="button is-primary" slot="trigger">
+                <span>{{ ss_genus | genus }}</span>
+            </button>
+            <b-dropdown-item v-on:click="setShape('none')">{{ 'none' | genus }}</b-dropdown-item>${drop}
+        </b-dropdown>`);
+
+        vBind({
+            el: `#sshifter`,
+            data: global.race,
+            methods: {
+                setShape(s){
+                    shapeShift(s);
+                }
+            },
+            filters: {
+                genus(g){
+                    return loc(`genelab_genus_${g}`);
+                }
+            }
+        });}
+    }
+
+    global.race['ss_traits'] = shifted;
+}
 export function shapeShift(genus,setup){
     let shifted = global.race.hasOwnProperty('ss_traits') ? global.race.ss_traits : [];
     if (!setup){

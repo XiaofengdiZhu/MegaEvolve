@@ -3,11 +3,11 @@ import { loc, locales } from './locale.js';
 import { setupStats, alevel, drawPerks, drawAchieve } from './achieve.js';
 import { vBind, initMessageQueue, clearElement, flib, tagEvent, gameLoop, popover, clearPopper, powerGrid, easterEgg, trickOrTreat, drawIcon } from './functions.js';
 import { tradeRatio, atomic_mass, supplyValue, marketItem, containerItem, loadEjector, loadSupply, loadAlchemy, drawResourceTab, tradeSummery, virtualContainerItem, virtualInitResourceTabs, virtualMarketItem, virtualTradeSummary } from './resources.js';
-import { defineJobs, } from './jobs.js';
+import { defineJobs, virtualDefineJobs } from './jobs.js';
 import { clearSpyopDrag } from './governor.js';
 import { defineIndustry, setPowerGrid, gridDefs, clearGrids } from './industry.js';
 import { defineGovernment, defineGarrison, buildGarrison, commisionGarrison, foreignGov } from './civics.js';
-import { races, shapeShift, renderPsychicPowers } from './races.js';
+import { races, shapeShift, renderPsychicPowers, virtualShapeShift } from './races.js';
 import { drawEvolution, drawCity, drawTech, resQueue, clearResDrag, virtualDrawCity, virtualDrawTech} from './actions.js';
 import {  virtualRenderSpace, ascendLab, terraformLab, deepSpace, galaxySpace, space } from './space.js';
 import { renderFortress, buildFortress, drawMechLab, clearMechDrag, drawHellObservations, virtualRenderFortress, virtualBuildFortress, drawMechs} from './portal.js';
@@ -459,7 +459,7 @@ export function loadTab(tab){
                     <b-tab-item id="civic">
                         <template slot="header">
                             <h2 class="is-sr-only">{{ 'tab_gov' | label }}</h2>
-                            <span aria-hidden="true">{{ 'tab_gov' | label }}</span>
+                            <span aria-hidden="true" @click="swapTab0">{{ 'tab_gov' | label }}</span>
                         </template>
                     </b-tab-item>
                     <b-tab-item id="industry" class="industryTab" :visible="s.showIndustry">
@@ -513,6 +513,21 @@ export function loadTab(tab){
                         },
                         drawShips(){
                             drawShips();
+                        },
+                        swapTab0(){
+                            clearElement($(`#civic`));
+                            $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
+                            defineJobs();
+                            $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
+                            defineGovernment();
+                            if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
+                                commisionGarrison();
+                                buildGarrison($('#c_garrison'),false);
+                                foreignGov();
+                            }
+                            if (global.race['shapeshifter']){
+                                shapeShift(false,true);
+                            }
                         },
                         swapTab(tab){
                             if (!global.settings.tabLoad){
@@ -594,7 +609,7 @@ export function loadTab(tab){
                 setPowerGrid();
 
                 $('#civic').append($('<div id="civics" class="tile is-parent"></div>'));
-                defineJobs();
+                virtualDefineJobs();
                 $('#civics').append($('<div id="r_civics" class="tile is-vertical is-parent civics"></div>'));
                 defineGovernment();
                 if (global.race.species !== 'protoplasm' && !global.race['start_cataclysm']){
@@ -611,7 +626,7 @@ export function loadTab(tab){
                     }
                 }
                 if (global.race['shapeshifter']){
-                    shapeShift(false,true);
+                    virtualShapeShift(false,true);
                 }
                 defineIndustry();
             }

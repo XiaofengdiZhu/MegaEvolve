@@ -2,12 +2,12 @@ import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resiz
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
-import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, shapeShift, fathomCheck } from './races.js';
+import { races, traits, racialTrait, randomMinorTrait, biomes, planetTraits, virtualShapeShift, fathomCheck } from './races.js';
 import { defineResources, resource_values, spatialReasoning, craftCost, plasmidBonus, faithBonus, tradeRatio, craftingRatio, crateValue, containerValue, tradeSellPrice, tradeBuyPrice, atomic_mass, supplyValue, galaxyOffers } from './resources.js';
-import { defineJobs, job_desc, loadFoundry, farmerValue, jobScale, workerScale, loadServants} from './jobs.js';
+import { virtualDefineJobs, job_desc, virtualLoadFoundry, farmerValue, jobScale, workerScale, virtualLoadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawCity, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, virtualRenderFortress } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, virtualRenderTauCeti } from './truepath.js';
@@ -183,12 +183,12 @@ if (global.tauceti['fusion_generator']){
     p_on['fusion_generator'] = global.tauceti.fusion_generator.on;
 }
 
-defineJobs(true);
+virtualDefineJobs(true);
 defineResources();
 initTabs();
 buildQueue();
 if (global.race['shapeshifter']){
-    shapeShift(false,true);
+    virtualShapeShift(false,true);
 }
 
 Object.keys(gridDefs()).forEach(function(gridtype){
@@ -8996,7 +8996,7 @@ function midLoop(){
             }
         });
         if (unlock_servants){
-            loadServants();
+            virtualLoadServants();
         }
         else if (global.race['servants']){
             global.race.servants['force_scavenger'] = not_scavanger_jobs_avail === 0 ? true : false;
@@ -10637,7 +10637,7 @@ function longLoop(){
                     global.tech['quantium'] = 1;
                     global.resource.Quantium.display = true;
                     virtualDrawTech();
-                    loadFoundry();
+                    virtualLoadFoundry();
                 }
                 if (global.resource.Knowledge.max >= (actions.tech.alien_biotech.cost.Knowledge() * know_adjust) && global.tech['genetics'] && global.tech.genetics >= 8 && global.tech['kuiper'] && !global.tech['biotech']){
                     messageQueue(loc(tech_source,[loc('tech_alien_biotech')]),'info',false,['progress']);
@@ -10671,7 +10671,7 @@ function longLoop(){
                     global.tech['nanoweave'] = 1;
                     global.resource.Nanoweave.display = true;
                     virtualDrawTech();
-                    loadFoundry();
+                    virtualLoadFoundry();
                 }
                 if (global.resource.Knowledge.max >= (actions.tech.orichalcum_analysis.cost.Knowledge() * know_adjust) && global.tech['high_tech'] && global.tech.high_tech === 16 && global.tech['chthonian'] && global.tech['chthonian'] >= 3){
                     messageQueue(loc(tech_source,[loc('tech_orichalcum_analysis')]),'info',false,['progress']);

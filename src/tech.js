@@ -5,10 +5,10 @@ import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
 import { payCosts, housingLabel, wardenLabel, updateQueueNames, virtualDrawTech, fanaticism, checkAffordable, actions } from './actions.js';
 import { races, checkAltPurgatory, renderPsychicPowers } from './races.js';
 import { defineResources, drawResourceTab, resource_values, atomic_mass } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { virtualLoadFoundry, jobScale } from './jobs.js';
 import { buildGarrison, checkControlling, govTitle } from './civics.js';
 import { virtualRenderSpace, planetName, int_fuel_adjust } from './space.js';
-import { drawHellObservations } from './portal.js';
+import { virtualDrawHellObservations } from './portal.js';
 import { setOrbits, jumpGateShutdown } from './truepath.js';
 import { arpa } from './arpa.js';
 import { setPowerGrid, defineIndustry } from './industry.js';
@@ -1722,7 +1722,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.city['metal_refinery'] = { count: 0, on: 0 };
-                loadFoundry();
+                virtualLoadFoundry();
                 return true;
             }
             return false;
@@ -2040,7 +2040,7 @@ const techs = {
                 global.resource.Iron.display = true;
                 if (global.city['foundry'] && global.city['foundry'].count > 0){
                     global.resource.Wrought_Iron.display = true;
-                    loadFoundry();
+                    virtualLoadFoundry();
                 }
                 return true;
             }
@@ -5830,7 +5830,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 global.resource.Nanoweave.display = true;
                 messageQueue(loc('tech_nanoweave_avail'),'info',false,['progress']);
-                loadFoundry();
+                virtualLoadFoundry();
                 return true;
             }
             return false;
@@ -5913,7 +5913,7 @@ const techs = {
                 global.resource.Scarletite.display = true;
                 global.portal['hell_forge'] = { count: 0, on: 0 };
                 messageQueue(loc('tech_scarletite_avail'),'info',false,['progress']);
-                loadFoundry();
+                virtualLoadFoundry();
                 if (global.race.universe !== 'micro' && !global.pillars[global.race.species]){
                     global.tech['fusable'] = 1;
                 }
@@ -9216,7 +9216,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 global.resource.Aerogel.display = true;
-                loadFoundry();
+                virtualLoadFoundry();
                 return true;
             }
             return false;
@@ -9690,7 +9690,7 @@ const techs = {
             return false;
         },
         post(){
-            drawHellObservations();
+            virtualDrawHellObservations();
         }
     },
     war_drones: {

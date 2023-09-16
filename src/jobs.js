@@ -1,5 +1,5 @@
-import { global, keyMultiplier, p_on, support_on } from './vars.js';
-import { vBind, clearElement, popover, darkEffect, eventActive, easterEgg } from './functions.js';
+import { global, keyMultiplier, p_on, support_on, virtualElement } from './vars.js';
+import {vBind, clearElement, popover, darkEffect, eventActive, easterEgg, virtualClearElement} from './functions.js';
 import { loc } from './locale.js';
 import { racialTrait, races, traits, biomes, planetTraits, fathomCheck } from './races.js';
 import { armyRating } from './civics.js';
@@ -311,11 +311,50 @@ export const job_desc = {
         return loc('job_crew_desc');
     }
 }
-
+export function virtualDefineJobs(define){
+    if(!define){
+        new virtualElement("sshifter");
+        new virtualElement("jobs");
+        new virtualElement("servants");
+        new virtualElement("foundry");
+        new virtualElement("skilledServants")
+    }
+    virtualLoadJob('unemployed',define,0,0,'warning');
+    virtualLoadJob('hunter',define,0,0);
+    virtualLoadJob('forager',define,0,0);
+    virtualLoadJob('farmer',define,0.82,5);
+    virtualLoadJob('lumberjack',define,1,5);
+    virtualLoadJob('quarry_worker',define,1,5);
+    virtualLoadJob('crystal_miner',define,0.1,5);
+    virtualLoadJob('scavenger',define,0.12,5);
+    virtualLoadJob('torturer',define,1,3,'advanced');
+    virtualLoadJob('miner',define,1,4,'advanced');
+    virtualLoadJob('coal_miner',define,0.2,4,'advanced');
+    virtualLoadJob('craftsman',define,1,5,'advanced');
+    virtualLoadJob('cement_worker',define,0.4,5,'advanced');
+    virtualLoadJob('entertainer',define,1,10,'advanced');
+    virtualLoadJob('priest',define,1,3,'advanced');
+    virtualLoadJob('professor',define,0.5,6,'advanced');
+    virtualLoadJob('scientist',define,1,5,'advanced');
+    virtualLoadJob('banker',define,0.1,6,'advanced');
+    virtualLoadJob('colonist',define,1,5,'advanced');
+    virtualLoadJob('titan_colonist',define,1,5,'advanced');
+    virtualLoadJob('space_miner',define,1,5,'advanced');
+    virtualLoadJob('hell_surveyor',define,1,1,'advanced');
+    virtualLoadJob('archaeologist',define,1,1,'advanced');
+    virtualLoadJob('pit_miner',define,1,4.5,'advanced');
+    virtualLoadJob('crew',define,1,4,'alert');
+    if (!define && !global.race['start_cataclysm']){
+        virtualLoadFoundry();
+        if (global.race['servants']){
+            virtualLoadServants();
+        }
+    }
+}
 // Sets up jobs in civics tab
 export function defineJobs(define){
     if (!define){
-        $('#civics').append($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
+        $('#civics').prepend($(`<h2 class="is-sr-only">${loc('civics_jobs')}</h2><div class="tile is-child"><div id="sshifter" class="tile sshifter"></div><div id="jobs" class="tile is-child"></div><div id="foundry" class="tile is-child"></div><div id="servants" class="tile is-child"></div><div id="skilledServants" class="tile is-child"></div></div>`));
     }
     loadJob('unemployed',define,0,0,'warning');
     loadJob('hunter',define,0,0);
@@ -400,7 +439,100 @@ export function setJobName(job){
     }
     global['civic'][job].name = job_name;
 }
-
+function virtualLoadJob(job, define, impact, stress, color){
+    let servant = false;
+    if (define === 'servant'){
+        servant = true;
+        define = false;
+    }
+    if (!global['civic'][job]){
+        global['civic'][job] = {
+            job: job,
+            display: false,
+            workers: 0,
+            max: 0,
+            impact: impact
+        };
+    }
+    setJobName(job);
+    if (!global.civic[job]['assigned']){
+        global.civic[job]['assigned'] = job === 'craftsman'? 0 : global.civic[job].workers;
+    }
+    if (!servant){
+        global.civic[job]['stress'] = stress;
+        global.civic[job].impact = impact;
+    }
+    if (job === 'craftsman' || define){
+        return;
+    }
+    var id = servant ? 'servant-' + job : 'civ-' + job;
+    let civ_container = new virtualElement(id,servant ? 'servants' : 'jobs');
+    if (servant) {
+        civ_container.showJob = (j) => {
+            return global.civic[j].display || (j === 'scavenger' && global.race.servants.force_scavenger);
+        };
+        civ_container.add = () => {
+            let keyMult = keyMultiplier();
+            for (let i = 0; i < keyMult; i++) {
+                if (global.race.servants.max > global.race.servants.used) {
+                    global.race.servants.jobs[job]++;
+                    global.race.servants.used++;
+                } else {
+                    break;
+                }
+            }
+        };
+        civ_container.sub = () => {
+            let keyMult = keyMultiplier();
+            for (let i = 0; i < keyMult; i++) {
+                if (global.race.servants.jobs[job] > 0) {
+                    global.race.servants.jobs[job]--;
+                    global.race.servants.used--;
+                } else {
+                    break;
+                }
+            }
+        };
+    }
+    else {
+        civ_container.showJob = (j) => {
+            return global.civic[j].display;
+        };
+        civ_container.add = () => {
+            let keyMult = keyMultiplier();
+            for (let i = 0; i < keyMult; i++) {
+                if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)) {
+                    global.civic[job].workers++;
+                    global.civic[global.civic.d_job].workers--;
+                    global.civic[job].assigned = global.civic[job].workers;
+                } else {
+                    break;
+                }
+            }
+        };
+        civ_container.sub = () => {
+            let keyMult = keyMultiplier();
+            for (let i = 0; i < keyMult; i++) {
+                if (global.civic[job].workers > 0) {
+                    global.civic[job].workers--;
+                    global.civic[global.civic.d_job].workers++;
+                    global.civic[job].assigned = global.civic[job].workers;
+                } else {
+                    break;
+                }
+            }
+        };
+        civ_container.setDefault = (j) => {
+            global.civic.d_job = j;
+        };
+        civ_container.isDefault = (j) => {
+            return global.civic.d_job === j;
+        };
+    }
+    if(global.settings.autoRefresh){
+        loadJob(job, define, impact, stress, color);
+    }
+}
 function loadJob(job, define, impact, stress, color){
     let servant = false;
     if (define === 'servant'){
@@ -590,7 +722,14 @@ function loadJob(job, define, impact, stress, color){
         }
     );
 }
-
+export function virtualLoadServants(){
+    ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].forEach(function(job){
+        virtualLoadJob(job,'servant');
+    });
+    if(global.settings.autoRefresh){
+        loadServants();
+    }
+}
 export function loadServants(){
     clearElement($('#servants'));
     if (global.race['servants']){
@@ -667,7 +806,106 @@ export function farmerValue(farm,servant){
     }
     return farming;
 }
+export function virtualLoadFoundry(servants){
+    virtualClearElement(servants ? 'skilledServants' : 'foundry');
+    if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']){
+        let element = new virtualElement(servants ? 'skilledServants' : 'foundry');
 
+        let summer = eventActive('summer');
+        let list = ['Plywood','Brick','Wrought_Iron','Sheet_Metal','Mythril','Aerogel','Nanoweave'];
+        if (!servants){
+            list.push('Scarletite');
+            list.push('Quantium');
+        }
+        if (summer && !servants){
+            list.push('Thermite');
+        }
+        for (let i=0; i<list.length; i++){
+            let res = list[i];
+            if ((servants && !global.race.servants.sjobs.hasOwnProperty(res)) || (!servants && !global.city.foundry.hasOwnProperty(res))){
+                if (servants){
+                    global.race.servants.sjobs[res] = 0;
+                }
+                else {
+                    global.city.foundry[res] = 0;
+                }
+            }
+        }
+        element.add=(res)=>{
+            let keyMult = keyMultiplier();
+            let tMax = -1;
+            if (res === 'Scarletite'){
+                tMax = (p_on['hell_forge'] || 0);
+                if (global.race['high_pop']){
+                    tMax *= traits.high_pop.vars()[0];
+                }
+            }
+            else if (res === 'Quantium'){
+                tMax = (global.tech['isolation'] ? Math.min(support_on['infectious_disease_lab'],p_on['infectious_disease_lab']) || 0 : Math.min(support_on['zero_g_lab'],p_on['zero_g_lab']) || 0);
+                if (global.race['high_pop']){
+                    tMax *= traits.high_pop.vars()[0];
+                }
+            }
+            for (let i=0; i<keyMult; i++){
+                if (servants){
+                    if (global.race.servants.sused < global.race.servants.smax){
+                        global.race.servants.sjobs[res]++;
+                        global.race.servants.sused++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    if (global.city.foundry.crafting < global.civic.craftsman.max
+                        && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)
+                        && (tMax === -1 || tMax > global.city.foundry[res])
+                    ){
+                        global.civic.craftsman.workers++;
+                        global.city.foundry.crafting++;
+                        global.city.foundry[res]++;
+                        global.civic[global.civic.d_job].workers--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        };
+        element.sub=(res)=>{
+            let keyMult = keyMultiplier();
+            for (let i=0; i<keyMult; i++){
+                if (servants){
+                    if (global.race.servants.sjobs[res] > 0){
+                        global.race.servants.sjobs[res]--;
+                        global.race.servants.sused--;
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    if (global.city.foundry[res] > 0){
+                        global.city.foundry[res]--;
+                        global.civic.craftsman.workers--;
+                        global.city.foundry.crafting--;
+                        global.civic[global.civic.d_job].workers++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        };
+
+        if (global.race['servants'] && !servants && global.race.servants.smax > 0){
+            virtualLoadFoundry(true);
+        }
+        if(global.settings.autoRefresh){
+            loadFoundry(servants);
+        }
+    }
+}
 export function loadFoundry(servants){
     clearElement($(servants ? '#skilledServants' : '#foundry'));
     if ((global.city['foundry'] && global.city['foundry'].count > 0) || global.race['cataclysm'] || global.race['orbit_decayed'] || global.tech['isolation']){

@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
-import { jobScale, job_desc, loadFoundry } from './jobs.js';
+import { jobScale, job_desc, virtualLoadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, bank_vault, buildTemplate, casinoEffect, housingLabel, virtualDrawTech, virtualSetAction} from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, checkRequirements, planetName, virtualRenderSpace} from './space.js';
@@ -5580,7 +5580,7 @@ export function loneSurvivor(){
         virtualDrawTech();
         virtualRenderTauCeti();
         arpa('Physics');
-        loadFoundry();
+        virtualLoadFoundry();
     }
 }
 

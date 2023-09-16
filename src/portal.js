@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, timeFormat, powerCostMod, sp
 import { unlockAchieve, alevel, universeAffix } from './achieve.js';
 import { traits, races, fathomCheck } from './races.js';
 import { defineResources, spatialReasoning } from './resources.js';
-import { loadFoundry, jobScale } from './jobs.js';
+import { virtualLoadFoundry, jobScale } from './jobs.js';
 import { armyRating, govCivics } from './civics.js';
 import {payCosts, powerOnNewStruct, setAction, drawTech, bank_vault, updateDesc , virtualDrawTech, virtualSetAction} from './actions.js';
 import { checkRequirements, incrementStruct, astrialProjection, ascendLab } from './space.js';
@@ -743,7 +743,7 @@ const fortressModules = {
                 return false;
             },
             post(){
-                loadFoundry();
+                virtualLoadFoundry();
             },
             postPower(on){
                 if (!on){
@@ -754,7 +754,7 @@ const fortressModules = {
                         global.city.foundry.Scarletite -= diff;
                     }
                 }
-                loadFoundry();
+                virtualLoadFoundry();
             }
         },
         inferno_power: {
@@ -4710,7 +4710,11 @@ export function mechRating(mech,boss){
     }
 }
 
-
+export function virtualDrawHellObservations(startup) {
+    if(global.settings.autoRefresh){
+        drawHellObservations(startup);
+    }
+}
 export function drawHellObservations(startup){
     if (!global.settings.tabLoad && global.settings.civTabs !== ($(`#mainTabs > nav ul li`).length - 1) && !startup){
         return;
