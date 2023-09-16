@@ -177,6 +177,9 @@ export function mainVue(){
                 if (!global.settings.pause && !webWorker.s){
                     gameLoop('start');
                 }
+            },
+            drawTech(){
+                drawTech();
             }
         },
         filters: {
@@ -1202,7 +1205,7 @@ export function index(){
     // Research Tab
     let research = $(`<b-tab-item :visible="s.showResearch">
         <template slot="header">
-            {{ 'tab_research' | label }}
+            <span @click="drawTech">{{ 'tab_research' | label }}</span>
         </template>
         <div id="mTabResearch"></div>
     </b-tab-item>`);

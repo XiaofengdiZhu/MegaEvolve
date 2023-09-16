@@ -325,6 +325,7 @@ Thanks to g8hh/Evolve, I used it's strings.zh-CN.json(not totally).感谢g8hh/Ev
 For faster speed, you will need a powerful CPU with higher Single-Core performance.如果你想要更快的加速，需要有更强劲单核性能的CPU。<br/>
 To display buildings, click the title of second row of tabs to refresh the building list. Other Tabs are same.显示建筑的方法是点击第二行标签栏的标题，这将刷新建筑列表，其他页面同理。<br/>
 Or set the "自动刷新" option to "是" on the right top, but this will affect the speed factor.或者设置右上角的“自动刷新”选项为“是”，但是会影响加速。</div>`);
+    content.append('<div class="paragraph">Discussion讨论：<br/><ul><li><a href="https://github.com/XiaofengdiZhu/evolve-electron/discussions" target="_blank">Github Discussion</a></li><li>QQ群：810936955</li></ul></div>')
     content.append(`<div class="paragraph has-text-warning">${loc(`wiki_main_contribution`,[contribute])}</div>`);
     content.append(`<div class="paragraph">${loc(`wiki_resources`)}</div>`);
     

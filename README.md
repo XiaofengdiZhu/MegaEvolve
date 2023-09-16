@@ -19,6 +19,10 @@ Or set the "自动刷新" option to "是" on the right top, but this will affect
 I also make an offline client for this我还为它做了一个离线客户端: [evolve-electron](https://github.com/XiaofengdiZhu/evolve-electron/)  
 Tampermonkey scripts for the client客户端用的油猴脚本: [Click me](https://github.com/XiaofengdiZhu/evolve-electron/tree/main/tampermonkeyScripts)
 
+Discussion讨论
+* [Github Discussion](https://github.com/XiaofengdiZhu/evolve-electron/discussions)
+* [QQ群 810936955](https://qm.qq.com/cgi-bin/qm/qr?k=YFLeKtRHn6KXKzFyN5IlbzV-EdgxclYE&jump_from=webapi&authKey=ecimWfpnGtzGQBQaDjbx9REB+BJco3/gzc992vsvscYkDUW1kYlAYOeOUTmx2jzf)
+
 Below is original readme.以下是原版介绍。
 
 An incremental game about evolving a civilization from primordial ooze into a space faring empire.
