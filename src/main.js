@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level } from './vars.js';
+import { global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, doTodos, doInNextLoop } from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
@@ -7068,6 +7068,7 @@ function fastLoop(){
 }
 
 function midLoop(){
+    doTodos();
     const astroSign = astrologySign();
     if (global.race.species === 'protoplasm'){
         let base = 100;
@@ -9877,9 +9878,9 @@ function longLoop(){
             setTimeout(function(){
                 bang.addClass('c');
             }, 2000);*/
-            setTimeout(function(){
+            doInNextLoop(function(){
                 vacuumCollapse();
-            }, 0);
+            });
         }
 
         if (global.portal['fortress']){
@@ -11076,7 +11077,7 @@ function frameLoop(){
     // Save game state
     global.stats['current'] = Date.now();
     if (!global.race.hasOwnProperty('geck')){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
     }
 
     let $powerMeter = $('#powerMeter');

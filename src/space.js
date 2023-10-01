@@ -1,4 +1,4 @@
-import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level, virtualElement } from './vars.js';
+import { save, global, seededRandom, webWorker, keyMultiplier, sizeApproximation, p_on, support_on, int_on, gal_on, quantum_level, virtualElement, doInNextLoop } from './vars.js';
 import { vBind, messageQueue, clearElement, popover, clearPopper, flib, powerModifier, powerCostMod, calcPrestige, spaceCostMultiplier, darkEffect, eventActive, calcGenomeScore, randomKey, getTraitDesc, deepClone, virtualClearElement } from './functions.js';
 import { unlockAchieve, unlockFeat, universeAffix } from './achieve.js';
 import { races, traits, genus_traits, genusVars, planetTraits, biomes } from './races.js';
@@ -586,10 +586,10 @@ const spaceProjects = {
             },
             postPower(o){
                 if (o){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         global.tech.terraforming = p_on['atmo_terraformer'] ? 3 : 2;
                          virtualRenderSpace();
-                    }, 0);
+                    });
                 }
                 else {
                     global.tech.terraforming = 2;
@@ -3902,10 +3902,10 @@ const interstellarProjects = {
             },
             postPower(o){
                 if (o){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         global.tech.ascension = p_on['ascension_trigger'] ? 8 : 7;
                         virtualDeepSpace();
-                    }, 0);
+                    });
                 }
                 else {
                     global.tech.ascension = 7;
@@ -6527,7 +6527,7 @@ export function ascendLab(wiki){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
         }
 
         unlockAchieve(`biome_${global.city.biome}`);
@@ -6975,7 +6975,7 @@ export function terraformLab(wiki){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
         }
 
         unlockAchieve(`biome_${global.city.biome}`);

@@ -5173,7 +5173,7 @@ export function cleanAddTrait(trait){
             }
             break;
         case 'slow':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -5182,7 +5182,7 @@ export function cleanAddTrait(trait){
             window.location.reload(true);
             }
         case 'hyper':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -5369,7 +5369,7 @@ export function cleanRemoveTrait(trait,rank){
             removeTask('horseshoe');
             break;
         case 'slow':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');
@@ -5378,7 +5378,7 @@ export function cleanRemoveTrait(trait,rank){
             window.location.reload(true);
             }
         case 'hyper':
-            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
                 gameLoop('stop');
                 gameLoop('start');

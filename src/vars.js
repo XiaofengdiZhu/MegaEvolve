@@ -166,7 +166,7 @@ export function seededRandom(min, max, alt) {
     let global_data = save.getItem('evolved') || false;
     if (global_data) {
         // Load pre-existing game data
-        let saveState = JSON.parse(LZString.decompressFromUTF16(global_data));
+        let saveState = JSON.parse(global_data.startsWith("ᯡ")?LZString.decompressFromUTF16(global_data):global_data);
 
         if (saveState){
             global = saveState;
@@ -2219,7 +2219,7 @@ window.soft_reset = function reset(source){
     global.warseed = Math.rand(0,10000);
 
     global.stats['current'] = Date.now();
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -2386,4 +2386,15 @@ window.reset = function reset(){
         webWorker.w.terminate();
     }
     window.location.reload(true);
+}
+let todosInNextLoop = [];
+export function doInNextLoop(callback){
+    if(typeof callback == 'function'){
+        todosInNextLoop.push(callback);
+    }
+}
+export function doTodos(){
+    while(todosInNextLoop.length>0){
+        todosInNextLoop.shift()();
+    }
 }

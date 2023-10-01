@@ -1,4 +1,4 @@
-import {global, p_on, support_on, sizeApproximation, quantum_level, virtualElement, virtualTree} from './vars.js';
+import {global, p_on, support_on, sizeApproximation, quantum_level, virtualElement, virtualTree, doInNextLoop} from './vars.js';
 import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, powerModifier, spaceCostMultiplier, deepClone, calcPrestige, flib, darkEffect, adjustCosts, virtualClearElement} from './functions.js';
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
@@ -1381,10 +1381,10 @@ const tauCetiModules = {
             powered(){ return 10000; },
             postPower(o){
                 if (o){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         global.tech.matrix = p_on['matrix'] ? 4 : 3;
                         virtualRenderTauCeti();
-                    }, 0);
+                    });
                 }
                 else {
                     global.tech.matrix = 3;
@@ -1439,9 +1439,9 @@ const tauCetiModules = {
                     }
 
                     setInterval(pill, 50);*/
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         matrix();
-                    }, 0);
+                    });
 
                     return true;
                 }

@@ -1,4 +1,4 @@
-import { global, seededRandom, keyMultiplier, sizeApproximation } from './vars.js';
+import { global, seededRandom, keyMultiplier, sizeApproximation, doInNextLoop } from './vars.js';
 import { loc } from './locale.js';
 import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
 import { universeAffix } from './achieve.js';
@@ -2198,9 +2198,9 @@ function defineMad(){
                         setTimeout(function(){
                             nuke.addClass('b');
                         }, 600);*/
-                        setTimeout(function(){
+                        doInNextLoop(function(){
                             warhead();
-                        }, 0);
+                        });
                     }
                 },
                 arm(){

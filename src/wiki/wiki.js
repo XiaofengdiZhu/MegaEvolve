@@ -184,7 +184,7 @@ function menuDispatch(main,sub,frag){
 
     var global_data = save.getItem('evolved') || false;
     if (global_data){
-        setGlobal(JSON.parse(LZString.decompressFromUTF16(global_data)));
+        setGlobal(JSON.parse(global_data.startsWith("ᯡ")?LZString.decompressFromUTF16(global_data):global_data));
     }
 
     tagEvent('page_view',{ page_title: `Evolve Wiki - ${main}` });

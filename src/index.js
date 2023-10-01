@@ -65,10 +65,10 @@ export function mainVue(){
                         }
                        
                         global.settings.sPackMsg = loc(`string_pack_using`,[fileName]);
-                        save.setItem('string_pack_name',fileName); save.setItem('string_pack',LZString.compressToUTF16(evt.target.result));
+                        save.setItem('string_pack_name',fileName); save.setItem('string_pack',evt.target.result);
                         if (global.settings.sPackOn){
                             global.queue.rename = true;
-                            save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                            save.setItem('evolved',JSON.stringify(global));
                             if (webWorker.w){
                                 webWorker.w.terminate();
                             }
@@ -88,7 +88,7 @@ export function mainVue(){
                     save.removeItem('string_pack');
                     if (global.settings.sPackOn){
                         global.queue.rename = true;
-                        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                        save.setItem('evolved',JSON.stringify(global));
                         if (webWorker.w){
                             webWorker.w.terminate();
                         }
@@ -99,7 +99,7 @@ export function mainVue(){
             stringPackOn(){
                 if (save.getItem('string_pack')){
                     global.queue.rename = true;
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    save.setItem('evolved',JSON.stringify(global));
                     if (webWorker.w){
                         webWorker.w.terminate();
                     }
@@ -123,7 +123,7 @@ export function mainVue(){
             lChange(locale){
                 global.settings.locale = locale;
                 global.queue.rename = true;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                save.setItem('evolved',JSON.stringify(global));
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }
@@ -141,7 +141,7 @@ export function mainVue(){
             },
             icon(icon){
                 global.settings.icon = icon;
-                save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                save.setItem('evolved',JSON.stringify(global));
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }

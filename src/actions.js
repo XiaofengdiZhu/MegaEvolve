@@ -1,4 +1,4 @@
-import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats, virtualElement, virtualTree } from './vars.js';
+import { global, save, seededRandom, webWorker, keyMultiplier, keyMap, srSpeak, sizeApproximation, p_on, support_on, gal_on, quantum_level, tmp_vars, setupStats, virtualElement, virtualTree, doInNextLoop } from './vars.js';
 import { loc } from './locale.js';
 import { timeCheck, timeFormat, vBind, popover, clearPopper, flib, tagEvent, clearElement, costMultiplier, darkEffect, genCivName, powerModifier, powerCostMod, calcPrestige, adjustCosts, modRes, messageQueue, buildQueue, format_emblem, shrineBonusActive, calc_mastery, calcPillar, calcGenomeScore, getShrineBonus, eventActive, easterEgg, getHalloween, trickOrTreat, deepClone, hoovedRename, virtualClearElement } from './functions.js';
 import { unlockAchieve, challengeIcon, alevel, universeAffix } from './achieve.js';
@@ -5529,9 +5529,9 @@ export function virtualSetAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         c_action.postPower(true);
-                    }, 0);
+                    });
                 }
             }
             parent.power_off = function (){
@@ -5545,9 +5545,9 @@ export function virtualSetAction(c_action,action,type,old){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         c_action.postPower(false);
-                    }, 0);
+                    });
                 }
             }
         }
@@ -5731,9 +5731,9 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         c_action.postPower(true);
-                    }, 0);
+                    });
                 }
             },
             power_off(){
@@ -5747,9 +5747,9 @@ export function setAction(c_action,action,type,old,prediction){
                     }
                 }
                 if (c_action['postPower']){
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         c_action.postPower(false);
-                    }, 0);
+                    });
                 }
             },
             repair(){
@@ -5833,9 +5833,9 @@ function virtualRunAction(c_action,action,type){
                 if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action()){
                     gainTech(type);
                     if (c_action['post']){
-                        setTimeout(function(){
+                        doInNextLoop(function(){
                             c_action.post();
-                        }, 0);
+                        });
                     }
                 }
                 else {
@@ -5867,9 +5867,9 @@ function virtualRunAction(c_action,action,type){
                         gainBlood(type);
                     }
                     if (c_action['post']){
-                        setTimeout(function(){
+                        doInNextLoop(function(){
                             c_action.post();
-                        }, 0);
+                        });
                     }
                 }
                 break;
@@ -5971,9 +5971,9 @@ function runAction(c_action,action,type){
                 if (!(global.settings.qKey && keyMap.q) && checkTechRequirements(type,false) && c_action.action()){
                     gainTech(type);
                     if (c_action['post']){
-                        setTimeout(function(){
+                        doInNextLoop(function(){
                             c_action.post();
-                        }, 0);
+                        });
                     }
                 }
                 else {
@@ -6005,9 +6005,9 @@ function runAction(c_action,action,type){
                         gainBlood(type);
                     }
                     if (c_action['post']){
-                        setTimeout(function(){
+                        doInNextLoop(function(){
                             c_action.post();
-                        }, 0);
+                        });
                     }
                 }
                 break;
@@ -6117,9 +6117,9 @@ export function virtualPostBuild(c_action,action,type){
         virtualRenderTauCeti();
     }
     if (c_action['post']){
-        setTimeout(function(){
+        doInNextLoop(function(){
             c_action.post();
-        }, 0);
+        });
     }
 }
 export function postBuild(c_action,action,type){
@@ -6147,9 +6147,9 @@ export function postBuild(c_action,action,type){
         }
     }
     if (c_action['post']){
-        setTimeout(function(){
+        doInNextLoop(function(){
             c_action.post();
-        }, 0);
+        });
     }
     updateDesc(c_action,action,type);
 }
@@ -8086,7 +8086,7 @@ function sentience(){
     }
 
     if (/*global.race['slow'] || global.race['hyper'] ||*/ global.race.species === 'junker'){
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
         if (webWorker.w){
             webWorker.w.terminate();
         }
@@ -8137,7 +8137,7 @@ function exitSim(){
         delete global['sim'];
         global.race.species = 'protoplasm';
         delete global.race['simulation'];
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
         if (webWorker.w){
             webWorker.w.terminate();
         }

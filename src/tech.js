@@ -1,4 +1,4 @@
-import { global, save, webWorker } from './vars.js';
+import { global, save, webWorker, doInNextLoop } from './vars.js';
 import { loc } from './locale.js';
 import { vBind, clearElement, calcQueueMax, calcRQueueMax, calcPrestige, messageQueue, clearPopper, popCost } from './functions.js';
 import { unlockAchieve, alevel, universeAffix, unlockFeat } from './achieve.js';
@@ -4370,7 +4370,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race.universe === 'antimatter' && global.race['amexplode']){
                     unlockFeat('annihilation');
-                    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+                    save.setItem('evolved',JSON.stringify(global));
                     /*$('body').addClass('nuke');
                     let nuke = $('<div class="nuke"></div>');
                     $('body').append(nuke);
@@ -4380,9 +4380,9 @@ const techs = {
                     setTimeout(function(){
                         nuke.addClass('b');
                     }, 600);*/
-                    setTimeout(function(){
+                    doInNextLoop(function(){
                         window.soft_reset();
-                    }, 0);
+                    });
                 }
                 else {
                     global.race['replicator'] = { res: 'Stone', pow: 1 };
@@ -4854,7 +4854,7 @@ const techs = {
         },
         action(){
             if (!global['sim']){
-                save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                save.setItem('evolveBak',JSON.stringify(global));
             }
             if (payCosts($(this)[0])){
                 descension();
@@ -8889,7 +8889,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        save.setItem('evolveBak',JSON.stringify(global));
                     }
                     delete global.race['banana'];
                 }
@@ -8936,7 +8936,7 @@ const techs = {
             if (payCosts($(this)[0])){
                 if (global.race['banana']){
                     if (!global['sim']){
-                        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                        save.setItem('evolveBak',JSON.stringify(global));
                     }
                     delete global.race['banana'];
                 }
@@ -9425,9 +9425,9 @@ const techs = {
                 setTimeout(function(){
                     bang.addClass('c');
                 }, 2000);*/
-                setTimeout(function(){
+                doInNextLoop(function(){
                     big_bang();
-                }, 0);
+                });
                 return false;
             }
             return false;
@@ -10483,10 +10483,10 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 //$('#main').addClass('earthquake');
-                setTimeout(function(){
+                doInNextLoop(function(){
                     //$('#main').removeClass('earthquake');
                     cataclysm_end();
-                }, 0);
+                });
                 return true;
             }
             return false;
@@ -11420,9 +11420,9 @@ const techs = {
                         opacity: 1
                     }, 400);
                 }, 3000);*/
-                setTimeout(function(){
+                doInNextLoop(function(){
                     aiApocalypse();
-                }, 0);
+                });
                 return true;
             }
             return false;
@@ -13074,7 +13074,7 @@ const techs = {
         action(){
             if (payCosts($(this)[0])){
                 if (!global['sim']){
-                    save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+                    save.setItem('evolveBak',JSON.stringify(global));
                 }
                 global.tech['isolation'] = 1;
                 jumpGateShutdown();

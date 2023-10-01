@@ -7,7 +7,7 @@ import { unlockAchieve, unlockFeat, checkAchievements, universeAffix, alevel } f
 export function warhead(){
     if (!global.civic.mad.armed && !global.race['cataclysm']){
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolveBak',JSON.stringify(global));
         }
         clearSavedMessages();
 
@@ -74,7 +74,7 @@ export function warhead(){
             geology: geo
         });
         
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
         window.location.reload(true);
     }
 }
@@ -82,7 +82,7 @@ export function warhead(){
 //Bioseed
 export function bioseed(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -210,7 +210,7 @@ export function bioseed(){
         geology: false
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -221,7 +221,7 @@ export function cataclysm_end(){
             webWorker.w.terminate();
         }
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolveBak',JSON.stringify(global));
         }
 
         tagEvent('reset',{
@@ -295,7 +295,7 @@ export function cataclysm_end(){
 
         global.race['start_cataclysm'] = 1;
         global.race['cataclysm'] = 1;
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
         window.location.reload(true);
     }
 }
@@ -303,7 +303,7 @@ export function cataclysm_end(){
 // Blackhole
 export function big_bang(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -405,7 +405,7 @@ export function big_bang(){
         geology: false
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -418,7 +418,7 @@ export function vacuumCollapse(){
 
         global.stats['current'] = Date.now();
         if (!global['sim']){
-            save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+            save.setItem('evolveBak',JSON.stringify(global));
         }
         clearSavedMessages();
 
@@ -501,7 +501,7 @@ export function vacuumCollapse(){
             geology: false
         });
 
-        save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolved',JSON.stringify(global));
         window.location.reload(true);
     }
 }
@@ -603,7 +603,7 @@ export function ascend(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -701,7 +701,7 @@ export function descension(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -791,14 +791,14 @@ export function terraform(planet){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
 // AI Appocalypse
 export function aiApocalypse(){
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -865,7 +865,7 @@ export function aiApocalypse(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -875,7 +875,7 @@ export function matrix(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -949,7 +949,7 @@ export function matrix(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -959,7 +959,7 @@ export function retirement(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -1033,7 +1033,7 @@ export function retirement(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
@@ -1043,7 +1043,7 @@ export function gardenOfEden(){
         webWorker.w.terminate();
     }
     if (!global['sim']){
-        save.setItem('evolveBak',LZString.compressToUTF16(JSON.stringify(global)));
+        save.setItem('evolveBak',JSON.stringify(global));
     }
     clearSavedMessages();
 
@@ -1117,7 +1117,7 @@ export function gardenOfEden(){
         geology: geo
     });
 
-    save.setItem('evolved',LZString.compressToUTF16(JSON.stringify(global)));
+    save.setItem('evolved',JSON.stringify(global));
     window.location.reload(true);
 }
 
