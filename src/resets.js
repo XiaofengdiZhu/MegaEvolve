@@ -75,7 +75,7 @@ export function warhead(){
         });
         
         save.setItem('evolved',JSON.stringify(global));
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 
@@ -211,7 +211,7 @@ export function bioseed(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Cataclysm
@@ -296,7 +296,7 @@ export function cataclysm_end(){
         global.race['start_cataclysm'] = 1;
         global.race['cataclysm'] = 1;
         save.setItem('evolved',JSON.stringify(global));
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 
@@ -406,7 +406,7 @@ export function big_bang(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 export function vacuumCollapse(){
@@ -502,7 +502,7 @@ export function vacuumCollapse(){
         });
 
         save.setItem('evolved',JSON.stringify(global));
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 
@@ -604,7 +604,7 @@ export function ascend(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Demonic Infusion
@@ -702,7 +702,7 @@ export function descension(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Terraform
@@ -792,7 +792,7 @@ export function terraform(planet){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // AI Appocalypse
@@ -866,7 +866,7 @@ export function aiApocalypse(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Matrix
@@ -950,7 +950,7 @@ export function matrix(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Retirement
@@ -1034,7 +1034,7 @@ export function retirement(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 // Garden of Eden
@@ -1118,7 +1118,7 @@ export function gardenOfEden(){
     });
 
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 function resetCommon(args){

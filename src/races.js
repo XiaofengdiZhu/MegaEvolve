@@ -5179,7 +5179,7 @@ export function cleanAddTrait(trait){
                 gameLoop('start');
             }
             else {
-            window.location.reload(true);
+            window.location.reload();
             }
         case 'hyper':
             save.setItem('evolved',JSON.stringify(global));
@@ -5188,7 +5188,7 @@ export function cleanAddTrait(trait){
                 gameLoop('start');
             }
             else {
-            window.location.reload(true);
+            window.location.reload();
             }
         case 'calm':
             if (global.tech['primitive'] >= 3) {
@@ -5375,7 +5375,7 @@ export function cleanRemoveTrait(trait,rank){
                 gameLoop('start');
             }
             else {
-            window.location.reload(true);
+            window.location.reload();
             }
         case 'hyper':
             save.setItem('evolved',JSON.stringify(global));
@@ -5384,7 +5384,7 @@ export function cleanRemoveTrait(trait,rank){
                 gameLoop('start');
             }
             else {
-            window.location.reload(true);
+            window.location.reload();
             }
         case 'calm':
             removeFromQueue(['city-meditation']);

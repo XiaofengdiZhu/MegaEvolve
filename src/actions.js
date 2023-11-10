@@ -8090,7 +8090,7 @@ function sentience(){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 function simulation(){
@@ -8107,7 +8107,8 @@ function simulation(){
             global.stats = {
                 start: Date.now(),
                 days: 0,
-                tdays: 0
+                tdays: 0,
+                daysMega: 0
             };
             setupStats();
             global.genes = { minor: {}, challenge: 1 };
@@ -8141,7 +8142,7 @@ function exitSim(){
         if (webWorker.w){
             webWorker.w.terminate();
         }
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 

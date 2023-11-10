@@ -3310,7 +3310,7 @@ const tauCetiModules = {
                 return false;
             },
             post(){
-                if (global.resource.Elerium.diff >= 10){
+                if (global.tauceti.alien_space_station && global.resource.Elerium.diff >= 10){
                     global.tauceti.alien_space_station.on = 1;
                 }
                 virtualRenderTauCeti();

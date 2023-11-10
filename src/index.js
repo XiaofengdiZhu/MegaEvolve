@@ -72,7 +72,7 @@ export function mainVue(){
                             if (webWorker.w){
                                 webWorker.w.terminate();
                             }
-                            window.location.reload(true);
+                            window.location.reload();
                         }
                        
                     }
@@ -92,7 +92,7 @@ export function mainVue(){
                         if (webWorker.w){
                             webWorker.w.terminate();
                         }
-                        window.location.reload(true);
+                        window.location.reload();
                     }
                 }
             },
@@ -103,7 +103,7 @@ export function mainVue(){
                     if (webWorker.w){
                         webWorker.w.terminate();
                     }
-                    window.location.reload(true);
+                    window.location.reload();
                 }
             },
             restoreGame(){
@@ -127,7 +127,7 @@ export function mainVue(){
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }
-                window.location.reload(true);
+                window.location.reload();
             },
             setTheme(theme){
                 global.settings.theme = theme;
@@ -145,7 +145,7 @@ export function mainVue(){
                 if (webWorker.w){
                     webWorker.w.terminate();
                 }
-                window.location.reload(true);
+                window.location.reload();
             },
             remove(index){
                 global.r_queue.queue.splice(index,1);
@@ -919,7 +919,7 @@ export function index(){
                 <b-tooltip :label="moon()" :aria-label="moon()" position="is-bottom" size="is-small" multilined animated><i id="moon" class="moon wi"></i></b-tooltip>
                 <span class="year">${loc('year')} <span class="has-text-warning">{{ city.calendar.year }}</span></span>
                 <span class="day">${loc('day')} <span class="has-text-warning">{{ city.calendar.day }}</span></span>
-                <span class="day">${loc('total')} <span class="has-text-warning">{{ stats.days }}</span></span>
+                <span class="day">${loc('total')} <span class="has-text-warning">{{ stats.daysMega | toFixed }}</span></span>
                 <b-tooltip :label="weather()" :aria-label="weather()" position="is-bottom" size="is-small" multilined animated><i id="weather" class="weather wi"></i></b-tooltip>
                 <b-tooltip :label="temp()" :aria-label="temp()" position="is-bottom" size="is-small" multilined animated><i id="temp" class="temp wi"></i></b-tooltip>
             </span>

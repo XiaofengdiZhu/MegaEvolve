@@ -17,7 +17,8 @@ export var global = {
     stats: {
         start: Date.now(),
         days: 0,
-        tdays: 0
+        tdays: 0,
+        daysMega: 0
     },
     event: {
         t: 200,
@@ -2220,7 +2221,7 @@ window.soft_reset = function reset(source){
 
     global.stats['current'] = Date.now();
     save.setItem('evolved',JSON.stringify(global));
-    window.location.reload(true);
+    window.location.reload();
 }
 
 export var webWorker = { w: false, s: false, mt: 250 };
@@ -2347,6 +2348,7 @@ export function clearStates(){
     global.event = { t: 100, l: false };
     global.m_event = { t: 499, l: false };
     global.stats.days = 0;
+    global.stats.daysMega = 0;
     global.stats.know = 0;
     global.stats.starved = 0;
     global.stats.died = 0;
@@ -2385,7 +2387,7 @@ window.reset = function reset(){
     if (webWorker.w){
         webWorker.w.terminate();
     }
-    window.location.reload(true);
+    window.location.reload();
 }
 let todosInNextLoop = [];
 export function doInNextLoop(callback){

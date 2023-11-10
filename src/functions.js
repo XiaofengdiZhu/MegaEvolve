@@ -203,7 +203,7 @@ window.importGame = function importGame(data,utf16){
             }
         }
         save.setItem('evolved',JSON.stringify(saveState));
-        window.location.reload(true);
+        window.location.reload();
     }
 }
 
@@ -315,8 +315,9 @@ export function messageQueue(msg,color,dnr,tags,reload){
 
     color = color || 'warning';
 
+    msg = global.stats.daysMega.toFixed(2)+'日]'+msg;
     if (tags.includes(message_logs.view)){
-        let new_message = $('<p class="has-text-'+color+'">['+global.stats.days+'日]'+msg+'</p>');
+        let new_message = $('<p class="has-text-'+color+'">['+msg+'</p>');
         let $msgQueueLog = $('#msgQueueLog');
         $msgQueueLog.prepend(new_message);
         if ($msgQueueLog.children().length > global.settings.msgFilters[message_logs.view].max){
@@ -2322,6 +2323,7 @@ export function updateResetStats(){
     global.stats.reset++;
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
+    global.stats.daysMega = 0;
     global.stats.tknow += global.stats.know;
     global.stats.know = 0;
     global.stats.tstarved += global.stats.starved;

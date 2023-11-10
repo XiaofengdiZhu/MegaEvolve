@@ -7938,7 +7938,7 @@ const techs = {
         post(){
             if (global.race['terrifying']){
                 global.tech['fanaticism'] = 3;
-                drawTech();
+                virtualDrawTech();
             }
         }
     },

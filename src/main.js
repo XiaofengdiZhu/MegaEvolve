@@ -460,6 +460,9 @@ vBind({
                 return `${hours}:${minutes.toString().padStart(2,'0')}`;
             }
             return;
+        },
+        toFixed(num){
+            return num.toFixed(2);
         }
     }
 });
@@ -692,6 +695,7 @@ if (window.Worker){
                         for (let i = 0; i < 5; i++) {
                             for (let j = 0; j < 4; j++) {
                                 fastLoop();
+                                global.stats.daysMega += 0.05;
                             }
                             midLoop();
                         }
@@ -3823,29 +3827,29 @@ function fastLoop(){
                 if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 1000000 : 250000000) && !global.tech['alien_data']){
                     global.tech['alien_data'] = 1;
                     messageQueue(loc('tau_gas2_alien_station_data1',[loc('tech_dist_womling')]),'success',false,['progress']);
-                    drawTech();
+                    virtualDrawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 2000000 : 500000000) && global.tech['alien_data'] && global.tech.alien_data === 1){
                     global.tech.alien_data = 2;
                     global.race.tau_food_item = Math.rand(0,10);
                     messageQueue(loc('tau_gas2_alien_station_data2',[loc(`tau_gas2_alien_station_data2_r${global.race.tau_food_item || 0}`)]),'success',false,['progress']);
-                    drawTech();
+                    virtualDrawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 3000000 : 750000000) && global.tech['alien_data'] && global.tech.alien_data === 2){
                     global.tech.alien_data = 3;
                     messageQueue(loc('tau_gas2_alien_station_data3'),'success',false,['progress']);
-                    drawTech();
+                    virtualDrawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 4800000 : 1200000000) && global.tech['alien_data'] && global.tech.alien_data === 3){
                     global.tech.alien_data = 4;
                     global.race.tau_junk_item = Math.rand(0,10);
                     messageQueue(loc('tau_gas2_alien_station_data4',[loc(`tau_gas2_alien_station_data4_r${global.race.tau_junk_item || 0}`)]),'success',false,['progress']);
-                    drawTech();
+                    virtualDrawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 6000000 : 1500000000) && global.tech['alien_data'] && global.tech.alien_data === 4){
                     global.tech.alien_data = 5;
                     messageQueue(loc('tau_gas2_alien_station_data5'),'success',false,['progress']);
-                    drawTech();
+                    virtualDrawTech();
                 }
                 else if (global.tauceti.alien_space_station.decrypted >= (global.race['lone_survivor'] ? 10000000 : 2500000000) && global.tech['alien_data'] && global.tech.alien_data === 5){
                     global.tech.alien_data = 6;
@@ -3859,7 +3863,7 @@ function fastLoop(){
                     else {
                         messageQueue(loc('tau_gas2_alien_station_data6'),'success',false,['progress']);
                     }
-                    drawTech();
+                    virtualDrawTech();
                 }
             }
         }
@@ -4849,14 +4853,14 @@ function fastLoop(){
 
             if (global.resource.Cipher.display && global.tech['outer'] && global.tech.outer === 2){
                 global.tech.outer = 3;
-                drawTech();
+                virtualDrawTech();
             }
         }
 
         if (!global.tech['isolation'] && global.space['digsite'] && global.space.digsite.count === 100){
             if (!global.tech['dig_control']){
                 global.tech['dig_control'] = 1;
-                drawTech();
+                virtualDrawTech();
             }
 
             let synd = syndicate('spc_eris');
@@ -8799,7 +8803,7 @@ function midLoop(){
                         global.tech.womling_tech++;
                         global.tauceti.womling_lab.tech = 0;
                         messageQueue(loc('tau_red_womling_advancement',[global.tech.womling_tech]),'advanced',false,['progress']);
-                        drawTech();
+                        virtualDrawTech();
                     }
                 }
             }
@@ -10835,7 +10839,7 @@ function longLoop(){
                     if (global.tech.plague < 5 && Math.rand(0,50) === 0){
                         global.tech.plague = 5;
                         messageQueue(loc('tau_plague5b',[races[global.race.species].home]),'info',false,['progress']);
-                        drawTech();
+                        virtualDrawTech();
                     }
                 }
                 else if (global.tech.plague === 3 && global.tech['disease'] && global.tech.disease >= 2 && Math.rand(0,50) === 0){
@@ -10859,7 +10863,8 @@ function longLoop(){
             }
         }
         else if (global.tech['tau_gas'] && global.tech.tau_gas >= 4 && !global.tech['plague'] && global.race['lone_survivor']){
-            global.tech['plague'] = 5; 
+            global.tech['plague'] = 5;
+            virtualDrawTech();
         }
 
         if (global.civic.govern['protest'] && global.civic.govern.protest > 0){
