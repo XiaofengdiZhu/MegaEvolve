@@ -1977,6 +1977,10 @@ if (!global.civic['d_job']){
     }
 }
 
+if(!global.stats.daysMega){
+    global.stats.daysMega = global.stats.days;
+}
+
 global.settings.animated = true;
 global.settings.disableReset = false;
 
