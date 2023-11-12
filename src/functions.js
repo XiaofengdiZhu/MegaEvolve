@@ -179,7 +179,7 @@ window.exportGame = function exportGame(){
 }
 
 window.importGame = function importGame(data,utf16){
-    let saveState = JSON.parse(utf16 ? (global_data.startsWith("ᯡ")?LZString.decompressFromUTF16(data):data) : LZString.decompressFromBase64(data));
+    let saveState = JSON.parse(utf16 ? (data.startsWith("ᯡ")?LZString.decompressFromUTF16(data):data) : LZString.decompressFromBase64(data));
     if (saveState && 'evolution' in saveState && 'settings' in saveState && 'stats' in saveState && 'plasmid' in saveState.stats){
         if (webWorker.w){
             webWorker.w.terminate();
