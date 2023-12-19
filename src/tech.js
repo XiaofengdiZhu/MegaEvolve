@@ -11420,9 +11420,9 @@ const techs = {
                         opacity: 1
                     }, 400);
                 }, 3000);*/
-                doInNextLoop(function(){
+                setTimeout(function(){
                     aiApocalypse();
-                });
+                },1);
                 return true;
             }
             return false;

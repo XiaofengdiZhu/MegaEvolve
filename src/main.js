@@ -689,6 +689,10 @@ if (window.Worker){
         var data = e.data;
         switch (data) {
             case 'fast':
+                if (global.settings.pause && webWorker.s){
+                    gameLoop('stop');
+                    break;
+                }
                 let frameLongLoopCount = global.settings.frameLongLoopCount??1;
                 try{
                     for (let x = 0; x < frameLongLoopCount; x++) {
@@ -9882,9 +9886,9 @@ function longLoop(){
             setTimeout(function(){
                 bang.addClass('c');
             }, 2000);*/
-            doInNextLoop(function(){
+            setTimeout(function(){
                 vacuumCollapse();
-            });
+            },1);
         }
 
         if (global.portal['fortress']){
