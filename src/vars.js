@@ -2393,14 +2393,22 @@ window.reset = function reset(){
     }
     window.location.reload();
 }
+export let fastLooped = 0;
 let todosInNextLoop = [];
 export function doInNextLoop(callback){
     if(typeof callback == 'function'){
-        todosInNextLoop.push(callback);
+        todosInNextLoop.push({f: fastLooped, c: callback});
     }
 }
 export function doTodos(){
+    let newTodos = [];
     while(todosInNextLoop.length>0){
-        todosInNextLoop.shift()();
+        let todo = todosInNextLoop.shift();
+        if(fastLooped>todo.f){
+            todo.c();
+        }else{
+            newTodos.push(todo);
+        }
     }
+    todosInNextLoop = newTodos;
 }
