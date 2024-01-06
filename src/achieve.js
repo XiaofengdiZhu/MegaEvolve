@@ -2671,7 +2671,7 @@ export function drawStats(){
                 return d + global.stats.tdied;
             },
             format(s){
-                return s.toLocaleString();
+                return s%1===0?s:s.toLocaleString();
             },
             res(r){
                 return (+(r).toFixed(2)).toLocaleString();

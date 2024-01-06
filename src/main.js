@@ -1,4 +1,4 @@
-import {    global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, doTodos, doInNextLoop, fastLooped} from './vars.js';
+import {    global, save, seededRandom, webWorker, intervals, keyMap, atrack, resizeGame, breakdown, sizeApproximation, keyMultiplier, power_generated, p_on, support_on, int_on, gal_on, spire_on, set_qlevel, quantum_level, doTodos, fastLoopedAdd} from './vars.js';
 import { loc } from './locale.js';
 import { unlockAchieve, checkAchievements, drawAchieve, alevel, universeAffix, challengeIcon, unlockFeat } from './achieve.js';
 import { gameLoop, vBind, popover, clearPopper, flib, tagEvent, timeCheck, arpaTimeCheck, timeFormat, powerModifier, modRes, initMessageQueue, messageQueue, calc_mastery, calcPillar, darkEffect, calcQueueMax, calcRQueueMax, buildQueue, shrineBonusActive, getShrineBonus, eventActive, easterEggBind, trickOrTreatBind, powerGrid, deepClone } from './functions.js';
@@ -75,7 +75,57 @@ $(document).keydown(function(e){
     if (!$(`input`).is(':focus') && !$(`textarea`).is(':focus')){
         Object.keys(quickMap).forEach(function(k){
             if (key === global.settings.keyMap[k] && global.settings.civTabs !== 0 && (k === 'settings' || global.settings[k])){
-                global.settings.civTabs = quickMap[k];
+                if (global.settings.civTabs !== quickMap[k]) {
+                    global.settings.civTabs = quickMap[k];
+                }
+                else {
+                    let s = global.settings;
+                    let tabName = null;
+                    let tabList = null;
+                    switch(quickMap[k]) {
+                            // Some sub tabs are always visible, and JavaScript strings
+                            // are truthy, so the sub tab name is used for clarity.
+                        case quickMap.showCiv:
+                            tabName = 'spaceTabs';
+                            tabList = [s.showCity, s.showSpace, s.showDeep, s.showGalactic, s.showPortal, s.showOuter, s.showTau];
+                            break;
+                        case quickMap.showCivic:
+                            // not reaching Military
+                            tabName = 'govTabs';
+                            tabList = ["Government", s.showIndustry, s.showPowerGrid, s.showMil, s.showMechLab, s.showShipYard, s.showPsychic];
+                            break;
+                        case quickMap.showResearch:
+                            tabName = 'resTabs';
+                            tabList = ["New", "Completed"]; // always visible
+                            break;
+                        case quickMap.showResources:
+                            tabName = 'marketTabs';
+                            tabList = [s.showMarket, s.showStorage, s.showEjector, s.showCargo, s.showAlchemy];
+                            break;
+                        case quickMap.showGenetics:
+                            s = global.settings.arpa;
+                            tabName = 'arpaTabs';
+                            tabList = [s.physics, s.genetics, s.crispr, s.blood];
+                            break;
+                        case quickMap.showAchieve:
+                            tabName = 'statsTabs';
+                            tabList = ["Stats", "Achievements", "Perks"]; // always visible
+                            break;
+                        case quickMap.settings:
+                        default:
+                            // no sub tabs
+                            tabName = '';
+                            tabList = [];
+                            break;
+                    }
+                    for (let i = 1; i < tabList.length; i+=1) {
+                        let next = (s[tabName] + i) % tabList.length
+                        if (tabList[next]) {
+                            s[tabName] = next;
+                            break;
+                        }
+                    }
+                }
                 if (!global.settings.tabLoad){
                     loadTab(global.settings.civTabs);
                 }
@@ -741,7 +791,7 @@ resourceAlt();
 var firstRun = true;
 var gene_sequence = global.arpa['sequence'] && global.arpa['sequence']['on'] ? global.arpa.sequence.on : 0;
 function fastLoop(){
-    fastLooped++;
+    fastLoopedAdd();
     const date = new Date();
     const astroSign = astrologySign();
 
@@ -1051,7 +1101,7 @@ function fastLoop(){
                 if (increment <= 0){ break; }
             }
             let rna = increment;
-            if ((global.evolution['bilateral_symmetry'] && global.evolution['bilateral_symmetry'].count > 0) || (global.evolution['poikilohydric'] && global.evolution['poikilohydric'].count > 0) || (global.evolution['spores'] && global.evolution['spores'].count > 0)){
+            if (global.tech['evo'] && global.tech.evo >= 5){
                 increment *= 2;
             }
             modRes('DNA', increment * global_multiplier * time_multiplier);
@@ -1068,7 +1118,7 @@ function fastLoop(){
         if (((global.stats.feat['novice'] && global.stats.achieve['apocalypse'] && global.stats.achieve.apocalypse.l > 0) || global['sim']) && global.race.universe !== 'bigbang' && (!global.race.seeded || (global.race.seeded && global.race['chose']))){
             let rank = global['sim'] ? 5 : Math.min(global.stats.achieve.apocalypse.l,global.stats.feat['novice']);
             modRes('RNA', (rank / 2) * time_multiplier * global_multiplier);
-            if (global.resource.DNA?global.resource.DNA.display:false){
+            if (global.resource.DNA?.display){
                 modRes('DNA', (rank / 4) * time_multiplier * global_multiplier);
             }
         }

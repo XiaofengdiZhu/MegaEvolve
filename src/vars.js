@@ -1253,8 +1253,8 @@ if (convertVersion(global['version']) < 103002){
         global.portal.observe.stats.total.gems['surveyors'] = 0;
     }
 }
-global['version'] = '1.3.8';
-global['revision'] = 'a';
+global['version'] = '1.3.9';
+delete global['revision'];
 delete global['beta'];
 
 if (!global.hasOwnProperty('prestige')){
@@ -1326,6 +1326,8 @@ if (!global.settings['showStorage']){
         global.settings['showStorage'] = false;
     }
 }
+
+global.settings.autoRefresh = false;
 
 
 
@@ -2393,7 +2395,10 @@ window.reset = function reset(){
     }
     window.location.reload();
 }
-export let fastLooped = 0;
+let fastLooped = 0;
+export function fastLoopedAdd(){
+    fastLooped++;
+}
 let todosInNextLoop = [];
 export function doInNextLoop(callback){
     if(typeof callback == 'function'){

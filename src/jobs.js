@@ -441,6 +441,7 @@ export function setJobName(job){
 }
 function virtualLoadJob(job, define, impact, stress, color){
     let servant = false;
+    let originalDefine = define;
     if (define === 'servant'){
         servant = true;
         define = false;
@@ -530,7 +531,7 @@ function virtualLoadJob(job, define, impact, stress, color){
         };
     }
     if(global.settings.autoRefresh){
-        loadJob(job, define, impact, stress, color);
+        loadJob(job, originalDefine, impact, stress, color);
     }
 }
 function loadJob(job, define, impact, stress, color){
@@ -723,9 +724,9 @@ function loadJob(job, define, impact, stress, color){
     );
 }
 export function virtualLoadServants(){
-    ['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].forEach(function(job){
+    if (global.race['servants']){['hunter','forager','farmer','lumberjack','quarry_worker','crystal_miner','scavenger'].forEach(function(job){
         virtualLoadJob(job,'servant');
-    });
+    });}
     if(global.settings.autoRefresh){
         loadServants();
     }
