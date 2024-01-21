@@ -2671,7 +2671,7 @@ const valAdjust = {
     living_tool: false,
 };
 
-function getTraitVals(trait,rank){
+export function getTraitVals(trait,rank){
     let vals = traits[trait].hasOwnProperty('vars') ? traits[trait].vars(rank) : [];
     if (valAdjust.hasOwnProperty(trait)){
         if (trait === 'fibroblast'){
@@ -2762,7 +2762,7 @@ export function hoovedRename(style){
     }
 }
 
-const traitExtra = {
+export const traitExtra = {
     infiltrator: [
         loc(`wiki_trait_effect_infiltrator_ex1`),
         loc(`wiki_trait_effect_infiltrator_ex2`,[

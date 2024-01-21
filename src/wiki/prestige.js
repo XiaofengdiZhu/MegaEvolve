@@ -5,7 +5,14 @@ import { pResPage } from './p_res.js';
 import { resetsPage } from './resets.js';
 import { perksPage } from './perks.js';
 
-export function prestigePage(zone){
+export function prestigePage(zone, forSearch = false){
+    if(forSearch){
+        pResPage(null, forSearch);
+        crisprPage(null, forSearch);
+        bloodPage(null, forSearch);
+        perksPage(null, forSearch);
+        return;
+    }
     let content = $(`#content`);
     clearElement(content);
 

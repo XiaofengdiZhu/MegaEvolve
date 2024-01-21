@@ -1,7 +1,7 @@
 import {} from './../vars.js';
 import { clearElement } from './../functions.js';
 
-const changeList = [
+export const changeList = [
     {
         version: `1.3.9`,
         date: `8/20/2023`,
@@ -3232,7 +3232,7 @@ export function changeLog(){
     clearElement(content);
 
     for (let i=0; i<changeList.length; i++){
-        let change = $(`<div class="infoBox"></div>`);
+        let change = $(`<div class="infoBox" id="changelog${i}"></div>`);
         content.append(change);
 
         let revision = changeList[i].hasOwnProperty('revision') ? changeList[i].revision : '';

@@ -3,6 +3,7 @@ import { loc } from './../locale.js';
 import { vBind } from './../functions.js';
 import { arpaProjects, arpaAdjustCosts } from './../arpa.js';
 import { sideMenu } from './functions.js';
+import { add2virtualWikiTitle, add2virtualWikiContent} from "./search";
 
 const extraInformation = {
     launch_facility: [loc('wiki_arpa_project_launch_facility')],
@@ -14,7 +15,15 @@ const extraInformation = {
     syphon: [loc('wiki_arpa_project_magic')]
 };
 
-export function projectsPage(content){
+export function projectsPage(content, forSearch = false){
+    if(forSearch){
+        Object.keys(arpaProjects).forEach(function (project){
+            let hash = "projects-" + project;
+            add2virtualWikiTitle(hash, typeof arpaProjects[project].title === 'string' ? arpaProjects[project].title : arpaProjects[project].title(true));
+            projectDescAndSoOnForSearch(hash,project);
+        });
+        return;
+    }
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_projects')}</div>`);
 
     let mainContent = $(`<div></div>`);
@@ -45,6 +54,20 @@ function projectDesc(info,project){
         addInformation(extra,project);
     }
     addCosts(info,project);
+}
+
+function projectDescAndSoOnForSearch(hash, project){
+    add2virtualWikiContent(hash, typeof arpaProjects[project].desc === 'string' ? arpaProjects[project].desc : arpaProjects[project].desc(), true);
+    add2virtualWikiContent(hash, typeof arpaProjects[project].effect === 'string' ? arpaProjects[project].effect : arpaProjects[project].effect(), true);
+
+    if (extraInformation[project]){
+        if (extraInformation.hasOwnProperty(project)){
+            for (let i=0; i<extraInformation[project].length; i++){
+                add2virtualWikiContent(hash, extraInformation[project][i], true);
+            }
+        }
+    }
+    addCostsForSearch(hash, project);
 }
 
 function addInformation(parent,key){
@@ -151,7 +174,7 @@ function addCosts(parent,key){
         </div>
     `;
     parent.append($(calcInputs));
-    
+
     vBind({
         el: `#${key}`,
         data: {
@@ -212,6 +235,67 @@ function addCosts(parent,key){
             }
         }
     });
+}
+
+
+function addCostsForSearch(hash,key) {
+    let inputs = {
+        owned: 0,
+        creepVis: true,
+        extra: {
+            creative: false
+        }
+    };
+    let resources = {};
+
+    switch (key) {
+        case 'monument':
+            inputs.extra.m_type = 'Obelisk';
+            break;
+        case 'launch_facility':
+            inputs.creepVis = false;
+            break;
+    }
+
+    let action = arpaProjects[key];
+    inputs.real_owned = global.arpa[key] ? global.arpa[key].rank : 0;
+
+    let costs = [];
+    let cost = action.cost;
+
+    Object.keys(arpaAdjustCosts(cost)).forEach(function (res) {
+        resources[res] = {};
+    });
+
+    //Functions to update costs and cost creeps
+    let new_costs = arpaAdjustCosts(cost, inputs.owned - inputs.real_owned, inputs.extra);
+    Object.keys(resources).forEach(function (res) {
+        let new_cost = new_costs[res] ? new_costs[res](inputs.owned - inputs.real_owned, inputs.extra) : 0;
+        if(!resources[res])resources[res] = {};
+        resources[res].vis = new_cost > 0;
+        resources[res].cost = sizeApproximation(new_cost, 1);
+    });
+
+    if (key !== 'launch_facility') {
+        let upper = arpaAdjustCosts(cost, 100, inputs.extra);
+        let lower = arpaAdjustCosts(cost, 99, inputs.extra);
+        Object.keys(resources).forEach(function (res) {
+            if (upper[res]) {
+                resources[res].creep = +(upper[res](100, inputs.extra) / lower[res](99, inputs.extra)).toFixed(4);
+            }
+        });
+    }
+
+    Object.keys(arpaAdjustCosts(cost)).forEach(function (res) {
+        if(resources[res].vis){
+            let costString = `${res === 'Money' ? '$' : global.resource[res].name + ': '}${resources[res].cost}`;
+            if(resources[res].creep > 0){
+                costString += ` (${loc('wiki_calc_cost_creep')}: ${resources[res].creep})`;
+            }
+            costs.push(costString);
+        }
+    });
+    add2virtualWikiContent(hash, loc('wiki_calc_cost') + costs.join(", "));
 }
 
 function monumentExtra(){

@@ -10075,6 +10075,8 @@
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
   "wiki_achievements_completed": "Completed",
+  "wiki_search_placeholder": "Please Search...",
+  "wiki_search_regex": "RegEx",
   "MegaEvolve": "Mega Evolve",
   "wiki_megaevolve_author": "Mega Evolve is Created by 销锋镝铸",
   "total": "Total"

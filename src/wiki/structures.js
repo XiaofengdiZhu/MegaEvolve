@@ -4,9 +4,26 @@ import { clearElement, popover, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 import { towerSize } from './../portal.js';
 import { races } from './../races.js';
-import { actionDesc, sideMenu } from './functions.js';
+import {actionDesc, sideMenu} from './functions.js';
+import {add2virtualWikiContent, add2virtualWikiTitle} from "./search";
 
-export function renderStructurePage(zone,path){
+export function renderStructurePage(zone,path,forSearch){
+    if(forSearch){
+        if(path === "truepath"){
+            prehistoricPage( null, path, forSearch);
+            planetaryPage(null, path, forSearch);
+            spacePage(null, path, forSearch);
+            taucetiPage(null, forSearch);
+        }else {
+            prehistoricPage(null, path, forSearch);
+            planetaryPage(null, path, forSearch);
+            spacePage(null, path, forSearch);
+            interstellarPage(null, forSearch);
+            intergalacticPage(null, forSearch);
+            hellPage(null, forSearch);
+        }
+        return;
+    }
     let content = sideMenu('create');
 
     switch (zone){
@@ -387,11 +404,19 @@ function addCalcInputs(parent,key,section,region,path){
     });
 }
 
-function prehistoricPage(content,path){
+function prehistoricPage(content,path,forSearch){
     let affix = path === 'truepath' ? 'tp_structures' : 'structures';
     Object.keys(actions.evolution).forEach(function (action){
         if (actions.evolution[action].hasOwnProperty('title') && (action !== 'custom' || global.hasOwnProperty('custom')) && (!actions.evolution[action].hasOwnProperty('wiki') || actions.evolution[action].wiki)){
             let id = actions.evolution[action].id.split('-');
+            if(forSearch){
+                if(id[1] === "s")return;
+                let hash = (path === "truepath" ? "tp_" : "") + "prehistoric-" + id[1];
+                let c_action = actions.evolution[action];
+                add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                actionDescAndSoOnForSearch(hash, c_action, false, action, 'prehistoric', false, path);
+                return;
+            }
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.evolution[action], false, true);
@@ -402,12 +427,19 @@ function prehistoricPage(content,path){
     });
 }
 
-function planetaryPage(content,path){
+function planetaryPage(content,path,forSearch){
     let affix = path === 'truepath' ? 'tp_structures' : 'structures';
     Object.keys(actions.city).forEach(function (action){
         if ((!actions.city[action].hasOwnProperty('wiki') || actions.city[action].wiki) &&
             (!actions.city[action].hasOwnProperty('path') || actions.city[action].path.includes(path)) ){
             let id = actions.city[action].id.split('-');
+            if(forSearch){
+                let hash = (path === "truepath" ? "tp_" : "") + "planetary-" + id[1];
+                let c_action = actions.city[action];
+                add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                actionDescAndSoOnForSearch(hash, c_action, false, action, 'planetary', false, path);
+                return;
+            }
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.city[action], false, true);
@@ -418,7 +450,7 @@ function planetaryPage(content,path){
     });
 }
 
-function spacePage(content,path){
+function spacePage(content,path,forSearch) {
     let affix = path === 'truepath' ? 'tp_structures' : 'structures';
 
     Object.keys(actions.space).forEach(function (region){        
@@ -430,6 +462,13 @@ function spacePage(content,path){
                 (!actions.space[region][struct].hasOwnProperty('wiki') || actions.space[region][struct].wiki) && 
                 (!actions.space[region][struct].hasOwnProperty('path') || actions.space[region][struct].path.includes(path)) ){
                 let id = actions.space[region][struct].id.split('-');
+                if(forSearch){
+                    let hash = (path === "truepath" ? "tp_" : "") + "space-" + id[1];
+                    let c_action = actions.space[region][struct];
+                    add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                    actionDescAndSoOnForSearch(hash, c_action, name, struct, 'space', region, path);
+                    return;
+                }
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.space[region][struct],`<span id="pop${actions.space[region][struct].id}">${name}</span>`, true);
@@ -446,6 +485,13 @@ function spacePage(content,path){
             (!actions.starDock[struct].hasOwnProperty('wiki') || actions.starDock[struct].wiki) && 
             (!actions.starDock[struct].hasOwnProperty('path') || actions.starDock[struct].path.includes(path)) ){
             let id = actions.starDock[struct].id.split('-');
+            if(forSearch){
+                let hash = (path === "truepath" ? "tp_" : "") + "space-" + id[1];
+                let c_action = actions.starDock[struct];
+                add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                actionDescAndSoOnForSearch(hash, c_action, loc('space_gas_star_dock_title'), struct, 'starDock', false, path);
+                return;
+            }
             let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
             content.append(info);
             actionDesc(info, actions.starDock[struct],`<span id="pop${actions.starDock[struct].id}">${loc('space_gas_star_dock_title')}</span>`, true);
@@ -457,7 +503,7 @@ function spacePage(content,path){
     });
 }
 
-function interstellarPage(content){
+function interstellarPage(content, forSearch){
     Object.keys(actions.interstellar).forEach(function (region){        
         let name = typeof actions.interstellar[region].info.name === 'string' ? actions.interstellar[region].info.name : actions.interstellar[region].info.name();
         let desc = typeof actions.interstellar[region].info.desc === 'string' ? actions.interstellar[region].info.desc : actions.interstellar[region].info.desc();
@@ -465,6 +511,13 @@ function interstellarPage(content){
         Object.keys(actions.interstellar[region]).forEach(function (struct){
             if (struct !== 'info' && (!actions.interstellar[region][struct].hasOwnProperty('wiki') || actions.interstellar[region][struct].wiki)){
                 let id = actions.interstellar[region][struct].id.split('-');
+                if(forSearch){
+                    let hash = "interstellar-" + id[1];
+                    let c_action = actions.interstellar[region][struct];
+                    add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                    actionDescAndSoOnForSearch(hash, c_action, name, struct, 'interstellar', region);
+                    return;
+                }
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.interstellar[region][struct],`<span id="pop${actions.interstellar[region][struct].id}">${name}</span>`, true);
@@ -477,7 +530,7 @@ function interstellarPage(content){
     });
 }
 
-function intergalacticPage(content){
+function intergalacticPage(content, forSearch){
     Object.keys(actions.galaxy).forEach(function (region){        
         let name = typeof actions.galaxy[region].info.name === 'string' ? actions.galaxy[region].info.name : actions.galaxy[region].info.name();
         let desc = typeof actions.galaxy[region].info.desc === 'string' ? actions.galaxy[region].info.desc : actions.galaxy[region].info.desc();
@@ -485,6 +538,13 @@ function intergalacticPage(content){
         Object.keys(actions.galaxy[region]).forEach(function (struct){
             if (struct !== 'info' && (!actions.galaxy[region][struct].hasOwnProperty('wiki') || actions.galaxy[region][struct].wiki)){
                 let id = actions.galaxy[region][struct].id.split('-');
+                if(forSearch){
+                    let hash = "intergalactic-" + id[1];
+                    let c_action = actions.galaxy[region][struct];
+                    add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                    actionDescAndSoOnForSearch(hash, c_action, name, struct, 'intergalactic', region);
+                    return;
+                }
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.galaxy[region][struct],`<span id="pop${actions.galaxy[region][struct].id}">${name}</span>`, true);
@@ -497,7 +557,7 @@ function intergalacticPage(content){
     });
 }
 
-function hellPage(content){
+function hellPage(content,forSearch){
     Object.keys(actions.portal).forEach(function (region){        
         let name = typeof actions.portal[region].info.name === 'string' ? actions.portal[region].info.name : actions.portal[region].info.name();
         let desc = typeof actions.portal[region].info.desc === 'string' ? actions.portal[region].info.desc : actions.portal[region].info.desc();
@@ -505,6 +565,13 @@ function hellPage(content){
         Object.keys(actions.portal[region]).forEach(function (struct){
             if (struct !== 'info' && (!actions.portal[region][struct].hasOwnProperty('wiki') || actions.portal[region][struct].wiki)){
                 let id = actions.portal[region][struct].id.split('-');
+                if(forSearch){
+                    let hash = "hell-" + id[1];
+                    let c_action = actions.portal[region][struct];
+                    add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                    actionDescAndSoOnForSearch(hash, c_action, name, struct, 'hell', region);
+                    return;
+                }
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.portal[region][struct],`<span id="pop${actions.portal[region][struct].id}">${name}</span>`, true);
@@ -517,7 +584,7 @@ function hellPage(content){
     });
 }
 
-function taucetiPage(content){
+function taucetiPage(content,forSearch){
     Object.keys(actions.tauceti).forEach(function (region){        
         let name = typeof actions.tauceti[region].info.name === 'string' ? actions.tauceti[region].info.name : actions.tauceti[region].info.name();
         let desc = typeof actions.tauceti[region].info.desc === 'string' ? actions.tauceti[region].info.desc : actions.tauceti[region].info.desc();
@@ -525,6 +592,13 @@ function taucetiPage(content){
         Object.keys(actions.tauceti[region]).forEach(function (struct){
             if (struct !== 'info' && (!actions.tauceti[region][struct].hasOwnProperty('wiki') || actions.tauceti[region][struct].wiki)){
                 let id = actions.tauceti[region][struct].id.split('-');
+                if(forSearch){
+                    let hash = "tp_tauceti-" + id[1];
+                    let c_action = actions.tauceti[region][struct];
+                    add2virtualWikiTitle(hash, typeof c_action.title === 'string' ? c_action.title : c_action.title());
+                    actionDescAndSoOnForSearch(hash, c_action, name, struct, 'tauceti', region);
+                    return;
+                }
                 let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
                 content.append(info);
                 actionDesc(info, actions.tauceti[region][struct],`<span id="pop${actions.tauceti[region][struct].id}">${name}</span>`, true);
@@ -535,4 +609,209 @@ function taucetiPage(content){
             }
         });
     });
+}
+
+function actionDescAndSoOnForSearch(hash, c_action, extended, key, section, region, path) {
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc(true);
+    if (desc !== (typeof c_action.title === 'string' ? c_action.title : c_action.title())) {
+        add2virtualWikiContent(hash, extended ? `${extended} | ${desc}` : desc, true);
+    }else if(extended){
+        add2virtualWikiContent(hash, extended);
+    }
+    //addInfomration
+    if (extraInformation[section].hasOwnProperty(key)) {
+        for (let i = 0; i < extraInformation[section][key].length; i++) {
+            add2virtualWikiContent(hash, extraInformation[section][key][i]);
+        }
+    }
+    if (c_action.hasOwnProperty('effect')) {
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : false;
+        if (effect !== false) {
+            add2virtualWikiContent(hash, effect);
+        }
+    }
+    let hasMax = calcInfo.max[section] && calcInfo.max[section][key] ? calcInfo.max[section][key] : false;
+    let inputs = {
+        owned: 0,
+        costVis: false,
+        creepVis: false,
+        extra: {
+            truepath: path === 'truepath'
+        }
+    };
+    let resources = {};
+
+    let action = false;
+    switch (section) {
+        case "prehistoric":
+            action = actions.evolution[key];
+            inputs.real_owned = global.evolution[key] ? global.evolution[key].count : 0;
+            break;
+        case 'planetary':
+            action = actions.city[key];
+            inputs.real_owned = global.city[key] ? global.city[key].count : 0;
+            break;
+        case 'space':
+            action = actions.space[region][key];
+            inputs.real_owned = global.space[key] ? global.space[key].count : 0;
+            break;
+        case 'starDock':
+            action = actions.starDock[key];
+            inputs.real_owned = global.starDock[key] ? global.starDock[key].count : 0;
+            break;
+        case 'interstellar':
+            action = actions.interstellar[region][key];
+            inputs.real_owned = global.interstellar[key] ? global.interstellar[key].count : 0;
+            break;
+        case 'intergalactic':
+            action = actions.galaxy[region][key];
+            inputs.real_owned = global.galaxy[key] ? global.galaxy[key].count : 0;
+            break;
+        case 'hell':
+            action = actions.portal[region][key];
+            inputs.real_owned = global.portal[key] ? global.portal[key].count : 0;
+            break;
+        case 'tauceti':
+            action = actions.tauceti[region][key];
+            inputs.real_owned = global.tauceti[key] ? global.tauceti[key].count : 0;
+            break;
+    }
+    if (calcInfo.count[section] && calcInfo.count[section][key]) {
+        inputs.real_owned = calcInfo.count[section][key];
+    }
+
+    //Add any additional inputs (Fully implement later)
+    let addInput = function (new_input) {
+        inputs.extra[new_input] = inputTypes[new_input].import();
+    }
+
+    //Function to update function-based effects with # of building owned.
+    if (action.hasOwnProperty('effect') && typeof action.effect !== 'string') {
+        let insert = inputs.owned - inputs.real_owned;
+        if (effectInputs[key]) {
+            insert = {count: insert};
+            effectInputs[key].forEach(function (inp) {
+                switch (inp) {
+                    case 'truepath':
+                        insert[inp] = path === 'truepath';
+                        break;
+                }
+            });
+        }
+        let result;
+        try {
+            result = action.effect(insert);
+        }catch (e) {}
+        if (result) add2virtualWikiContent(hash, result, true);
+    }
+
+    let cost = action.cost;
+    if (cost) {
+        Object.keys(adjustCosts(action)).forEach(function (res) {
+            resources[res] = {};
+            if (section === 'space' && (res === 'Oil' || res === 'Helium_3')) {
+                calcInputs.fuelAdj.inputs.forEach(function (input) {
+                    addInput(input);
+                });
+            }
+        });
+    }
+
+    let vis = false;
+    if (cost) {
+        let new_costs = adjustCosts(action, inputs.owned - inputs.real_owned, inputs.extra);
+        Object.keys(resources).forEach(function (res) {
+            if (res === 'Custom') {
+                resources[res].vis = true;
+            } else {
+                let new_cost = new_costs[res] ? new_costs[res](inputs.owned - inputs.real_owned, inputs.extra) : 0;
+                resources[res].vis = new_cost > 0;
+                resources[res].cost = sizeApproximation(new_cost, 1);
+            }
+            vis = vis || resources[res].vis;
+        });
+    }
+    inputs.costVis = vis;
+
+    //Add calculator inputs
+    if ((calcInfo.include[section] && calcInfo.include[section].includes(key)) || (calcInfo.exclude[section] && !calcInfo.exclude[section].includes(key))) {
+        let creep = false;
+        if (cost && !hasMax &&
+            !(calcInfo.excludeCreep[section] && calcInfo.excludeCreep[section].includes(key)) &&
+            section !== 'prehistoric') {
+            let high = calcInfo.creepCalc[section] && calcInfo.creepCalc[section][key] ? calcInfo.creepCalc[section][key] : 100;
+            let low = high - 1;
+            let upper = adjustCosts(action, high, inputs.extra);
+            let lower = adjustCosts(action, low, inputs.extra);
+            Object.keys(resources).forEach(function (res) {
+                if (upper[res]) {
+                    resources[res].creep = +(upper[res](high, inputs.extra) / lower[res](low, inputs.extra)).toFixed(5);
+                    if (resources[res].creep === 1) {
+                        resources[res].creep = loc('wiki_calc_none');
+                    } else if (resources[res].creep < 1.005) {
+                        resources[res].creep = 1.005;
+                    }
+                    creep = creep || resources[res].vis;
+                }
+            });
+        }
+        inputs.creepVis = creep;
+    }
+    if (c_action.hasOwnProperty('cost')) {
+        let costs = adjustCosts(c_action, true);
+        let cost = [];
+
+        let render = false;
+
+        let addCost = function (res, res_cost, label) {
+            if (resources[res].vis) {
+                let c = inputs.costVis ? (label + resources[res].cost) : false;
+                if (c) {
+                    let cc = inputs.creepVis ? resources[res].creep : false;
+                    cost.push(c + (cc ? ` (${loc('wiki_calc_cost_creep')}: ${cc})` : ""));
+                }
+            }
+            render = true;
+        };
+
+        Object.keys(costs).forEach(function (res) {
+            if (res === 'Structs') {
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region) {
+                    Object.keys(structs[region]).forEach(function (struct) {
+                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')) {
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        } else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }
+                        cost.push(`${label}: ${res_cost} (${loc('wiki_calc_cost_creep')}: ${loc('wiki_calc_none')})`);
+                        render = true;
+                    });
+                });
+            } else if (['Plasmid', 'Phage', 'Dark', 'Harmony', 'AICore', 'Artifact', 'Blood_Stone', 'AntiPlasmid'].includes(res)) {
+                let resName = res;
+                if (res === 'Plasmid' && global.race.universe === 'antimatter') {
+                    resName = 'AntiPlasmid';
+                }
+                addCost(res, costs[res](), loc(`resource_${resName}_name`) + ': ');
+            } else if (res === 'Supply') {
+                addCost(res, costs[res](), loc(`resource_${res}_name`) + ': ');
+            } else if (res === 'Custom') {
+                cost.push(costs[res]().label);
+                render = true;
+            } else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool') {
+                let f_res = res === 'Species' ? global.race.species : res;
+                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
+                label = label.replace("_", " ");
+                addCost(res, costs[res](), label);
+            }
+        });
+        if(render){
+            add2virtualWikiContent(hash, loc('wiki_calc_cost') + ": " + cost.join(", "));
+        }
+    }
 }

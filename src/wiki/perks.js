@@ -1,7 +1,14 @@
 import { perkList } from './../achieve.js';
 import { sideMenu } from './functions.js';
+import { add2virtualWikiContent, add2virtualWikiTitle } from "./search";
 
-export function perksPage(content){
+export function perksPage(content, forSearch = false){
+    if(forSearch){
+        Object.keys(perkList).forEach(function (perk){
+            perkDesc(null, perk, forSearch);
+        });
+        return;
+    }
     let mainContent = $(`<div></div>`);
     let perkContent = sideMenu('create',mainContent);
     content.append(mainContent);
@@ -12,7 +19,25 @@ export function perksPage(content){
     });
 }
 
-function perkDesc(content, perk){
+function perkDesc(content, perk, forSearch){
+    if(forSearch){
+        let hash = `perks-${perk}`;
+        add2virtualWikiTitle(hash, perkList[perk].name);
+        if (perkList[perk].hasOwnProperty('group')){
+            perkList[perk].group.forEach(function(subperk){
+                add2virtualWikiContent(hash, subperk.desc(true), true);
+            });
+        }
+        else {
+            add2virtualWikiContent(hash, perkList[perk].desc(true), true);
+        }
+        if (perkList[perk].notes.length > 0){
+            perkList[perk].notes.forEach(function(note){
+                add2virtualWikiContent(hash, note, true);
+            });
+        }
+        return;
+    }
     let perkbox = $(`<div id="${perk}" class="infoBox"></div>`);
     if (perkList[perk].hasOwnProperty('group')){
         let gperk = $(`<div><div class="has-text-warning">${perkList[perk].name}</div></div>`);

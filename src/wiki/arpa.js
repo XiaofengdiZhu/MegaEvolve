@@ -3,7 +3,11 @@ import { projectsPage } from './projects.js';
 import { crisprPage } from './crispr.js';
 import { bloodPage } from './blood.js';
 
-export function arpaPage(zone){
+export function arpaPage(zone, forSearch = false){
+    if(forSearch){
+        projectsPage(null, forSearch);
+        return;
+    }
     let content = $(`#content`);
     clearElement(content);
 

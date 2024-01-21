@@ -3,17 +3,17 @@ import { universe_types } from './../space.js';
 import { infoBoxBuilder, sideMenu, createCalcSection } from './functions.js';
 import { prestigeCalc } from './p_res.js';
 
-export function resetsPage(content){
-    let mainContent = sideMenu('create',content);
+export function resetsPage(content, forSearch  = false) {
+    let mainContent = sideMenu('create',content, null, null, forSearch);
 
     let resets = ['mad','bioseed','blackhole','ascension','cataclysm','vacuum','infusion','ai','terraform'];
-    let reset_labels = resets.map(x => `<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
+    let reset_labels = resets.map(x => forSearch?loc(`wiki_resets_${x}`):`<span class="has-text-caution">${loc(`wiki_resets_${x}`)}</span>`);
 
     infoBoxBuilder(mainContent,{ name: 'intro', template: 'resets', paragraphs: 3, h_level: 2,
         para_data: { 1: [resets.length, reset_labels.slice(0, -1).join(', ') + `, & ${reset_labels[reset_labels.length - 1]}`] },
         data_color: { 1: ['warning','plain'] }
-    });
-    sideMenu('add',`resets-prestige`,'intro',loc('wiki_menu_intro'));
+    }, null, forSearch);
+    sideMenu('add',`resets-prestige`,'intro',loc('wiki_menu_intro'), forSearch);
 
     // MAD
     let section = infoBoxBuilder(mainContent,{ name: 'mad', template: 'resets', paragraphs: 9, break: [6,9], h_level: 2,
@@ -30,10 +30,10 @@ export function resetsPage(content){
             6: ['danger'],
             7: ['danger']
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'mad','gain');
     prestigeCalc(section,'plasmid',false,'mad');
-    sideMenu('add',`resets-prestige`,'mad',loc('wiki_resets_mad'));
+    sideMenu('add',`resets-prestige`,'mad',loc('wiki_resets_mad'), forSearch);
 
     // Bioseed
     section = infoBoxBuilder(mainContent,{ name: 'bioseed', template: 'resets', paragraphs: 12, break: [5,8,12], h_level: 2,
@@ -53,18 +53,18 @@ export function resetsPage(content){
             4: ['danger']
         },
         data_link: { 10: ['wiki.html#planets-gameplay'] }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'bioseed','gain');
     prestigeCalc(section,'plasmid',false,'bioseed');
     prestigeCalc(section,'phage',false,'bioseed');
-    sideMenu('add',`resets-prestige`,'bioseed',loc('wiki_resets_bioseed'));
+    sideMenu('add',`resets-prestige`,'bioseed',loc('wiki_resets_bioseed'), forSearch);
 
     // Blackhole
     let universes = [];
     Object.keys(universe_types).forEach(function (universe){
         universes.push(universe);
     });
-    let universe_labels = universes.map(x => `<span class="has-text-caution">${loc(`universe_${x}`)}</span>`);
+    let universe_labels = forSearch? universes.map(x =>loc(`universe_${x}`)): universes.map(x => `<span class="has-text-caution">${loc(`universe_${x}`)}</span>`);
 
     section = infoBoxBuilder(mainContent,{ name: 'blackhole', template: 'resets', paragraphs: 12, break: [3,6,9,12], h_level: 2,
         para_data: {
@@ -85,12 +85,12 @@ export function resetsPage(content){
             7: ['warning','caution'],
             10: ['warning','plain']
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'bigbang','gain');
     prestigeCalc(section,'plasmid',false,'bigbang');
     prestigeCalc(section,'phage',false,'bigbang');
     prestigeCalc(section,'dark',false,'bigbang');
-    sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'));
+    sideMenu('add',`resets-prestige`,'blackhole',loc('wiki_resets_blackhole'), forSearch);
 
     // Vacuum Collapse
     section = infoBoxBuilder(mainContent,{ name: 'vacuum', template: 'resets', paragraphs: 10, break: [4,8,10], h_level: 2,
@@ -107,12 +107,12 @@ export function resetsPage(content){
             8: ['danger','danger','danger'],
             9: ['danger'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'vacuum','gain');
     prestigeCalc(section,'plasmid',false,'vacuum');
     prestigeCalc(section,'phage',false,'vacuum');
     prestigeCalc(section,'dark','vacuum','vacuum');
-    sideMenu('add',`resets-prestige`,'vacuum',loc('wiki_resets_vacuum'));
+    sideMenu('add',`resets-prestige`,'vacuum',loc('wiki_resets_vacuum'), forSearch);
 
     // Ascension
     section = infoBoxBuilder(mainContent,{ name: 'ascension', template: 'resets', paragraphs: 10, break: [3,5,7,10], h_level: 2,
@@ -127,12 +127,12 @@ export function resetsPage(content){
         data_color: {
             2: ['danger','danger','danger'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'ascend','gain');
     prestigeCalc(section,'plasmid',false,'ascend');
     prestigeCalc(section,'phage',false,'ascend');
     prestigeCalc(section,'harmony',false,'ascend');
-    sideMenu('add',`resets-prestige`,'ascension',loc('wiki_resets_ascension'));
+    sideMenu('add',`resets-prestige`,'ascension',loc('wiki_resets_ascension'), forSearch);
 
     // Cataclysm
     section = infoBoxBuilder(mainContent,{ name: 'cataclysm', template: 'resets', paragraphs: 10, break: [4,7,10], h_level: 2,
@@ -146,11 +146,11 @@ export function resetsPage(content){
         data_color: {
             6: ['danger','danger']
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'cataclysm','gain');
     prestigeCalc(section,'plasmid',false,'cataclysm');
     prestigeCalc(section,'phage',false,'cataclysm');
-    sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'));
+    sideMenu('add',`resets-prestige`,'cataclysm',loc('wiki_resets_cataclysm'), forSearch);
 
     // Terraform
     section = infoBoxBuilder(mainContent,{ name: 'terraform', template: 'resets', paragraphs: 19, break: [3,6,7,10,12,19], h_level: 2,
@@ -167,12 +167,12 @@ export function resetsPage(content){
             17: ['50%'],
             19: [loc('wiki_resets_terraform')],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'terraform','gain');
     prestigeCalc(section,'plasmid',false,'terraform');
     prestigeCalc(section,'phage',false,'terraform');
     prestigeCalc(section,'harmony',false,'terraform');
-    sideMenu('add',`resets-prestige`,'terraform',loc('wiki_resets_terraform'));
+    sideMenu('add',`resets-prestige`,'terraform',loc('wiki_resets_terraform'), forSearch);
 
     section = infoBoxBuilder(mainContent,{ name: 'infusion', template: 'resets', paragraphs: 8, break: [4,8], h_level: 2,
         para_data: {
@@ -186,10 +186,10 @@ export function resetsPage(content){
             2: ['danger'],
             7: ['caution']
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'descend','gain');
     prestigeCalc(section,'artifact',false,'descend');
-    sideMenu('add',`resets-prestige`,'infusion',loc('wiki_resets_infusion'));
+    sideMenu('add',`resets-prestige`,'infusion',loc('wiki_resets_infusion'), forSearch);
 
     // AI Appoc
     section = infoBoxBuilder(mainContent,{ name: 'ai', template: 'resets', paragraphs: 8, break: [3,6,7,8], h_level: 2,
@@ -211,12 +211,12 @@ export function resetsPage(content){
             4: ['wiki.html#solar-tp_tech-protocol66'],
             5: ['#space-tp_structures-ai_colonist','#space-tp_structures-decoder','#space-tp_structures-shock_trooper','#space-tp_structures-tank'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'ai','gain');
     prestigeCalc(section,'plasmid',false,'ai');
     prestigeCalc(section,'phage',false,'ai');
     prestigeCalc(section,'cores',false,'ai');
-    sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'));
+    sideMenu('add',`resets-prestige`,'ai',loc('wiki_resets_ai'), forSearch);
 
     // Matrix
     section = infoBoxBuilder(mainContent,{ name: 'matrix', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
@@ -233,11 +233,11 @@ export function resetsPage(content){
             2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
             3: ['wiki.html#tauceti-structures-ringworld'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'matrix','gain');
     prestigeCalc(section,'plasmid',false,'matrix');
     prestigeCalc(section,'phage',false,'matrix');
-    sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'));
+    sideMenu('add',`resets-prestige`,'matrix',loc('wiki_resets_matrix'), forSearch);
 
     // Retirement
     section = infoBoxBuilder(mainContent,{ name: 'retired', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
@@ -254,11 +254,11 @@ export function resetsPage(content){
             2: ['wiki.html#challenges-gameplay-scenarios_truepath'],
             3: ['wiki.html#tauceti-structures-matrioshka_brain','wiki.html#tauceti-structures-ignition_device'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'retired','gain');
     prestigeCalc(section,'plasmid',false,'retired');
     prestigeCalc(section,'phage',false,'retired');
-    sideMenu('add',`resets-prestige`,'retired',loc('wiki_resets_retired'));
+    sideMenu('add',`resets-prestige`,'retired',loc('wiki_resets_retired'), forSearch);
 
     // Garden of Eden
     section = infoBoxBuilder(mainContent,{ name: 'eden', template: 'resets', paragraphs: 6, break: [3,5,6], h_level: 2,
@@ -277,9 +277,9 @@ export function resetsPage(content){
             3: ['wiki.html#tauceti-structures-ringworld'],
             4: ['wiki.html#tauceti-structures-goe_facility'],
         }
-    });
+    }, null, forSearch);
     section = createCalcSection(section,'eden','gain');
     prestigeCalc(section,'plasmid',false,'eden');
     prestigeCalc(section,'phage',false,'eden');
-    sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'));
+    sideMenu('add',`resets-prestige`,'eden',loc('wiki_resets_eden'), forSearch);
 }

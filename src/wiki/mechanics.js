@@ -12,8 +12,8 @@ import { astroVal, astrologySign } from './../seasons.js';
 import { shipAttackPower, sensorRange, shipCrewSize, shipPower } from './../truepath.js';
 import { sideMenu, infoBoxBuilder, createRevealSection, createCalcSection, getSolarName } from './functions.js';
 
-export function mechanicsPage(content){
-    let mainContent = sideMenu('create',content);
+export function mechanicsPage(content, forSearch = false){
+    let mainContent = sideMenu('create',content,null,null, forSearch);
 
     { // Saving
         infoBoxBuilder(mainContent,{ name: 'save', template: 'mechanics', label: loc('wiki_mechanics_save'), paragraphs: 8, break: [3,5], h_level: 2,
@@ -24,8 +24,8 @@ export function mechanicsPage(content){
                 5: [loc(`restore`)],
                 8: [loc(`restore`)]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`save`,loc('wiki_mechanics_save'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`save`,loc('wiki_mechanics_save'), forSearch);
     }
 
     { // Accelerated Time
@@ -38,19 +38,19 @@ export function mechanicsPage(content){
                 5: [12,8,loc('wiki_mechanics_atime')],
                 6: [loc('wiki_mechanics_atime')]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`atime`,loc('wiki_mechanics_atime'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`atime`,loc('wiki_mechanics_atime'), forSearch);
     }
 
     { // String Packs
         infoBoxBuilder(mainContent,{ name: 'spack', template: 'mechanics', label: loc('wiki_mechanics_spack'), paragraphs: 10, break: [4,6,7,8,9,10], h_level: 2,
             para_data: {
                 1: ['UTF-8','JSON','.txt'],
-                4: [`<a href="https://github.com/pmotschmann/Evolve/blob/master/README.md" target="_blank">${loc(`wiki_mechanics_spack_para4_note`)}</a>`],
+                4: forSearch?[loc(`wiki_mechanics_spack_para4_note`)]:[`<a href="https://github.com/pmotschmann/Evolve/blob/master/README.md" target="_blank">${loc(`wiki_mechanics_spack_para4_note`)}</a>`],
                 6: [loc(`resource_Food_name`),loc(`wiki_mechanics_spack_para6_note1`),loc(`city_biolab`),loc(`wiki_mechanics_spack_para6_note2`)]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`spack`,loc('wiki_mechanics_spack'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`spack`,loc('wiki_mechanics_spack'), forSearch);
     }
     
     { // Default Job
@@ -60,8 +60,8 @@ export function mechanicsPage(content){
                 2: ['*'],
                 3: [loc('wiki_mechanics_job')]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`job`,loc('wiki_mechanics_job'), forSearch);
     }
 
     { // Job Stress
@@ -78,10 +78,10 @@ export function mechanicsPage(content){
                 4: ['wiki.html#traits-species-major_freespirit','wiki.html#traits-species-minor_content','wiki.html#planets-gameplay-mellow'],
                 6: ['wiki.html#traits-species-major_optimistic','wiki.html#traits-species-major_pessimistic']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(stress,'mechanics','job_stress',loc('wiki_mechanics_job_stress'));
         jobStressCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`job_stress`,loc('wiki_mechanics_job_stress'));
+        sideMenu('add',`mechanics-gameplay`,`job_stress`,loc('wiki_mechanics_job_stress'), forSearch);
     }
 
     { // Multiplier Keys
@@ -95,8 +95,8 @@ export function mechanicsPage(content){
             data_color: {
                 2: ['warning','caution','warning','caution','warning','caution']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`multiplier`,loc('wiki_mechanics_multiplier'), forSearch);
     }
 
     { // Cost Creep
@@ -113,8 +113,8 @@ export function mechanicsPage(content){
                 5: ['wiki.html#discovery-tech-steel_beams','wiki.html#traits-species-genus_large',false,'wiki.html#crispr-prestige-genetic_memory'],
                 6: ['wiki.html#traits-species-major_creative']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`cost_creep`,loc('wiki_mechanics_cost_creep'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`cost_creep`,loc('wiki_mechanics_cost_creep'), forSearch);
     }
 
     { // Queue
@@ -131,19 +131,19 @@ export function mechanicsPage(content){
             data_color: {
                 7: ['warning','caution']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`queue`,loc('wiki_mechanics_queue'), forSearch);
     }
 
     { // Stacking Multipliers
-        let multipliers = infoBoxBuilder(mainContent,{ name: 'multipliers', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 1, h_level: 2 });
+        let multipliers = infoBoxBuilder(mainContent,{ name: 'multipliers', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 1, h_level: 2 }, null, forSearch);
 
         let prod = infoBoxBuilder(multipliers,{ name: 'multipliers_prod', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 4, break: [3,4], h_level: false,
             para_data: {
                 3: [loc('wiki_mechanics_multipliers_struct'),loc('wiki_mechanics_multipliers_bonus')],
             },
-        });
-        prod.append(`<div class="doublePane"><img src="lib/mine.png"><img src="lib/copper-miner.png"></div>`);
+        }, null, forSearch);
+        prod.append?.(`<div class="doublePane"><img src="lib/mine.png"><img src="lib/copper-miner.png"></div>`);
 
         infoBoxBuilder(multipliers,{ name: 'multipliers_dis', template: 'mechanics', label: loc('wiki_mechanics_multipliers'), paragraphs: 7, break: [3,4], h_level: false,
             para_data: {
@@ -155,11 +155,11 @@ export function mechanicsPage(content){
             data_link: {
                 5: ['wiki.html#planetary-structures-mass_driver'],
             }
-        });
+        }, null, forSearch);
 
-        multipliers.append(`<div>${loc(`wiki_mechanics_multipliers_exception`)}</div>`)
+        multipliers.append?.(`<div>${loc(`wiki_mechanics_multipliers_exception`)}</div>`)
 
-        sideMenu('add',`mechanics-gameplay`,`multipliers`,loc('wiki_mechanics_multipliers'));
+        sideMenu('add',`mechanics-gameplay`,`multipliers`,loc('wiki_mechanics_multipliers'), forSearch);
     }
 
     { // Blocking Resources
@@ -174,12 +174,12 @@ export function mechanicsPage(content){
                 3: ['caution'],
                 5: ['danger'],
             }
-        });
-        blocking.append(`<div class="doublePane"><img src="lib/blocking-resource.png"><img src="lib/blocking-stack.png"></div>`);
-        sideMenu('add',`mechanics-gameplay`,`blocking`,loc('wiki_mechanics_blocking'));
+        }, null, forSearch);
+        blocking.append?.(`<div class="doublePane"><img src="lib/blocking-resource.png"><img src="lib/blocking-stack.png"></div>`);
+        sideMenu('add',`mechanics-gameplay`,`blocking`,loc('wiki_mechanics_blocking'), forSearch);
     }
 
-    { // Bank Vault
+    { // Astrology Signs
         infoBoxBuilder(mainContent,{ name: 'astro', template: 'mechanics', label: loc('wiki_mechanics_astro'), paragraphs: 15, break: [3,4,5,6,7,8,9,10,11,12,13,14,15], h_level: 2,
             para_data: {
                 2: [12],
@@ -212,9 +212,10 @@ export function mechanicsPage(content){
                 14: ['warning','caution'],
                 15: ['caution'],
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`astro`,loc('wiki_mechanics_astro'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`astro`,loc('wiki_mechanics_astro'), forSearch);
     }
+
     { // Bank Vault
         infoBoxBuilder(mainContent,{ name: 'bank_vault', template: 'mechanics', label: loc('wiki_mechanics_bank_vault'), paragraphs: 2, h_level: 2,
             para_data: {
@@ -225,8 +226,8 @@ export function mechanicsPage(content){
                 1: ['wiki.html#planetary-structures-bank','wiki.html#interstellar-structures-exchange','wiki.html#hell-structures-arcology',false,false,'wiki.html#space-structures-spaceport','wiki.html#challenges-gameplay-scenarios_cataclysm'],
                 2: [false,false,'wiki.html#interstellar-tech-adamantite_vault','wiki.html#governor-gameplay-entrepreneur','wiki.html#traits-species-major_paranoid','wiki.html#projects-arpa-stock_exchange','wiki.html#early_space-tech-unification2','wiki.html#challenges-gameplay-modes_inflation']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`bank_vault`,loc('wiki_mechanics_bank_vault'), forSearch);
     }
 
     { // Homeless
@@ -237,8 +238,8 @@ export function mechanicsPage(content){
             data_link: {
                 3: ['wiki.html#projects-arpa-railway']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`homeless`,loc('wiki_mechanics_homeless'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`homeless`,loc('wiki_mechanics_homeless'), forSearch);
     }
 
     { // Warmonger
@@ -256,10 +257,10 @@ export function mechanicsPage(content){
                 2: ['wiki.html#traits-species-genus_immoral'],
                 3: ['wiki.html#government-gameplay-autocracy','wiki.html#traits-species-major_blood_thirst']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(warmonger,'mechanics','warmonger',loc('wiki_mechanics_warmonger'));
         warmongerCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`warmonger`,loc('wiki_mechanics_warmonger'));
+        sideMenu('add',`mechanics-gameplay`,`warmonger`,loc('wiki_mechanics_warmonger'), forSearch);
     }
 
     { // Spies
@@ -277,10 +278,10 @@ export function mechanicsPage(content){
                 1: ['wiki.html#civilized-tech-spy'],
                 9: ['wiki.html#civilized-tech-espionage']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(spy,'mechanics','spy_cost');
         spyCostCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`spy`,loc('wiki_mechanics_spy'));
+        sideMenu('add',`mechanics-gameplay`,`spy`,loc('wiki_mechanics_spy'), forSearch);
     }
 
     { // Occupying Foreign Powers
@@ -314,10 +315,10 @@ export function mechanicsPage(content){
                 15: [false,false,false,false,'wiki.html#government-gameplay-federation'],
                 16: ['wiki.html#early_space-tech-unification2']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(occupation,'mechanics','occupation');
         occupationCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`occupying`,loc('wiki_mechanics_occupying'));
+        sideMenu('add',`mechanics-gameplay`,`occupying`,loc('wiki_mechanics_occupying'), forSearch);
     }
 
     { // Religion
@@ -346,8 +347,8 @@ export function mechanicsPage(content){
                 10: ['wiki.html#races-species'],
                 20: ['wiki.html#crispr-prestige','wiki.html#crispr-prestige-transcendence']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`religion`,loc('wiki_mechanics_religion'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`religion`,loc('wiki_mechanics_religion'), forSearch);
     }
 
     { // Challenge Genes
@@ -383,8 +384,8 @@ export function mechanicsPage(content){
                 1: [false,false,'wiki.html#crispr-prestige','wiki.html#crispr-prestige-hardened_genes'],
                 7: [false,'wiki.html#crispr-prestige-genetic_memory',false]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`challenge`,loc('wiki_mechanics_challenge'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`challenge`,loc('wiki_mechanics_challenge'), forSearch);
     }
 
     { // Mastery
@@ -419,8 +420,8 @@ export function mechanicsPage(content){
                 9: ['wiki.html#universes-gameplay'],
                 10: ['wiki.html#crispr-prestige-universal','wiki.html#crispr-prestige-standard']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`mastery`,loc('mastery'), forSearch);
     }
 
     { // Genome Decay
@@ -434,10 +435,10 @@ export function mechanicsPage(content){
             data_link: {
                 4: ['wiki.html#early_space-tech-genetic_decay','wiki.html#traits-species-special_fortify']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(genome_decay,'mechanics','g_decay',loc('wiki_mechanics_genome_decay'));
         genomeDecayCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`genome_decay`,loc('wiki_mechanics_genome_decay'));
+        sideMenu('add',`mechanics-gameplay`,`genome_decay`,loc('wiki_mechanics_genome_decay'), forSearch);
     }
 
     { // CRISPR Mutation
@@ -453,8 +454,8 @@ export function mechanicsPage(content){
                 4: [false,'wiki.html#traits-species'],
                 5: ['wiki.html#custom-species','wiki.html#races-species-sludge']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`crispr_mutation`,loc('wiki_mechanics_crispr_mutation'), forSearch);
     }
 
     { // Planets 
@@ -464,14 +465,14 @@ export function mechanicsPage(content){
                 3: [4],
                 4: ['200-600']
             }
-        });
+        }, null, forSearch, 'mechanics');
         infoBoxBuilder(mainContent,{ name: 'geology', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
             para_data: {
                 2: [2],
                 3: ['-10%','+19%'],
                 4: [7,'+44%']
             }
-        },planets);
+        },planets, forSearch, 'mechanics');
         infoBoxBuilder(mainContent,{ name: 'seeother', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc('wiki_menu_planets')]
@@ -479,8 +480,8 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#planets-gameplay']
             }
-        },planets);
-        sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'));
+        },planets, forSearch, 'mechanics');
+        sideMenu('add',`mechanics-gameplay`,`planet`,loc('wiki_menu_planets'), forSearch);
     }
     
     { // Soul Gem
@@ -489,8 +490,8 @@ export function mechanicsPage(content){
                 1: [loc('wiki_hell_soul_gem'),loc('tab_portal')],
                 3: [loc('tech_demon_attractor')]
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`soul_gem`,loc('wiki_hell_soul_gem'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`soul_gem`,loc('wiki_hell_soul_gem'), forSearch);
     }
 
     { // Quantum Level
@@ -504,10 +505,10 @@ export function mechanicsPage(content){
                 2: ['wiki.html#deep_space-tech-quantum_computing'],
                 4: ['wiki.html#interstellar-structures-citadel']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(quantum,'mechanics','quantum_level',loc('wiki_mechanics_quantum'));
         quantumLevelCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`quantum`,loc('wiki_mechanics_quantum'));
+        sideMenu('add',`mechanics-gameplay`,`quantum`,loc('wiki_mechanics_quantum'), forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_swarm_ai', template: 'mechanics', label: loc('tech_swarm_control_ai'), paragraphs: 2, h_level: 2,
             para_data: {
@@ -517,7 +518,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#deep_space-tech-swarm_control_ai','wiki.html#space-structures-swarm_satellite','wiki.html#space-structures-swarm_control']
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_swarm', template: 'mechanics', label: loc('tech_quantum_swarm'), paragraphs: 3, h_level: 2,
             para_data: {
@@ -528,7 +529,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#deep_space-tech-quantum_swarm','wiki.html#space-structures-swarm_plant']
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_manufacture', template: 'mechanics', label: loc('tech_quantum_manufacturing'), paragraphs: 4, break: [2,3,4], h_level: 2,
             para_data: {
@@ -540,7 +541,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#deep_space-tech-quantum_manufacturing','wiki.html#planetary-structures-factory',false]
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_cement_processing', template: 'mechanics', label: loc('tech_cement_processing'), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
@@ -550,7 +551,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#interstellar-tech-cement_processing','wiki.html#interstellar-structures-citadel']
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_graph_processing', template: 'mechanics', label: loc('tech_graphene_processing'), paragraphs: 2, break: [2], h_level: 2,
             para_data: {
@@ -560,7 +561,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#intergalactic-tech-graphene_processing','wiki.html#interstellar-structures-citadel']
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_ai_logistics', template: 'mechanics', label: loc('tech_ai_logistics'), paragraphs: 3, break: [3], h_level: 2,
             para_data: {
@@ -571,7 +572,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#interstellar-tech-ai_logistics','wiki.html#interstellar-structures-cargo_yard','wiki.html#interstellar-structures-warehouse']
             }
-        });
+        }, null, forSearch);
 
         infoBoxBuilder(quantum,{ name: 'quantum_arcology', template: 'mechanics', label: loc('portal_arcology_title'), paragraphs: 1, h_level: 2,
             para_data: {
@@ -580,7 +581,7 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#hell-structures-arcology',false]
             }
-        });
+        }, null, forSearch);
     }
 
     { // Mass & Ejecting
@@ -605,10 +606,10 @@ export function mechanicsPage(content){
                 9: ['wiki.html#interstellar-structures-stellar_engine'],
                 10: [false,false,'wiki.html#interstellar-structures-stellar_engine',false,'wiki.html#interstellar-tech-gravity_convection']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(mass,'eject','mass');
         massCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`mass`,loc('wiki_mechanics_mass'));
+        sideMenu('add',`mechanics-gameplay`,`mass`,loc('wiki_mechanics_mass'), forSearch);
     }
 
     { // Piracy
@@ -619,14 +620,14 @@ export function mechanicsPage(content){
                 4: [loc('tab_galactic'),loc('galaxy_piracy'),loc('galaxy_stargate')],
                 5: [loc('interstellar_stargate')]
             }
-        });
+        }, null, forSearch);
         infoBoxBuilder(mainContent,{ name: 'pirate_ramp', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 3, h_level: 2,
             para_data: {
                 1: [loc('galaxy_stargate'),loc('galaxy_gateway')],
                 2: [loc('tab_galactic')],
                 3: [loc('galaxy_embassy'),loc('tech_xeno_gift'),loc('galaxy_alien2_mission',[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].solar.red])],
             }
-        },pirates);
+        },pirates, forSearch);
         infoBoxBuilder(mainContent,{ name: 'pirate_threat', template: 'mechanics', label: loc('galaxy_piracy'), paragraphs: 7, break: [2,3,4,5,6,7],  h_level: 2,
             para_data: {
                 1: [loc('galaxy_armada')],
@@ -645,8 +646,8 @@ export function mechanicsPage(content){
                 6: ['caution','warning'],
                 7: ['caution','warning']
             }
-        },pirates);
-        sideMenu('add',`mechanics-gameplay`,`piracy`,loc('galaxy_piracy'));
+        },pirates, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`piracy`,loc('galaxy_piracy'), forSearch);
     }
 
     { // Customs & Untapped Potential
@@ -668,10 +669,10 @@ export function mechanicsPage(content){
                 8: ['wiki.html#perks-prestige-technophobe'],
                 9: [(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify']
             }
-        });
+        }, null, forSearch);
         let subSection = createCalcSection(custom,'mechanics','untapped',loc('trait_untapped_name'));
         untappedCalc(subSection);
-        sideMenu('add',`mechanics-gameplay`,`custom`,loc('wiki_mechanics_custom'));
+        sideMenu('add',`mechanics-gameplay`,`custom`,loc('wiki_mechanics_custom'), forSearch);
     }
 
     { // Pillars
@@ -686,7 +687,7 @@ export function mechanicsPage(content){
             data_link: {
                 5: ['wiki.html#hell-structures-west_tower']
             }
-        });
+        }, null, forSearch);
         infoBoxBuilder(mainContent,{ name: 'pillar', template: 'mechanics', label: loc('wiki_mechanics_pillar'), paragraphs: 10, break: [4,6,8], h_level: 2,
             para_data: {
                 1: [loc('tech_pillars'),loc('resource_Harmony_name'),loc('resource_Scarletite_name')],
@@ -709,8 +710,8 @@ export function mechanicsPage(content){
                 9: ['wiki.html#mechanics-gameplay-custom'],
                 10: ['wiki.html#races-species-junker',false,'wiki.html#races-species-sludge']
             }
-        },custom);
-        sideMenu('add',`mechanics-gameplay`,`pillar`,loc('wiki_mechanics_pillar'));
+        },custom, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`pillar`,loc('wiki_mechanics_pillar'), forSearch);
     }
 
     { // Demon Lord Strength
@@ -729,19 +730,19 @@ export function mechanicsPage(content){
                 4: [false,'wiki.html#resets-prestige-infusion'],
                 5: ['wiki.html#dimensional-tech-dark_bomb','wiki.html#resets-prestige-infusion']
             }
-        });
-        dlord.append(`
+        }, null, forSearch);
+        dlord.append?.(`
             <h2 class="has-text-warning">${loc('wiki_mechanics_dlord_str')}</h2>
         `);
         Object.keys(universe_types).forEach(function (uni){
             let empowered = global.stats.spire[universeAffix(uni)] && global.stats.spire[universeAffix(uni)]['dlstr'] ? loc('wiki_mechanics_dlord_str_empowered',[global.stats.spire[universeAffix(uni)]['dlstr']]) : loc('wiki_mechanics_dlord_str_not_empowered');
-            dlord.append(`
+            dlord.append?.(`
                 <div class="para">
                     <span>${loc('universe_' + uni)}: ${empowered}</span>
                 </div>
             `);
         });
-        sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'));
+        sideMenu('add',`mechanics-gameplay`,`dlord`,loc('wiki_mechanics_dlord'), forSearch);
     }
 
     { // Syndicate
@@ -754,7 +755,7 @@ export function mechanicsPage(content){
                 1: [false,'wiki.html#challenges-gameplay-scenarios_truepath','wiki.html#progress-events-syndicate','wiki.html#solar-tp_tech-shipyard'],
                 2: ['wiki.html#mechanics-gameplay-piracy']
             }
-        });
+        }, null, forSearch);
         
         let syndicate_influence = infoBoxBuilder(syndicate,{ name: 'syndicate_influence', template: 'mechanics', label: loc('wiki_mechanics_syndicate_influence'), paragraphs: 3, break:[3], h_level: 2,
             para_data: {
@@ -765,7 +766,7 @@ export function mechanicsPage(content){
             data_link: {
                 2: ['wiki.html#space-tp_structures-triton_mission','wiki.html#solar-tp_tech-data_analysis']
             }
-        });
+        }, null, forSearch);
         
         { // Current Syndicate Influence List
             let syndicate_influence_reveal = createRevealSection(syndicate_influence,'mechanics','syndicate_influence_current',loc('wiki_mechanics_syndicate_influence_current'));
@@ -773,7 +774,7 @@ export function mechanicsPage(content){
             ['moon','red','gas','gas_moon','belt','titan','enceladus','triton','kuiper','eris'].forEach(function(region){
                 let influence = global.space['syndicate'] && global.space.syndicate['spc_'+region] ? global.space.syndicate['spc_'+region] : 0;
                 
-                syndicate_influence_reveal.append(`<div><span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">${influence}</span>`);
+                syndicate_influence_reveal?.append?.(`<div><span class="has-text-caution">${getSolarName(region)}</span>: <span class="has-text-warning">${influence}</span>`);
             });
         }
         
@@ -791,11 +792,11 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#mechanics-gameplay-piracy']
             }
-        });
+        }, null, forSearch);
         let syndicate_penalty_calc = createCalcSection(syndicate_penalty,'mechanics','syndicate_penalty',loc('wiki_mechanics_syndicate_penalty'));
         syndicatePenaltyCalc(syndicate_penalty_calc);
         
-        sideMenu('add',`mechanics-gameplay`,`syndicate`,loc('wiki_mechanics_syndicate'));
+        sideMenu('add',`mechanics-gameplay`,`syndicate`,loc('wiki_mechanics_syndicate'), forSearch);
     }
 
     { // Truepath Ship Mechanics
@@ -808,14 +809,14 @@ export function mechanicsPage(content){
                 1: ['wiki.html#space-tp_structures-shipyard'],
                 2: [false,'wiki.html#mechanics-gameplay-piracy']
             }
-        });
+        }, null, forSearch);
         
         let tp_ships_costs = infoBoxBuilder(tp_ships,{ name: 'tp_ships_costs', template: 'mechanics', label: loc('wiki_mechanics_tp_ships_costs'), paragraphs: 3, break:[3], h_level: 2,
             para_data: {
                 2: [loc(`outer_shipyard_class`)],
                 3: [loc(`outer_shipyard_class`)]
             }
-        });
+        }, null, forSearch);
         let costs_calc = createCalcSection(tp_ships_costs,'mechanics','tp_ships_costs',loc('wiki_mechanics_tp_ships_costs'));
         tpShipsCostsCalc(costs_calc);
         
@@ -823,13 +824,13 @@ export function mechanicsPage(content){
             para_data: {
                 1: [loc(`outer_shipyard_class`)]
             }
-        });
+        }, null, forSearch);
         
         { // Current TP Ship Crew
             let tp_ships_crew_reveal = createRevealSection(tp_ships_crew,'mechanics','tp_ships_crew',loc('wiki_mechanics_tp_ships_crew'));
             
             ['corvette','frigate','destroyer','cruiser','battlecruiser','dreadnought','explorer'].forEach(function(shipClass){
-                tp_ships_crew_reveal.append(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+shipClass)}</span>: <span class="has-text-warning">${shipCrewSize({ class: shipClass })}</span>`);
+                tp_ships_crew_reveal?.append?.(`<div><span class="has-text-caution">${loc('outer_shipyard_class_'+shipClass)}</span>: <span class="has-text-warning">${shipCrewSize({ class: shipClass })}</span>`);
             });
         }
         
@@ -838,7 +839,7 @@ export function mechanicsPage(content){
                 3: [loc('outer_shipyard_power'),loc('outer_shipyard_class')],
                 4: [loc('outer_shipyard_weapon'),loc('outer_shipyard_engine'),loc('outer_shipyard_sensor'),loc(`outer_shipyard_class`)]
             }
-        });
+        }, null, forSearch);
         let power_calc = createCalcSection(tp_ships_power,'mechanics','tp_ships_power',loc('wiki_mechanics_tp_ships_power'));
         tpShipsPowerCalc(power_calc);
         
@@ -847,7 +848,7 @@ export function mechanicsPage(content){
                 1: [loc('firepower'),loc('outer_shipyard_class'),loc('outer_shipyard_weapon')],
                 2: [loc('firepower'),loc('outer_shipyard_hull')]
             }
-        });
+        }, null, forSearch);
         let firepower_calc = createCalcSection(tp_ships_firepower,'mechanics','tp_ships_firepower',loc('wiki_mechanics_tp_ships_firepower'));
         tpShipsFirepowerCalc(firepower_calc);
         
@@ -861,7 +862,7 @@ export function mechanicsPage(content){
                 6: [`1%`,loc('outer_shipyard_hull')],
                 7: [loc('outer_shipyard_hull'),`10%`]
             }
-        });
+        }, null, forSearch);
         let hull_calc = createCalcSection(tp_ships_hull,'mechanics','tp_ships_hull',loc('wiki_calc_tp_ships_hull_damage_range'));
         tpShipsHullCalc(hull_calc);
         
@@ -870,13 +871,13 @@ export function mechanicsPage(content){
                 1: [loc('space_scan_effectiveness')],
                 2: [loc('space_scan_effectiveness'),loc('outer_shipyard_sensors'),loc('outer_shipyard_class'),loc('outer_shipyard_sensor'),getSolarName('triton'),loc('space_fob_title')]
             }
-        });
+        }, null, forSearch);
         let scan_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_scan',loc('wiki_calc_tp_ships_scan_ship'));
         tpShipsScanCalc(scan_calc);
         let intel_calc = createCalcSection(tp_ships_sensors,'mechanics','tp_ships_intel',loc('space_scan_effectiveness'));
         tpShipsIntelCalc(intel_calc);
         
-        sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'));
+        sideMenu('add',`mechanics-gameplay`,`tp_ships`,loc('wiki_mechanics_tp_ships'), forSearch);
     }
 
     { // Seeded Randomness
@@ -901,8 +902,8 @@ export function mechanicsPage(content){
                 13: ['wiki.html#planets-gameplay','wiki.html#resets-prestige-bioseed','wiki.html#resets-prestige-blackhole','wiki.html#resets-prestige-vacuum'],
                 14: ['wiki.html#hell-gameplay-spire']
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`seed`,loc('wiki_mechanics_seed'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`seed`,loc('wiki_mechanics_seed'), forSearch);
     }
 
     { // Cheese Level
@@ -946,7 +947,7 @@ export function mechanicsPage(content){
         }
         let cheeses = [];
         for (let i=0; i<cheeseList.length; i++){
-            cheeses.push(`<span class="has-text-warning">${loc(`cheese_${cheeseList[i]}`)}</span> (<span class="has-text-caution">${i+1}</span>)`);
+            cheeses.push(forSearch?`${loc(`cheese_${cheeseList[i]}`)} (${i+1})`:`<span class="has-text-warning">${loc(`cheese_${cheeseList[i]}`)}</span> (<span class="has-text-caution">${i+1}</span>)`);
         }
         infoBoxBuilder(mainContent,{ name: 'cheese', template: 'mechanics', label: loc('wiki_mechanics_cheese'), paragraphs: 5, break: [4,5], h_level: 2,
             para_data: {
@@ -960,9 +961,10 @@ export function mechanicsPage(content){
                 4: ['warning','danger','caution'],
                 5: [false],
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'));
+        }, null, forSearch);
+        sideMenu('add',`mechanics-gameplay`,`cheese`,loc('wiki_mechanics_cheese'), forSearch);
     }
+
     { // Thralls
         let thralls = infoBoxBuilder(mainContent,{ name: 'thralls', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 9, break: [4,8], h_level: 2,
             para_data: {
@@ -973,74 +975,91 @@ export function mechanicsPage(content){
             data_link: {
                 1: ['wiki.html#traits-species-genus_unfathomable'],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_cath', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_cath`),3],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_pterodacti', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_pterodacti`),3],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_entish', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_entish`),`40%`],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_cacti', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_cacti`),`32%`],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_moldling', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 3, break: [3], h_level: false,
             para_data: {
                 1: [loc(`race_moldling`)],
                 2: [
-                    [
+                    (forSearch?[
+                        loc('tech_smelting'), loc('tech_dynamite'), loc('tech_portland_cement'), loc('tech_oxygen_converter'),
+                        loc('tech_machinery'), loc('tech_uranium_storage'), actions.tech.synthetic_fur.title(), loc('tech_rover'),
+                        loc('tech_starcharts'), loc('tech_nano_tubes'), loc('tech_stanene'), loc('tech_hydroponics'),
+                        loc('tech_orichalcum_panels'), loc('tech_cybernetics')
+                    ]:[
                         `<span class="has-text-warning">${loc('tech_smelting')}</span>`, `<span class="has-text-warning">${loc('tech_dynamite')}</span>`, `<span class="has-text-warning">${loc('tech_portland_cement')}</span>`, `<span class="has-text-warning">${loc('tech_oxygen_converter')}</span>`,
                         `<span class="has-text-warning">${loc('tech_machinery')}</span>`, `<span class="has-text-warning">${loc('tech_uranium_storage')}</span>`, `<span class="has-text-warning">${actions.tech.synthetic_fur.title()}</span>`, `<span class="has-text-warning">${loc('tech_rover')}</span>`,
                         `<span class="has-text-warning">${loc('tech_starcharts')}</span>`, `<span class="has-text-warning">${loc('tech_nano_tubes')}</span>`, `<span class="has-text-warning">${loc('tech_stanene')}</span>`, `<span class="has-text-warning">${loc('tech_hydroponics')}</span>`,
                         `<span class="has-text-warning">${loc('tech_orichalcum_panels')}</span>`, `<span class="has-text-warning">${loc('tech_cybernetics')}</span>`
-                    ].join(', ')
+                    ]).join(', ')
                 ],
             }
             ,
             data_color: {
                 2: [false]
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_sharkin', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_sharkin`)],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_satyr', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_satyr`)],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_phoenix', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_phoenix`),'0.25'],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_salamander', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_salamander`),'20%'],
             }
-        });
+        }, null, forSearch);
+
         infoBoxBuilder(thralls,{ name: 'thralls_unicorn', template: 'mechanics', label: loc('wiki_mechanics_thralls'), paragraphs: 1, h_level: false,
             para_data: {
                 1: [loc(`race_unicorn`),1],
             }
-        });
-        sideMenu('add',`mechanics-gameplay`,`thralls`,loc('wiki_mechanics_thralls'));
+        }, null, forSearch);
+
+        sideMenu('add',`mechanics-gameplay`,`thralls`,loc('wiki_mechanics_thralls'), forSearch);
     }
 }
 
 function jobStressCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="jobStressCalc"></div>`);
     info.append(calc);
     
@@ -1092,9 +1111,9 @@ function jobStressCalc(info){
     jobsDropdown += `
         </b-dropdown></div>
     `;
-    jobSelect.append(jobsDropdown);
+    jobSelect.append?.(jobsDropdown);
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_job_stress_divisor')}</h2>
         </div>
@@ -1109,7 +1128,7 @@ function jobStressCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput" v-show="i.content.vis"><span>${loc('wiki_calc_job_stress_content')}</span> <b-numberinput :input="val('content')" min="0" v-model="i.content.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><b-checkbox class="patrol" v-model="i.mellow.val">${loc('planet_mellow')}</b-checkbox></div>
@@ -1439,6 +1458,7 @@ function jobStressCalc(info){
 }
 
 function warmongerCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="warmongerCalc"></div>`);
     info.append(calc);
     
@@ -1459,13 +1479,13 @@ function warmongerCalc(info){
         result: { vis: false, val: 0 }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span>log2({{ i.fatigue.val, 'fatigue' | generic }} + {{ i.protest.val, 'protest' | generic }})</span><span v-show="s.result.vis"> = {{ false | calc }} = {{ true | calc }}% ${loc('wiki_mechanics_warmonger')}</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_warmonger_fatigue')}</span> <b-numberinput :input="val('fatigue')" min="0" v-model="i.fatigue.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_calc_warmonger_protest')}</span> <b-numberinput :input="val('protest')" min="0" v-model="i.protest.val" :controls="false"></b-numberinput></div>
@@ -1518,6 +1538,7 @@ function warmongerCalc(info){
 }
 
 function spyCostCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="spyCostCalc"></div>`);
     info.append(calc);
     
@@ -1540,7 +1561,7 @@ function spyCostCalc(info){
         total: { vis: false, val: undefined }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_spy_cost_base_title')}</h2>
         </div>
@@ -1555,7 +1576,7 @@ function spyCostCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('civics_gov_mil_rate')}</span> <b-numberinput :input="val('military')" min="50" v-model="i.military.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('civics_gov_relations')}</span> <b-numberinput :input="val('relations')" min="0" max ="100" v-model="i.relations.val" :controls="false"></b-numberinput></div>
@@ -1641,6 +1662,7 @@ function spyCostCalc(info){
 }
 
 function occupationCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="occupationCalc"></div>`);
     info.append(calc);
     
@@ -1661,7 +1683,7 @@ function occupationCalc(info){
         purchase: { vis: false, val: undefined }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_occupation_annex')}</h2>
         </div>
@@ -1676,7 +1698,7 @@ function occupationCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('civics_gov_relations')}</span> <b-numberinput :input="val('relations')" min="0" max ="100" v-model="i.relations.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('civics_gov_eco_rate')}</span> <b-numberinput :input="val('economic')" min="0" v-model="i.economic.val" :controls="false"></b-numberinput></div>
@@ -1735,6 +1757,7 @@ function occupationCalc(info){
 }
 
 function genomeDecayCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="genomeDecayCalc"></div>`);
     info.append(calc);
     
@@ -1754,7 +1777,7 @@ function genomeDecayCalc(info){
         real: { vis: false, val: undefined }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_g_decay_game')}</h2>
         </div>
@@ -1769,7 +1792,7 @@ function genomeDecayCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_g_decay_mutations')}</span> <b-numberinput :input="val('mutations')" min="0" v-model="i.mutations.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_calc_g_decay_days')}</span> <b-numberinput :input="val('days')" min="0" v-model="i.days.val" :controls="false"></b-numberinput></div>
@@ -1828,6 +1851,7 @@ function genomeDecayCalc(info){
 }
 
 function quantumLevelCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="quantumLevelCalc"></div>`);
     info.append(calc);
     
@@ -1854,13 +1878,13 @@ function quantumLevelCalc(info){
         result: { vis: false, val: 0 }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span>(ln(1 + ((1.1 - 1) * {{ i.knowledge.val, 'knowledge' | generic }} / 250000)) / ln(1.1)) * (1 + (0.05 * {{ i.citadels.val, 'citadels' | generic }})) * (2 - (0.99^{{ i.cores.val, 'cores' | generic }}))</span><span v-show="i.supercore.val"> * 1.25</span><span v-show="i.linked.val"> * {{ s.linked.val, 'linked' | generic }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_q_level_knowledge')}</span> <b-numberinput :input="val('knowledge')" min="0" v-model="i.knowledge.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_calc_q_level_citadels')}</span> <b-numberinput :input="val('citadels')" min="0" v-model="i.citadels.val" :controls="false"></b-numberinput></div>
@@ -1970,6 +1994,7 @@ function quantumLevelCalc(info){
 }
 
 function massCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="massCalc"></div>`);
     info.append(calc);
     
@@ -1999,28 +2024,28 @@ function massCalc(info){
     let ktFormula = $(`<div></div>`);
     
     let isFirst = true;
-    variables.append(resVariables);
+    variables.append?.(resVariables);
     resources.forEach(function(res){
         if (!isFirst){
-            ktFormula.append(`<span> + </span>`);
+            ktFormula.append?.(`<span> + </span>`);
         }
         isFirst = false;
         
         inputs[res] = { val: undefined };
-        resVariables.append(`
+        resVariables.append?.(`
             <div class="calcInput"><span>${loc('resource_' + res + '_name')}</span> <b-numberinput :input="val('${res}')" min="0" v-model="i.${res}.val" :controls="false"></b-numberinput></div>
         `);
-        ktFormula.append(`<span>({{ i.${res}.val, '${res}' | generic }} * ${atomic_mass[res]})`);
+        ktFormula.append?.(`<span>({{ i.${res}.val, '${res}' | generic }} * ${atomic_mass[res]})`);
     });
-    ktFormula.append(`<span v-show="s.result.vis"> = {{ true, 'kt' | calc }}</span>`);
+    ktFormula.append?.(`<span v-show="s.result.vis"> = {{ true, 'kt' | calc }}</span>`);
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_mass_kt')}</h2>
         </div>
     `);
-    formula.append(ktFormula);
-    formula.append(`
+    formula.append?.(ktFormula);
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_mass_solar')}</h2>
         </div>
@@ -2053,7 +2078,7 @@ function massCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_mass_solar_tot')}</span> <b-numberinput :input="val('solar_tot')" min="8" v-model="i.solar_tot.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><span>${loc('wiki_calc_mass_exotic_tot')}</span> <b-numberinput :input="val('exotic_tot')" min="0" v-model="i.exotic_tot.val" :controls="false"></b-numberinput></div>
@@ -2210,6 +2235,7 @@ function massCalc(info){
 }
 
 function untappedCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="untappedPotentialCalc"></div>`);
     info.append(calc);
     
@@ -2229,13 +2255,13 @@ function untappedCalc(info){
         result: { vis: false, val: 0 }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span>({{ i.genes.val | generic }} / ({{ i.genes.val | generic }} + 20) / 10) + 0.00024</span><span v-show="s.result.vis"> = {{ false | calc }} = +{{ true | calc }}%</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('resource_Genes_name')}</span> <b-numberinput :input="val('genes')" min="0" v-model="i.genes.val" :controls="false"></b-numberinput></div>
         </div>
@@ -2285,6 +2311,7 @@ function untappedCalc(info){
 }
 
 function syndicateCapCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="syndicateCapCalc"></div>`);
     info.append(calc);
     
@@ -2310,9 +2337,9 @@ function syndicateCapCalc(info){
         `;
     });
     
-    formula.append(regions);
+    formula.append?.(regions);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><div><span>${loc(`space_mission_title`,[getSolarName('triton')])}</span></div><div><b-checkbox class="patrol" v-model="i.triton1.val"></b-checkbox></div></div>
             <div class="calcInput" v-show="i.triton1.val"><div><span>${loc('tech_data_analysis')}</span></div><div><b-checkbox class="patrol" v-model="i.outer4.val"></b-checkbox></div></div>
@@ -2360,6 +2387,7 @@ function syndicateCapCalc(info){
 }
 
 function syndicatePenaltyCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="syndicatePenaltyCalc"></div>`);
     info.append(calc);
     
@@ -2389,7 +2417,7 @@ function syndicatePenaltyCalc(info){
         penalty: { vis: false, val: undefined }
     };
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_syndicate_penalty_divisor')}</h2><h2 class="has-text-caution" v-show="i.relations.vis"> - {{ i.relations.val | relationsType}}</h2>
         </div>
@@ -2416,7 +2444,7 @@ function syndicatePenaltyCalc(info){
         </div>
     `);
    
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput">
                 <div>
@@ -2725,6 +2753,7 @@ function syndicatePenaltyCalc(info){
 }
 
 function tpShipsCostsCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsCostsCalc"></div>`);
     info.append(calc);
     
@@ -2768,7 +2797,7 @@ function tpShipsCostsCalc(info){
         creep: { val: undefined }
     }
     
-    formulaBase.append(`
+    formulaBase.append?.(`
         <div>
             <div>
                 <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_costs_base_costs')}</h2>
@@ -2829,9 +2858,9 @@ function tpShipsCostsCalc(info){
         `;
     });
     finalForms += `</div>`;
-    formulaCreep.append(finalForms);
+    formulaCreep.append?.(finalForms);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_tp_ships_costs_owned')}</span> <b-numberinput :input="val('owned')" min="0" v-model="i.owned.val" :controls="false"></b-numberinput></div>
             <div class="calcInput">
@@ -3293,6 +3322,7 @@ function tpShipsCostsCalc(info){
 }
 
 function tpShipsPowerCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsPowerCalc"></div>`);
     info.append(calc);
     
@@ -3322,7 +3352,7 @@ function tpShipsPowerCalc(info){
         net: { val: undefined, vis: false, neg: undefined }
     }
     
-    shipClass.append(`
+    shipClass.append?.(`
         <div>
             <div class="calcInput">
                 <div>
@@ -3347,7 +3377,7 @@ function tpShipsPowerCalc(info){
         </div>
     `);
     
-    powerGen.append(`
+    powerGen.append?.(`
         <div>
             <div>
                 <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_gen')}</h2>
@@ -3378,7 +3408,7 @@ function tpShipsPowerCalc(info){
         </div>
     `);
     
-    powerUse.append(`
+    powerUse.append?.(`
         <div>
             <div>
                 <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_power_use',[loc('outer_shipyard_weapon')])}</h2>
@@ -3611,6 +3641,7 @@ function tpShipsPowerCalc(info){
 }
 
 function tpShipsFirepowerCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsFirepowerCalc"></div>`);
     info.append(calc);
     
@@ -3631,13 +3662,13 @@ function tpShipsFirepowerCalc(info){
         result: { vis: false, val: 0 }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span>{{ i.weapon.val | weaponVal }} * {{ i.class.val | classVal }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput">
                 <div>
@@ -3761,6 +3792,7 @@ function tpShipsFirepowerCalc(info){
 }
 
 function tpShipsHullCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsHullCalc"></div>`);
     info.append(calc);
     
@@ -3781,13 +3813,13 @@ function tpShipsHullCalc(info){
         result: { vis: false, val: undefined }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span v-show="s.result.vis">1 - {{ | calc }}</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput">
                 <div>
@@ -3860,6 +3892,7 @@ function tpShipsHullCalc(info){
 }
 
 function tpShipsScanCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsScanCalc"></div>`);
     info.append(calc);
     
@@ -3880,13 +3913,13 @@ function tpShipsScanCalc(info){
         result: { vis: false, val: 0 }
     }
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <span>{{ i.sensor.val | sensorVal }}</span><span v-show="i.sensor.val !== 'visual'"> * {{ i.class.val | classVal }}</span><span v-show="s.result.vis"> = {{ | calc }}</span>
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput">
                 <div>
@@ -4001,6 +4034,7 @@ function tpShipsScanCalc(info){
 }
 
 function tpShipsIntelCalc(info){
+    if(!info?.append)return;
     let calc = $(`<div class="calc" id="tpShipsIntelCalc"></div>`);
     info.append(calc);
     
@@ -4023,7 +4057,7 @@ function tpShipsIntelCalc(info){
     }
     
     
-    formula.append(`
+    formula.append?.(`
         <div>
             <h2 class="has-text-caution">${loc('wiki_calc_tp_ships_intel_combined_range')}</h2>
         </div>
@@ -4050,7 +4084,7 @@ function tpShipsIntelCalc(info){
         </div>
     `);
     
-    variables.append(`
+    variables.append?.(`
         <div>
             <div class="calcInput"><span>${loc('wiki_calc_tp_ships_intel_ship_range')}</span> <b-numberinput :input="val('range')" min="0" v-model="i.range.val" :controls="false"></b-numberinput></div>
             <div class="calcInput"><div><span>${getSolarName('triton')}</span></div><div><b-checkbox class="patrol" v-model="i.triton.val"></b-checkbox></div></div>

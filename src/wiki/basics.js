@@ -1,8 +1,8 @@
 import { loc } from './../locale.js';
 import { infoBoxBuilder } from './functions.js';
 
-export function basicsPage(content){
-    infoBoxBuilder(content,{ name: 'start', template: 'basics', paragraphs: 2, h_level: 2 });
+export function basicsPage(content,forSearch=false){
+    infoBoxBuilder(content,{ name: 'start', template: 'basics', paragraphs: 2, h_level: 2 }, null, forSearch);
 
     infoBoxBuilder(content,{ name: 'prehistoric', template: 'basics', paragraphs: 14, break: [2,6,13], h_level: 2,
         para_data: {
@@ -16,7 +16,7 @@ export function basicsPage(content){
         data_link: {
             7: ['wiki.html#races-species']
         }
-    });
+    },null, forSearch);
 
     infoBoxBuilder(content,{ name: 'civilization', template: 'basics', paragraphs: 14, break: [2,8,13], h_level: 2,
         para_data: {
@@ -31,7 +31,7 @@ export function basicsPage(content){
             13: [loc(`resource_Knowledge_name`)],
             14: [loc(`resource_Knowledge_name`),loc(`city_university`)]
         }
-    });
+    },null, forSearch);
 
     infoBoxBuilder(content,{ name: 'government', template: 'basics', paragraphs: 8, break: [4], h_level: 2,
         para_data: {
@@ -44,7 +44,7 @@ export function basicsPage(content){
             7: [loc('morale_tax'),loc('morale')],
             8: [25,100]
         }
-    });
+    },null, forSearch);
 
     infoBoxBuilder(content,{ name: 'mad', template: 'basics', paragraphs: 4, h_level: 2,
         para_data: {
@@ -55,5 +55,5 @@ export function basicsPage(content){
         data_link: {
             2: ['wiki.html#resets-prestige']
         }
-    });
+    },null, forSearch);
 }
