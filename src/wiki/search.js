@@ -52,7 +52,7 @@ export function initSearch(parent){
             isLoading: true,
             start: 0,
             showCount: 0,
-            resultDefaultHeight: 100
+            resultDefaultHeight: 120
         },
         methods:{
             inputChanged: function (){
@@ -117,6 +117,7 @@ export function initSearch(parent){
                         });
                     }
                 }
+                this.$refs["searchPopperResult"].scrollTop = 0;
             },
             gotoHash: function(hash, isSub = false){
                 let array = hash.split('-');
@@ -136,7 +137,7 @@ export function initSearch(parent){
             },
             getResultHeight() {
                 this.$nextTick(() => {
-                    this.showCount = ~~(this.$refs["searchPopperResult"].offsetHeight / this.resultDefaultHeight) + 3;
+                    this.showCount = ~~(this.$refs["searchPopperResult"].offsetHeight / this.resultDefaultHeight) + 6;
                 });
             }
         },

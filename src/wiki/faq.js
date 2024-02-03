@@ -23,8 +23,8 @@ export function faqPage(forSearch = false){
 
     if(forSearch) {
         for (let i = 0; i < questions.length; i++) {
-            let hash = `faq-faq${i}`;
-            add2virtualWikiTitle(hash, `${loc("wiki_menu_faq")} ${("00"+i).slice(-2)}`);
+            let hash = `faq-faq${i+1}`;
+            add2virtualWikiTitle(hash, `${loc("wiki_menu_faq")} ${("00"+(i+1)).slice(-2)}`);
             let tokens = [];
             if (values.hasOwnProperty(questions[i])) {
                 tokens = values[questions[i]];
@@ -47,7 +47,7 @@ export function faqPage(forSearch = false){
             tokens = values[questions[i]];
         }
 
-        qna.append(`<h2 class="has-text-warning" id="faq${i}">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
+        qna.append(`<h2 class="has-text-warning" id="faq${i+1}">${loc(`wiki_faq_q_${questions[i]}`)}</h2>`);
         qna.append(`<div>${loc(`wiki_faq_a_${questions[i]}`,tokens)}</div>`);
     }
 }
