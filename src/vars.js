@@ -18,7 +18,8 @@ export var global = {
         start: Date.now(),
         days: 0,
         tdays: 0,
-        daysMega: 0
+        daysMega: 0,
+        daysEvolveComplete: -1
     },
     event: {
         t: 200,
@@ -1982,6 +1983,9 @@ if (!global.civic['d_job']){
 if(!global.stats.daysMega){
     global.stats.daysMega = global.stats.days;
 }
+if(!global.stats.daysEvolveComplete){
+    global.stats.daysEvolveComplete = -1;
+}
 
 global.settings.animated = true;
 global.settings.disableReset = false;
@@ -2355,6 +2359,7 @@ export function clearStates(){
     global.m_event = { t: 499, l: false };
     global.stats.days = 0;
     global.stats.daysMega = 0;
+    global.stats.daysEvolveComplete = -1;
     global.stats.know = 0;
     global.stats.starved = 0;
     global.stats.died = 0;

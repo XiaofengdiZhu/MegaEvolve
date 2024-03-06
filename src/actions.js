@@ -7880,6 +7880,7 @@ function sentience(){
     else {
         messageQueue(loc('sentience',[loc('genelab_genus_' + races[global.race.species].type),races[global.race.species].entity,flib('name')]),'info',false,['progress']);
     }
+    global.stats.daysEvolveComplete = global.stats.daysMega;
 
     if (global.stats.achieve['technophobe'] && global.stats.achieve.technophobe.l >= 1){
         global.resource.Steel.display = true;
@@ -8108,7 +8109,8 @@ function simulation(){
                 start: Date.now(),
                 days: 0,
                 tdays: 0,
-                daysMega: 0
+                daysMega: 0,
+                daysEvolveComplete: -1
             };
             setupStats();
             global.genes = { minor: {}, challenge: 1 };

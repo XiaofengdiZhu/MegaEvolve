@@ -472,56 +472,38 @@ function virtualLoadJob(job, define, impact, stress, color){
         civ_container.showJob = (j) => {
             return global.civic[j].display || (j === 'scavenger' && global.race.servants.force_scavenger);
         };
-        civ_container.add = () => {
-            let keyMult = keyMultiplier();
-            for (let i = 0; i < keyMult; i++) {
-                if (global.race.servants.max > global.race.servants.used) {
-                    global.race.servants.jobs[job]++;
-                    global.race.servants.used++;
-                } else {
-                    break;
-                }
-            }
+        civ_container.add = (num) => {
+            if(!num)num = keyMultiplier();
+            num = Math.min(num, global.race.servants.max - global.race.servants.used);
+            global.race.servants.jobs[job] += num;
+            global.race.servants.used += num;
         };
-        civ_container.sub = () => {
-            let keyMult = keyMultiplier();
-            for (let i = 0; i < keyMult; i++) {
-                if (global.race.servants.jobs[job] > 0) {
-                    global.race.servants.jobs[job]--;
-                    global.race.servants.used--;
-                } else {
-                    break;
-                }
-            }
+        civ_container.sub = (num) => {
+            if(!num)num = keyMultiplier();
+            num = Math.max(num, global.race.servants.jobs[job]);
+            global.race.servants.jobs[job] -= num;
+            global.race.servants.used -= num;
         };
     }
     else {
         civ_container.showJob = (j) => {
             return global.civic[j].display;
         };
-        civ_container.add = () => {
-            let keyMult = keyMultiplier();
-            for (let i = 0; i < keyMult; i++) {
-                if ((global['civic'][job].max === -1 || global.civic[job].workers < global['civic'][job].max) && (global.civic[global.civic.d_job] && global.civic[global.civic.d_job].workers > 0)) {
-                    global.civic[job].workers++;
-                    global.civic[global.civic.d_job].workers--;
-                    global.civic[job].assigned = global.civic[job].workers;
-                } else {
-                    break;
-                }
+        civ_container.add = (num) => {
+            if(!num)num = keyMultiplier();
+            if(global.civic[global.civic.d_job]){
+                num = Math.min(num, global['civic'][job].max === -1 ? Number.MAX_SAFE_INTEGER : global['civic'][job].max, global.civic[global.civic.d_job].workers);
+                global.civic[job].workers += num;
+                global.civic[global.civic.d_job].workers -= num;
+                global.civic[job].assigned = global.civic[job].workers;
             }
         };
-        civ_container.sub = () => {
-            let keyMult = keyMultiplier();
-            for (let i = 0; i < keyMult; i++) {
-                if (global.civic[job].workers > 0) {
-                    global.civic[job].workers--;
-                    global.civic[global.civic.d_job].workers++;
-                    global.civic[job].assigned = global.civic[job].workers;
-                } else {
-                    break;
-                }
-            }
+        civ_container.sub = (num) => {
+            if(!num)num = keyMultiplier();
+            num = Math.max(num, global.civic[job].workers);
+            global.civic[job].workers -= num;
+            global.civic[global.civic.d_job].workers += num;
+            global.civic[job].assigned = global.civic[job].workers;
         };
         civ_container.setDefault = (j) => {
             global.civic.d_job = j;

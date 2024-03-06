@@ -1047,6 +1047,9 @@ export function clearElement(elm,remove){
 }
 
 export function vBind(bind,action){
+    if(action === 'update' &&!global.settings.autoRefresh && global.stats.daysEvolveComplete !== -1 && Math.round((global.stats.daysMega - global.stats.daysEvolveComplete) * 100) % 20 !== 0){
+        return;
+    }
     action = action || 'create';
     if ($(bind.el).length > 0 && typeof $(bind.el)[0].__vue__ !== "undefined"){
         try {
@@ -2324,6 +2327,7 @@ export function updateResetStats(){
     global.stats.tdays += global.stats.days;
     global.stats.days = 0;
     global.stats.daysMega = 0;
+    global.stats.daysEvolveComplete = -1;
     global.stats.tknow += global.stats.know;
     global.stats.know = 0;
     global.stats.tstarved += global.stats.starved;
