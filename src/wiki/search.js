@@ -123,14 +123,23 @@ export function initSearch(parent){
                 let array = hash.split('-');
                 hideSearchPopper();
                 let sub = array[0];
-                let main = sub2Main[sub];
                 if(sub.startsWith("tp_")){
                     sub = sub.slice(3);
                 }
-                if(sub.endsWith("_tech")){
-                    sub = sub.slice(0, -3);
+                let frag = array[1];
+                if(frag && frag.endsWith("_tech")){
+                    if(isSub){
+                        menuDispatch("tech", sub);
+                    }else{
+                        menuDispatch("tech", sub, frag.slice(0, -5));
+                    }
+                }else{
+                    if(isSub){
+                        menuDispatch(sub2Main[sub], sub);
+                    }else{
+                        menuDispatch(sub2Main[sub], sub, frag);
+                    }
                 }
-                isSub ? menuDispatch(main, sub) : menuDispatch(main, sub, array[1]);
             },
             scrollHandle() {
                 this.start = ~~(this.$refs["searchPopperResult"].scrollTop / this.resultDefaultHeight);
@@ -233,16 +242,19 @@ function initVirtualWiki(vue){
     renderAchievePage(null, true);
     changeLog();
     for(let hash in virtualWiki){
-        let sub = hash.split('-')[0];
+        let array = hash.split('-');
+        let sub = array[0];
         let subForLoc = sub;
         if(subForLoc.startsWith("tp_")){
             subForLoc = subForLoc.slice(3);
         }
-        if(subForLoc.endsWith("_tech")){
-            subForLoc = subForLoc.slice(0, -3);
+        let frag = array[1];
+        if(frag && frag.endsWith("_tech")){
+            virtualWiki[hash].main = loc(`wiki_menu_tech`);
+        }else{
+            virtualWiki[hash].main = loc(`wiki_menu_${sub2Main[sub]}`);
         }
         virtualWiki[hash].sub = loc(`wiki_menu_${subForLoc}`);
-        virtualWiki[hash].main = loc(`wiki_menu_${sub2Main[sub]}`);
         if(sub !== sub2Main[sub]){
             virtualWiki[hash].showMain = true;
         }
