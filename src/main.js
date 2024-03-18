@@ -7,7 +7,7 @@ import { defineResources, resource_values, spatialReasoning, craftCost, plasmidB
 import { virtualDefineJobs, job_desc, virtualLoadFoundry, farmerValue, jobScale, workerScale, virtualLoadServants} from './jobs.js';
 import { defineIndustry, f_rate, manaCost, setPowerGrid, gridEnabled, gridDefs, nf_resources, replicator, luxGoodPrice } from './industry.js';
 import { checkControlling, garrisonSize, armyRating, govTitle, govCivics, govEffect, weaponTechModifer } from './civics.js';
-import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech } from './actions.js';
+import { actions, updateDesc, checkTechRequirements, drawEvolution, BHStorageMulti, storageMultipler, checkAffordable, drawTech, gainTech, housingLabel, updateQueueNames, wardenLabel, planetGeology, resQueue, bank_vault, start_cataclysm, orbitDecayed, postBuild, skipRequirement, virtualDrawCity, virtualDrawTech, virtualDrawEvolution } from './actions.js';
 import { renderSpace, convertSpaceSector, fuel_adjust, int_fuel_adjust, zigguratBonus, planetName, genPlanets, setUniverse, universe_types, gatewayStorage, piracy, spaceTech, universe_affixes, virtualRenderSpace } from './space.js';
 import { renderFortress, bloodwar, soulForgeSoldiers, hellSupression, genSpireFloor, mechRating, mechCollect, updateMechbay, virtualRenderFortress } from './portal.js';
 import { renderTauCeti, syndicate, shipFuelUse, spacePlanetStats, genXYcoord, shipCrewSize, tpStorageMultiplier, tritonWar, sensorRange, erisWar, calcAIDrift, drawMap, tauEnabled, virtualRenderTauCeti } from './truepath.js';
@@ -711,7 +711,7 @@ if (global.race.species === 'protoplasm'){
         genPlanets();
     }
     else {
-        drawEvolution();
+        virtualDrawEvolution();
 
 
 
@@ -1130,31 +1130,31 @@ function fastLoop(){
                 modRes('RNA', global.resource.RNA.max);
                 modRes('DNA', global.resource.RNA.max);
             }
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global['resource']['RNA'].amount >= 10 && !global.evolution['membrane']){
             global.evolution['membrane'] = { count: 0 };
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global['resource']['DNA'].amount >= 4 && !global.evolution['organelles']){
             global.evolution['organelles'] = { count: 0 };
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global.evolution['organelles'] && global.evolution.organelles.count >= 2 && !global.evolution['nucleus']){
             global.evolution['nucleus'] = { count: 0 };
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global.evolution['nucleus'] && global.evolution.nucleus.count >= 1 && !global.evolution['eukaryotic_cell']){
             global.evolution['eukaryotic_cell'] = { count: 0 };
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global.evolution['eukaryotic_cell'] && global.evolution.eukaryotic_cell.count >= 1 && !global.evolution['mitochondria']){
             global.evolution['mitochondria'] = { count: 0 };
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else if (global.evolution['mitochondria'] && !global.tech['evo']){
             global.tech['evo'] = 1;
-            drawEvolution();
+            virtualDrawEvolution();
         }
     }
     else {

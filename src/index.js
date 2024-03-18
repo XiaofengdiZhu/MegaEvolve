@@ -180,6 +180,9 @@ export function mainVue(){
             },
             drawTech(){
                 drawTech();
+            },
+            drawEvolution(){
+                drawEvolution();
             }
         },
         filters: {
@@ -1202,7 +1205,7 @@ export function index(){
     // Evolution Tab
     let evolution = $(`<b-tab-item id="evolution" class="tab-item sticky" :visible="s.showEvolve">
         <template slot="header">
-            {{ 'tab_evolve' | label }}
+            <span @click="drawEvolution">{{ 'tab_evolve' | label }}</span>
         </template>
     </b-tab-item>`);
     tabs.append(evolution);

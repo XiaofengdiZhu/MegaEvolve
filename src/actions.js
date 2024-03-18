@@ -3981,7 +3981,138 @@ export const actions = {
     portal: fortressTech(),
     tauceti: tauCetiTech()
 };
-
+export function virtualSetChallengeScreen(){
+    Object.keys(challengeList).forEach(challenge=>{
+        virtualClearElement("evolution-"+challenge, true);
+    });
+    Object.keys(advancedChallengeList).forEach(challenge=>{
+        virtualClearElement("evolution-"+challenge, true);
+    });
+    global.evolution['bunker'] = { count: 1 };
+    virtualRemoveAction(actions.evolution.bunker.id);
+    if (global.race['truepath'] || global.race['lone_survivor']){
+        global.evolution['nerfed'] = { count: 0 };
+        global.evolution['badgenes'] = { count: 0 };
+    }
+    else {
+        if (global.race.universe === 'antimatter'){
+            global.evolution['mastery'] = { count: 0 };
+        }
+        else {
+            global.evolution['plasmid'] = { count: 0 };
+        }
+        global.evolution['crispr'] = { count: 0 };
+    }
+    global.evolution['trade'] = { count: 0 };
+    global.evolution['craft'] = { count: 0 };
+    global.evolution['junker'] = { count: 0 };
+    global.evolution['joyless'] = { count: 0 };
+    global.evolution['steelen'] = { count: 0 };
+    if (global.stats.achieve['whitehole'] || global['sim']){
+        global.evolution['decay'] = { count: 0 };
+    }
+    if (global.stats.achieve['ascended'] || global['sim']){
+        global.evolution['emfield'] = { count: 0 };
+    }
+    if (global.stats.achieve['scrooge'] || global['sim']){
+        global.evolution['inflation'] = { count: 0 };
+    }
+    if (global.stats.achieve['shaken'] || global['sim']){
+        global.evolution['cataclysm'] = { count: 0 };
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
+        global.evolution['banana'] = { count: 0 };
+        global.evolution['orbit_decay'] = { count: 0 };
+    }
+    if (global.race.universe === 'standard' && (global.stats.achieve['whitehole'] || global['sim'])){
+        //global.evolution['nonstandard'] = { count: 0 };
+    }
+    if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
+        //global.evolution['gravity_well'] = { count: 0 };
+    }
+    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
+        global.evolution['witch_hunter'] = { count: 0 };
+    }
+    if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
+        //global.evolution['warlord'] = { count: 0 };
+    }
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
+        global.evolution['truepath'] = { count: 0 };
+    }
+    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
+        global.evolution['sludge'] = { count: 0 };
+    }
+    if (global.stats.achieve['bluepill'] || global['sim']){
+        global.evolution['simulation'] = { count: 0 };
+    }
+    if (global.stats.achieve['retired'] || global['sim']){
+        global.evolution['lone_survivor'] = { count: 0 };
+    }
+    if (global.race['truepath'] || global.race['lone_survivor']){
+        virtualAddAction('evolution','nerfed');
+    }
+    else {
+        if (global.race.universe === 'antimatter'){
+            virtualAddAction('evolution','mastery');
+        }
+        else {
+            virtualAddAction('evolution','plasmid');
+        }
+    }
+    virtualAddAction('evolution','trade');
+    virtualAddAction('evolution','craft');
+    if (global.race['truepath'] || global.race['lone_survivor']){
+        virtualAddAction('evolution','badgenes');
+    }
+    else {
+        virtualAddAction('evolution','crispr');
+    }
+    virtualAddAction('evolution','joyless');
+    virtualAddAction('evolution','steelen');
+    if (global.stats.achieve['whitehole'] || global['sim']){
+        virtualAddAction('evolution','decay');
+    }
+    if (global.stats.achieve['ascended'] || global['sim']){
+        virtualAddAction('evolution','emfield');
+    }
+    if (global.stats.achieve['scrooge'] || global['sim']){
+        virtualAddAction('evolution','inflation');
+    }
+    if ((global.stats.achieve['ascended'] || global.stats.achieve['corrupted']) && global.stats.achieve['extinct_junker'] || global['sim']){
+        virtualAddAction('evolution','sludge');
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
+        virtualAddAction('evolution','orbit_decay');
+    }
+    if (global.race.universe === 'standard' && (global.stats.achieve['whitehole'] || global['sim'])){
+    }
+    if (global.race.universe === 'heavy' && ((global.stats.achieve['seeder'] && global.stats.achieve.seeder['h']) || global['sim'])){
+    }
+    if (global.race.universe === 'magic' && ((global.stats.achieve['ascended'] && global.stats.achieve.ascended['mg']) || global['sim'])){
+        virtualAddAction('evolution','witch_hunter');
+    }
+    if (global.race.universe === 'evil' && ((global.stats.achieve['corrupted'] && global.stats.achieve.corrupted['e']) || global['sim'])){
+    }
+    if (global.hasOwnProperty('beta') && !global['sim']){
+        virtualAddAction('evolution','simulation');
+    }
+    virtualAddAction('evolution','junker');
+    if (global.stats.achieve['shaken'] || global['sim']){
+        virtualAddAction('evolution','cataclysm');
+    }
+    if (global.stats.achieve['whitehole'] || global.stats.achieve['ascended'] || global['sim']){
+        virtualAddAction('evolution','banana');
+    }
+    if (global.stats.achieve['ascended'] || global.stats.achieve['corrupted'] || global['sim']){
+        virtualAddAction('evolution','truepath');
+    }
+    if (global.stats.achieve['retired'] || global['sim']){
+        virtualAddAction('evolution','lone_survivor');
+    }
+    if(global.settings.autoRefresh){
+        setChallengeScreen();
+    }
+}
 export function setChallengeScreen(){
     let list = $(`#evolution .evolving`).nextAll();
     Object.values(list).forEach(function(elm){
@@ -4453,7 +4584,7 @@ raceList.forEach(race => actions.evolution[race] = {
     action(){
         if (payCosts($(this)[0])){
             if (['synth','custom'].includes(race)){
-                return evoExtraState(race);
+                return virtualEvoExtraState(race);
             }
             else {
             global.race.species = race;
@@ -4529,7 +4660,7 @@ Object.keys(challengeList).forEach(challenge => actions.evolution[challenge] = {
                 global.race[challengeList[challenge]] = 1;
                 $(`#${$(this)[0].id}`).addClass('hl');
             }
-            setChallengeScreen();
+            virtualSetChallengeScreen();
             challengeIcon();
         }
         return false;
@@ -4577,10 +4708,10 @@ Object.keys(advancedChallengeList).forEach(challenge => actions.evolution[challe
     action(){
         if (payCosts($(this)[0])){
             if (advancedChallengeList[challenge].t === 'c'){
-                setChallenge(challenge);
+                virtualSetChallenge(challenge);
             }
             else {
-                setScenario(challenge);
+                virtualSetScenario(challenge);
             }
         }
         return false;
@@ -4609,6 +4740,43 @@ actions.evolution['bunker'] = {
     queue_complete(){ return global.tech['evo_challenge'] ? 0 : 1; },
     flair: loc('evo_bunker_flair')
 };
+export function virtualDrawEvolution(){
+    if (global.race.universe === 'bigbang' || (global.race.seeded && !global.race['chose'])){
+        return;
+    }
+    if (global.tech['evo_challenge']){
+        Object.keys(challengeList).forEach(challenge=>{
+            virtualClearElement("evolution-"+challenge, true);
+        });
+        Object.keys(advancedChallengeList).forEach(challenge=>{
+            virtualClearElement("evolution-"+challenge, true);
+        });
+    }
+    Object.keys(actions.evolution).forEach(function (evo) {
+        if (!actions.evolution[evo]['challenge']){
+            virtualRemoveAction(actions.evolution[evo].id);
+            var isMet = true;
+            if (actions.evolution[evo].hasOwnProperty('reqs')){
+                Object.keys(actions.evolution[evo].reqs).forEach(function (req){
+                    if (!global.tech[req] || global.tech[req] < actions.evolution[evo].reqs[req]){
+                        isMet = false;
+                    }
+                });
+            }
+            if (isMet){
+                virtualAddAction('evolution', evo);
+            }
+        }
+    });
+    if (!global.race['evoFinalMenu']){
+        if (global.tech['evo_challenge']){
+            virtualSetChallengeScreen();
+        }
+    }
+    if(global.settings.autoRefresh){
+        drawEvolution();
+    }
+}
 export function drawEvolution(){
     if (!global.settings.tabLoad && global.settings.civTabs !== 0){
         return;
@@ -4834,7 +5002,29 @@ function evolveCosts(molecule,base,mult,offset){
     return count * mult + base;
 
 }
-
+function virtualSetChallenge(challenge){
+    if (global.race[challenge]){
+        delete global.race[challenge];
+    }
+    else {
+        global.race[challenge] = 1;
+        if (challenge === 'sludge'){
+            if (global.race['junker']){
+                delete global.race['junker'];
+            }
+        }
+        if (challenge === 'orbit_decay'){
+            delete global.race['cataclysm'];
+            if (global.race['lone_survivor']){
+                delete global.race['lone_survivor'];
+                ['nerfed','badgenes'].forEach(function(gene){
+                    delete global.race[challengeList[gene]];
+                });
+            }
+        }
+    }
+    virtualSetChallengeScreen();
+}
 function setChallenge(challenge){
     if (global.race[challenge]){
         delete global.race[challenge];
@@ -4873,7 +5063,55 @@ function setChallenge(challenge){
     setChallengeScreen();
     challengeIcon();
 }
+function virtualSetScenario(scenario){
+    if (global.race[scenario]){
+        delete global.race[scenario];
+        ['nerfed','badgenes'].forEach(function(gene){
+            delete global.race[challengeList[gene]];
+        });
+    }
+    else {
+        ['junker','cataclysm','banana','truepath','lone_survivor'].forEach(function(s){
+            delete global.race[s];
+        });
+        global.race[scenario] = 1;
 
+        if (scenario === 'junker'){
+            if (global.race['sludge']){
+                delete global.race['sludge'];
+            }
+        }
+
+        if (scenario === 'cataclysm' || scenario === 'lone_survivor'){
+            delete global.race['orbit_decay'];
+        }
+
+        if (scenario === 'truepath' || scenario === 'lone_survivor'){
+            global.race['nerfed'] = 1;
+            ['crispr','plasmid','mastery'].forEach(function(gene){
+                delete global.race[challengeList[gene]];
+            });
+        }
+        else {
+            ['nerfed','badgenes'].forEach(function(gene){
+                delete global.race[challengeList[gene]];
+            });
+
+            if (global.race.universe === 'antimatter'){
+                global.race['weak_mastery'] = 1;
+            }
+            else {
+                global.race['no_plasmid'] = 1;
+            }
+        }
+
+        let genes = scenario === 'truepath' || scenario === 'lone_survivor' ? ['badgenes','trade','craft'] : ['crispr','trade','craft'];
+        for (let i=0; i<genes.length; i++){
+            global.race[challengeList[genes[i]]] = 1;
+        }
+    }
+    virtualSetChallengeScreen();
+}
 function setScenario(scenario){
     if (!global.race['sludge']){
         Object.keys(races).forEach(function(r){
@@ -6110,11 +6348,16 @@ export function virtualPostBuild(c_action,action,type){
     }
     if (c_action['grant'] || c_action['refresh']){
         virtualRemoveAction(c_action.id);
-        virtualDrawCity();
-        virtualDrawTech();
-        virtualRenderSpace();
-        virtualRenderFortress();
-        virtualRenderTauCeti();
+        if (global.race.species === 'protoplasm'){
+            virtualDrawEvolution();
+        }
+        else {
+            virtualDrawCity();
+            virtualDrawTech();
+            virtualRenderSpace();
+            virtualRenderFortress();
+            virtualRenderTauCeti();
+        }
     }
     if (c_action['post']){
         doInNextLoop(function(){
@@ -6136,13 +6379,13 @@ export function postBuild(c_action,action,type){
     if (c_action['grant'] || c_action['refresh']){
         virtualRemoveAction(c_action.id);
         if (global.race.species === 'protoplasm'){
-            drawEvolution();
+            virtualDrawEvolution();
         }
         else {
-        virtualDrawCity();
-        virtualDrawTech();
-        virtualRenderSpace();
-        virtualRenderFortress();
+            virtualDrawCity();
+            virtualDrawTech();
+            virtualRenderSpace();
+            virtualRenderFortress();
             virtualRenderTauCeti();
         }
     }
@@ -6322,7 +6565,8 @@ export function setPlanet(opt){
             }
             clearElement($('#evolution'));
             clearPopper();
-            drawEvolution();
+            virtualClearElement("evolution");
+            virtualDrawEvolution();
         }
     });
 
@@ -7384,7 +7628,7 @@ export function orbitDecayed(){
 
         clearElement($(`#infoTimer`));
 
-         virtualRenderSpace();
+        virtualRenderSpace();
     }
 }
 
@@ -7534,7 +7778,17 @@ export function updateQueueNames(both, items){
         }
     }
 }
-
+function virtualEvoExtraState(race){
+    if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
+        global.race['evoFinalMenu'] = race;
+        virtualDrawEvolution();
+        return true;
+    }
+    else {
+        global.race.species = race;
+        sentience();
+    }
+}
 function evoExtraState(race){
     if ((race === 'synth' || (race === 'custom' && global.custom.race0.traits.includes('imitation'))) && Object.keys(global.stats.synth).length > 1){
         global.race['evoFinalMenu'] = race;
@@ -7578,6 +7832,7 @@ function sentience(){
         if (global.race[evolve_actions[i]]){
             clearElement($('#'+actions.evolution[evolve_actions[i]].id),true);
             clearPopper(actions.evolution[evolve_actions[i]].id);
+            virtualClearElement(actions.evolution[evolve_actions[i]].id,true);
         }
     }
 
