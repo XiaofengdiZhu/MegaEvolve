@@ -7,14 +7,14 @@ import { setResourceName, atomic_mass } from './resources.js';
 import { buildGarrison, govEffect } from './civics.js';
 import { govActive, removeTask } from './governor.js';
 import { unlockAchieve } from './achieve.js';
-import { highPopAdjust } from './prod.js';
+import { highPopAdjust, teamster } from './prod.js';
 import { actions, checkTechQualifications } from './actions.js';
 
 const date = new Date();
 const easter = getEaster();
 const hallowed = getHalloween();
 
-export const neg_roll_traits = ['diverse','arrogant','angry','lazy','paranoid','greedy','puny','dumb','nearsighted','gluttony','slow','hard_of_hearing','pessimistic','solitary','pyrophobia','skittish','nyctophilia','frail','atrophy','invertebrate','pathetic','invertebrate','unorganized','slow_regen','snowy','mistrustful','fragrant','freespirit','hooved','heavy','gnawer'];
+export const neg_roll_traits = ['angry','arrogant','atrophy','diverse','dumb','fragrant','frail','freespirit','gluttony','gnawer','greedy','hard_of_hearing','heavy','hooved','invertebrate','lazy','mistrustful','nearsighted','nyctophilia','paranoid','pathetic','pessimistic','puny','pyrophobia','skittish','slow','slow_regen','snowy','solitary','unorganized'];
 
 export function altRace(race,set){
     if (global.settings.boring){
@@ -379,6 +379,7 @@ export const traits = {
         type: 'genus',
         val: 5,
         vars(r){
+            // [Manual Gathering, Basic Jobs]
             switch (r || global.race.strong || 1){
                 case 0.25:
                     return [2,1.25];
@@ -996,6 +997,7 @@ export const traits = {
         type: 'genus',
         val: 10,
         vars(r){
+            // [Mind Break Modifer, Thrall Modifer, Recharge Rate, Effect Strength]
             switch (r || global.race.psychic || 1){
                 case 0.25:
                     return [0.35,5,0.01,20];
@@ -1016,6 +1018,7 @@ export const traits = {
         type: 'genus',
         val: -25,
         vars(r){
+            // [Morale above 100% is greatly reduced]
             switch (r || global.race.tormented || 1){
                 case 0.25:
                     return [99];
@@ -1036,6 +1039,7 @@ export const traits = {
         type: 'genus',
         val: 1,
         vars(r){
+            // [Sunny Days less frequent]
             switch (r || global.race.darkness || 1){
                 case 0.25:
                     return [1];
@@ -1056,6 +1060,7 @@ export const traits = {
         type: 'genus',
         val: 15,
         vars(r){
+            // [Thrall Races, Catch Modifer, Thrall Effectiveness]
             switch (r || global.race.unfathomable || 1){
                 case 0.25:
                     return [1,0.5,0.05];
@@ -1366,7 +1371,7 @@ export const traits = {
         type: 'major',
         val: 4,
         vars(r){
-            // [Armor Bonus, Wounded Bonus]
+            // [Rage Bonus, Wounded Bonus]
             switch (r || global.race.rage || 1){
                 case 0.25:
                     return [0.3,20];
@@ -1650,7 +1655,6 @@ export const traits = {
         desc: loc('trait_regenerative'),
         type: 'major',
         val: 8,
-        vars(r){ return [4]; },
         vars(r){
             switch (r || global.race.regenerative || 1){
                 case 0.25:
@@ -3080,6 +3084,7 @@ export const traits = {
         type: 'major',
         val: 10,
         vars(r){
+            // [Combat Bonus, Thrall Catch Bonus]
             switch (r || global.race.swift || 1){
                 case 0.25:
                     return [35,15];
@@ -3120,6 +3125,7 @@ export const traits = {
         type: 'major',
         val: 12,
         vars(r){
+            // [Tool Factor, Crafting Factor]
             switch (r || global.race.living_tool || 1){
                 case 0.25:
                     return [0.65,5];
@@ -3140,6 +3146,7 @@ export const traits = {
         type: 'major',
         val: -10,
         vars(r){
+            // [Costs are higher]
             switch (r || global.race.bloated || 1){
                 case 0.25:
                     return [25];
@@ -3497,7 +3504,8 @@ export const races = {
             gas_moon: loc('race_bearkin_solar_gas_moon'),
             dwarf: loc('race_bearkin_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },
     porkenari: {
         name: loc('race_porkenari'),
@@ -3515,7 +3523,8 @@ export const races = {
             gas_moon: loc('race_porkenari_solar_gas_moon'),
             dwarf: loc('race_porkenari_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },
     hedgeoken: {
         name: loc('race_hedgeoken'),
@@ -3533,7 +3542,8 @@ export const races = {
             gas_moon: loc('race_hedgeoken_solar_gas_moon'),
             dwarf: loc('race_hedgeoken_solar_dwarf'),
         },
-        fanaticism: ''
+        fanaticism: '',
+        basic(){ return true; }
     },*/
     kobold: {
         name: loc('race_kobold'),
@@ -4505,7 +4515,7 @@ function customRace(){
 }
 
 /*
-types: farmer, miner, lumberjack, science, factory, army, hunting
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
 */
 export function racialTrait(workers,type){
     let modifier = 1;
@@ -4529,7 +4539,7 @@ export function racialTrait(workers,type){
             modifier *= 1 + traits.living_tool.vars()[0] * (global.tech['science'] && global.tech.science > 0 ? global.tech.science * 0.3 : 0);
         }
         else {
-        modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
+            modifier *= 1 + ((global.tech['reclaimer'] - 1) * 0.4);
         }
     }
     if (global.race['powered'] && (type === 'factory' || type === 'miner' || type === 'lumberjack') ){
@@ -4711,7 +4721,7 @@ export function racialTrait(workers,type){
                 modifier *= 1 + (boost / (boost + 75) * 2.5);
             }
             else {
-            modifier *= 1 + (boost / (boost + 75));
+                modifier *= 1 + (boost / (boost + 75));
             }
         }
     }
@@ -4720,6 +4730,20 @@ export function racialTrait(workers,type){
     }
     if (global.race['high_pop']){
         modifier = highPopAdjust(modifier);
+    }
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting'].includes(type)){
+        modifier = teamster(modifier);
+    }
+    return modifier;
+}
+
+/*
+types: farmer, miner, lumberjack, science, factory, army, hunting, scavenger, forager
+*/
+export function servantTrait(workers,type){
+    let modifier = 1;
+    if (global.race['gravity_well'] && ['farmer', 'miner', 'lumberjack', 'factory', 'hunting', 'scavenger'].includes(type)){
+        modifier = teamster(modifier);
     }
     return modifier;
 }
@@ -4951,7 +4975,6 @@ function adjustFood() {
         }
     }
 
-
     let jobEnabled = [], jobDisabled = [];
     if (!global.race['orbit_decayed'] && farmersEnabled && global.tech['agriculture'] >= 1 && global.city['farm'].count > 0) {
         jobEnabled.push('farmer');
@@ -5061,7 +5084,7 @@ export function cleanAddTrait(trait){
             break;
         case 'sappy':
             if (global.civic.d_job === 'quarry_worker'){
-                global.civic.d_job = 'unemployed';
+                global.civic.d_job = global.race['carnivore'] || global.race['soul_eater'] ? 'hunter' : 'unemployed';
             }
             global.civic.quarry_worker.display = false;
             global.civic.quarry_worker.workers = 0;
@@ -5096,7 +5119,7 @@ export function cleanAddTrait(trait){
         case 'slaver':
             checkPurgatory('tech','slaves');
             if (global.tech['slaves'] >= 1) {
-                checkPurgatory('city','slave_pen',{ count: 0, slaves: 0 });
+                checkPurgatory('city','slave_pen',{ count: 0 });
                 if (global.city['slave_pen'].count > 0 && !global.race['orbit_decayed']) {
                     global.resource.Slave.display = true;
                 }
@@ -5179,8 +5202,9 @@ export function cleanAddTrait(trait){
                 gameLoop('start');
             }
             else {
-            window.location.reload();
+                window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
@@ -5188,8 +5212,9 @@ export function cleanAddTrait(trait){
                 gameLoop('start');
             }
             else {
-            window.location.reload();
+                window.location.reload();
             }
+            break;
         case 'calm':
             if (global.tech['primitive'] >= 3) {
                 checkPurgatory('city','meditation',{ count: 0 });
@@ -5377,6 +5402,7 @@ export function cleanRemoveTrait(trait,rank){
             else {
             window.location.reload();
             }
+            break;
         case 'hyper':
             save.setItem('evolved',JSON.stringify(global));
             if (webWorker.w){
@@ -5384,8 +5410,9 @@ export function cleanRemoveTrait(trait,rank){
                 gameLoop('start');
             }
             else {
-            window.location.reload();
+                window.location.reload();
             }
+            break;
         case 'calm':
             removeFromQueue(['city-meditation']);
             global.resource.Zen.display = false;

@@ -401,6 +401,28 @@ export function challengesPage(content, forSearch = false){
             ], forSearch);
             subSideMenu('add',`challenges-gameplay`,'modes_witchhunter',loc('wiki_challenges_modes_witchhunter'), forSearch);
         }
+
+        {   // Gravity Well
+            let gravity = infoBoxBuilder(modes,{ name: 'modes_gravity_well', template: 'challenges', paragraphs: 6, break: [4], h_level: 2,
+                para_data: {
+                    1: [loc(`evo_challenge_gravity_well`)],
+                }
+            }, null, forSearch);
+            addAchievements(gravity,false,['escape_velocity'], null, forSearch);
+            addRequirements(gravity,[
+                {
+                    text: `wiki_challenges_reqs_reset`,
+                    subreqs: [
+                        {
+                            text: `${loc(`wiki_universe_heavy`)} ${loc(`wiki_resets_bioseed`)}`,
+                            color: global.stats.achieve['seeder'] && global.stats.achieve.seeder['h'] ? true : false,
+                            link: 'wiki.html#resets-prestige-bioseed'
+                        }
+                    ]
+                }
+            ], forSearch);
+            subSideMenu('add',`challenges-gameplay`,'modes_gravity_well',loc('wiki_challenges_modes_gravity_well'), forSearch);
+        }
     }
     
     // Scenarios

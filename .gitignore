@@ -4,6 +4,7 @@ update.*.json
 strings/last-strings.json
 node_modules/*
 docs
+dist
 .idea
 evolve/main.js.LICENSE.txt
 wiki/wiki.js.LICENSE.txt

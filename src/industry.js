@@ -161,9 +161,9 @@ function loadSmelter(parent,bind){
         }
     }
 
-        let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
-        let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
-        parent.append(fuelTypes);
+    let fId = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+    let fuelTypes = $(`<div id="${fId}" class="fuels"></div>`);
+    parent.append(fuelTypes);
 
     if (!global.race['forge']){
         if ((!global.race['kindling_kindred'] && !global.race['smoldering']) || global.race['evil']){
@@ -191,52 +191,52 @@ function loadSmelter(parent,bind){
         fuelTypes.append(oil);
     }
     else if (global.resource.Oil.display){
-            let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
-            let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
-            let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subOil);
-            fuelTypes.append(oil);
-            fuelTypes.append(addOil);
-        }
+        let oil = $(`<span :aria-label="buildLabel('oil') + ariaCount('Oil')" class="current oil">${global.resource.Oil.name} {{ s.Oil }}</span>`);
+        let subOil = $(`<span role="button" class="sub" @click="subFuel('Oil')" aria-label="Remove oil fuel"><span>&laquo;</span></span>`);
+        let addOil = $(`<span role="button" class="add" @click="addFuel('Oil')" aria-label="Add oil fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subOil);
+        fuelTypes.append(oil);
+        fuelTypes.append(addOil);
+    }
 
-        if (global.tech['star_forge'] && global.tech.star_forge >= 2){
+    if (global.tech['star_forge'] && global.tech.star_forge >= 2){
         let star = $(`<span :aria-label="buildLabel('star') + ariaCount('Star')" class="current star infoOnly">${loc('star')} {{ s.Star }}</span>`);
-            fuelTypes.append(star);
-        }
+        fuelTypes.append(star);
+    }
 
-        if (global.tech['smelting'] && global.tech.smelting >= 8){
-            let inferno = $(`<span :aria-label="buildLabel('inferno') + ariaCount('Inferno')" class="current inferno">${loc('modal_smelter_inferno')} {{ s.Inferno }}</span>`);
-            let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
-            let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
-            fuelTypes.append(subInferno);
-            fuelTypes.append(inferno);
-            fuelTypes.append(addInferno);
-        }
+    if (global.tech['smelting'] && global.tech.smelting >= 8){
+        let inferno = $(`<span :aria-label="buildLabel('inferno') + ariaCount('Inferno')" class="current inferno">${loc('modal_smelter_inferno')} {{ s.Inferno }}</span>`);
+        let subInferno = $(`<span role="button" class="sub" @click="subFuel('Inferno')" aria-label="Remove inferno fuel"><span>&laquo;</span></span>`);
+        let addInferno = $(`<span role="button" class="add" @click="addFuel('Inferno')" aria-label="Add inferno fuel"><span>&raquo;</span></span>`);
+        fuelTypes.append(subInferno);
+        fuelTypes.append(inferno);
+        fuelTypes.append(addInferno);
+    }
 
-        let available = $('<div class="avail"></div>');
-        parent.append(available);
+    let available = $('<div class="avail"></div>');
+    parent.append(available);
 
-        if (!bind && 1 === 2){
-            if (!global.race['kindling_kindred'] || global.race['evil']){
-                if (global.race['evil']){
-                    if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
-                        available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
-                    }
-                    else {
-                        available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
-                    }
+    if (!bind && 1 === 2){
+        if (!global.race['kindling_kindred'] || global.race['evil']){
+            if (global.race['evil']){
+                if (global.race['soul_eater'] && global.race.species !== 'wendigo'){
+                    available.append(`<span :class="net('Lumber')">{{ food.diff | diffSize }}</span>`);
                 }
                 else {
-                    available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
+                    available.append(`<span :class="net('Lumber')">{{ fur.diff | diffSize }}</span>`);
                 }
             }
-
-            if (global.resource.Coal.display){
-                available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+            else {
+                available.append(`<span :class="net('Lumber')">{{ lum.diff | diffSize }}</span>`);
             }
+        }
 
-            if (global.resource.Oil.display){
-                available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
+        if (global.resource.Coal.display){
+            available.append(`<span :class="net('Coal')">{{ coal.diff | diffSize }}</span>`);
+        }
+
+        if (global.resource.Oil.display){
+            available.append(`<span :class="net('Oil')">{{ oil.diff | diffSize }}</span>`);
         }
     }
 
@@ -491,15 +491,15 @@ function loadSmelter(parent,bind){
         }
     }
 
-        let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
-        ['wood','coal','oil','star','inferno'].forEach(function(fuel){
-            popover(`${id}${fuel}`,function(){
-                return tooltip(fuel);
-            }, {
-                elm: $(`#${id} > .${fuel}`),
-                attach: '#main',
-            });
+    let id = parent.hasClass('modalBody') ? `mSmelterFuels` : `smelterFuels`;
+    ['wood','coal','oil','star','inferno'].forEach(function(fuel){
+        popover(`${id}${fuel}`,function(){
+            return tooltip(fuel);
+        }, {
+            elm: $(`#${id} > .${fuel}`),
+            attach: '#main',
         });
+    });
 
     if ((global.resource.Steel.display && global.tech.smelting >= 2 && !global.race['steelen']) || (global.resource.Iridium.display && irid_smelt)){
         let id = parent.hasClass('modalBody') ? `mSmelterMats` : `smelterMats`;
@@ -1144,35 +1144,32 @@ function loadPylon(parent,bind){
     let spellTypes = $('<div class="pylon wrap"></div>');
     parent.append(spellTypes);
 
-    let ritualList = [];
-    if (global.race['orbit_decayed']){
-        ritualList = ['miner','science','factory','army','hunting','crafting'];
+    let ritualList = ['science','army','hunting'];
+
+    if (!global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical'] && !global.race['unfathomable'] && !global.race['cataclysm'] && !global.race['orbit_decayed']) {
+        ritualList.push('farmer');
     }
-    else if (global.race['cataclysm']){
-        ritualList = ['science','factory','army','hunting','crafting'];
+    if (!global.race['cataclysm']) {
+        ritualList.push('miner');
     }
-    else if (global.race['unfathomable']){
-        ritualList = ['miner','lumberjack','science','factory','army','hunting','crafting'];
+    if (!global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil'] && !global.race['cataclysm'] && !global.race['orbit_decayed']) {
+        ritualList.push('lumberjack');
     }
-    else {
-        ritualList = ['farmer','miner','lumberjack','science','factory','army','hunting','crafting'];
+    if (!global.race['flier']) {
+        ritualList.push('factory');
+    }
+    if (global.tech.magic >= 4) {
+        ritualList.push('crafting');
     }
 
     if (global.tech['magic'] && global.tech.magic >= 3){
         ritualList.forEach(function (spell){
-            if (
-                (spell !== 'crafting' && spell !== 'lumberjack' && spell !== 'farmer') ||
-                (spell === 'farmer' && !global.race['detritivore'] && !global.race['carnivore'] && !global.race['soul_eater'] && !global.race['artifical']) ||
-                (spell === 'lumberjack' && !global.race['kindling_kindred'] && !global.race['smoldering'] && !global.race['evil']) ||
-                (spell === 'crafting' && global.tech.magic >= 4)
-                ){
-                let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
-                let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
-                let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
-                spellTypes.append(sub);
-                spellTypes.append(cast);
-                spellTypes.append(add);
-            }
+            let cast = $(`<span :aria-label="buildLabel('${spell}') + ariaCount('${spell}')" class="current ${spell}">${loc(`modal_pylon_spell_${spell}`)} {{ ${spell} }}</span>`);
+            let sub = $(`<span role="button" class="sub" @click="subSpell('${spell}')" aria-label="Stop casting '${spell}' ritual"><span>&laquo;</span></span>`);
+            let add = $(`<span role="button" class="add" @click="addSpell('${spell}')" aria-label="Cast '${spell}' ritual"><span>&raquo;</span></span>`);
+            spellTypes.append(sub);
+            spellTypes.append(cast);
+            spellTypes.append(add);
         });
     }
 

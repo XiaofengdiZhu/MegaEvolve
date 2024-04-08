@@ -1186,6 +1186,22 @@ function minorEventsPage(content, forSearch){
         }, section, forSearch, 'minor');
         sideMenu('add',`minor-events`,`rumor`,loc('wiki_events_rumor'), forSearch);
     }
+
+    {   // Pet
+        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
+        infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2,
+            para_data: {
+                1: [loc(`tech_club`)]
+            }
+        }, section, forSearch, 'minor');
+        infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_pet'), h_level: 2, 
+            examples: [
+                loc(`event_pet_cat`,[loc(`event_cat_name3`)]),
+                loc(`event_pet_dog`,[loc(`event_dog_name0`)])
+            ]
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'), forSearch);
+    }
 }
 
 function progressEventsPage(content, forSearch){

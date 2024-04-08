@@ -291,6 +291,11 @@ if (convertVersion(global['version']) < 4003 && global.stats['achieve']){
     });
 }
 
+if (convertVersion(global['version']) < 4010){
+    if (global.stats['achieve'] && global.stats.achieve['doomed']){
+        global.stats['portals'] = 1;
+    }
+}
 if (convertVersion(global['version']) < 4028 && global.stats['achieve'] && global.stats.achieve['genus_demonic']){
     global.stats.achieve['biome_hellscape'] = global.stats.achieve['genus_demonic'];
 }
@@ -549,6 +554,11 @@ if (convertVersion(global['version']) < 8017){
     }
 }
 
+if (convertVersion(global['version']) < 9000){
+    if (global.settings && global.settings.showCity){
+        global.settings.showCiv = global.settings.showCity;
+    }
+}
 if (convertVersion(global['version']) < 9005){
     if (global.race.hasOwnProperty('terrifying') && global.tech.hasOwnProperty('gambling') && !global.space.hasOwnProperty('spc_casino')){
         global.space['spc_casino'] = { count: 0, on: 0 };
@@ -1254,7 +1264,13 @@ if (convertVersion(global['version']) < 103002){
         global.portal.observe.stats.total.gems['surveyors'] = 0;
     }
 }
-global['version'] = '1.3.9';
+if (convertVersion(global['version']) < 103011){
+    if (global.city.hasOwnProperty('slave_pen') && global.city.slave_pen.hasOwnProperty('slaves')){
+        global.resource.Slave.amount = global.city.slave_pen.slaves;
+        delete global.city.slave_pen.slaves;
+    }
+}
+global['version'] = '1.3.12';
 delete global['revision'];
 delete global['beta'];
 
@@ -1296,7 +1312,7 @@ if (!global['settings']){
         q_merge: 'merge_nearby',
         cLabels: true,
         theme: 'gruvboxDark',
-        locale: ["cs-CZ","es-ES","im-PL","ko-KR","pt-BR","ru-RU","zh-CN","zh-TW",].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US',
+        locale: ["cs-CZ","de-DE","es-ES","im-PL","it-IT","ko-KR","pl-PL","pt-BR","ru-RU","zh-CN","zh-TW"].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US',
         icon: 'star'
     };
 }
@@ -1511,6 +1527,9 @@ if (typeof global.settings.sPackMsg === 'undefined'){
 }
 if (typeof global.settings.expose === 'undefined'){
     global.settings['expose'] = false;
+}
+if (typeof global.settings.alwaysPower === 'undefined'){
+    global.settings['alwaysPower'] = false;
 }
 if (typeof global.settings.tabLoad === 'undefined'){
     global.settings['tabLoad'] = false;
@@ -1755,7 +1774,11 @@ else if (global.race !== undefined && global.race.species === 'wendigo'){
     }
 }
 
+if (!global.settings['queuestyle']){
+    global.settings['queuestyle'] = 'standardqueuestyle';
+}
 $('html').addClass(global.settings.theme);
+$('html').addClass(global.settings.queuestyle);
 
 if (!global.settings['at']){
     global.settings['at'] = 0;

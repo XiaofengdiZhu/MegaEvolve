@@ -164,17 +164,76 @@ export function gameLoop(act){
     }
 }
 
-function calcATime(){
-    let dt = Date.now();
-    let timeDiff = dt - global.stats.current;
+// Computes the relative to default duration of a single loop (common for all three loop types).
+// Note that these values are not tied to the time_multiplier from fastLoop - the relative speed of time in the game
+// is controlled by loop lengths.
+export function loopTimers(){
+    // Here come any speed modifiers not related to accelerated time.
+    let modifier = 1.0;
+    if (global.race['slow']){
+        modifier *= 1 + (traits.slow.vars()[0] / 100);
+    }
+    if (global.race['hyper']){
+        modifier *= 1 - (traits.hyper.vars()[0] / 100);
+    }
+
+    // Main loop takes 250ms without any modifiers.
+    const webWorkerMainTimer = Math.floor(250 * modifier);
+    // Mid loop takes 1000ms without any modifiers.
+    const baseMidTimer = 4 * webWorkerMainTimer;
+    // Long loop (game day) takes 5000ms without any modifiers.
+    const baseLongTimer = 20 * webWorkerMainTimer;
+    // The constant by which the time is accelerated when atrack.t > 0.
+    const timeAccelerationFactor = 2;
+
+    const aTimeMultiplier = atrack.t > 0 ? 1 / timeAccelerationFactor : 1;
+    return {
+        webWorkerMainTimer,
+        mainTimer: Math.ceil(webWorkerMainTimer * aTimeMultiplier),
+        midTimer: Math.ceil(baseMidTimer * aTimeMultiplier),
+        longTimer: Math.ceil(baseLongTimer * aTimeMultiplier),
+        baseLongTimer,
+        timeAccelerationFactor,
+    };
 }
 
+// Adds accelerated time if enough time has passed since `global.stats.current`. Returns true if there was accelerated
+// time added. If the parameter is true, it will only add the time if a threshold of 120s has been reached.
+export function addATime(currentTimestamp){
+    // The second case is used for the initialization of atrack.t.
+    if (exceededATimeThreshold(currentTimestamp) || global.stats.hasOwnProperty('current') && global.settings.at > 0){
+        let timeDiff = currentTimestamp - global.stats.current;
+        // Removing any accelerated time if the value is larger than the cap.
+        if (global.settings.at > 11520){
+            global.settings.at = 0;
+        }
+        // Accelerated time is added only if it is over the threshold.
+        if (timeDiff >= 120000){
+            const timers = loopTimers();
+            const gameDayDuration = timers.baseLongTimer;
+            // The number of days during which the time is accelerated (at) should take as long as 2 / 3 of paused time.
+            // at * gameDayDuration / timeAccelerationFactor = 2 / 3 * timeDiff
+            global.settings.at += Math.floor(2 / 3 * timeDiff * timers.timeAccelerationFactor / gameDayDuration);
+        }
+        // Accelerated time is capped at 8*60*60/2.5 game days.
+        if (global.settings.at > 11520){
+            global.settings.at = 11520;
+        }
+        atrack.t = global.settings.at;
+        // Updating the current date so that it won't be counted twice (e.g., when unpausing).
+        global.stats.current = currentTimestamp;
+    }
+}
+
+// Takes the current Date.now, returns whether the minimum threshold to count accelerated time has passed.
+export function exceededATimeThreshold(currentTimestamp){
+    return global.stats.hasOwnProperty('current') && currentTimestamp - global.stats.current >= 120000;
+}
 window.exportGame = function exportGame(){
     if (global.race['noexport']){
         return `Export is not available during ${global.race['noexport']} Creation`;
     }
-    calcATime();
-    global.stats['current'] = Date.now();
+    addATime(Date.now());
     return LZString.compressToBase64(JSON.stringify(global));
 }
 
@@ -401,6 +460,11 @@ export function buildQueue(){
         <span id="pausequeue" class="pause ${global.queue.pause ? '' : 'play'}" role="button" @click="pauseQueue()" :aria-label="pausedesc()">${global.queue.pause ? '▶' : '〓'}</span>
     `));
 
+    if (global.settings.queuestyle) {
+        $('#buildQueue').addClass(global.settings.queuestyle);
+
+    }
+
     let queue = $(`<ul class="buildList"></ul>`);
     $('#buildQueue').append(queue);
 
@@ -556,21 +620,21 @@ function attachQueuePopovers(){
     }
 }
 export function decodeStructId(id){
-        let c_action;
+    let c_action;
     let segments = id.split("-");
-        if (segments[0].substring(0,4) === 'arpa'){
-            c_action = segments[0].substring(4);
-        }
-        else if (segments[0] === 'city' || segments[0] === 'evolution' ||segments[0] === 'starDock'){
-            c_action = actions[segments[0]][segments[1]];
-        }
-        else {
-            Object.keys(actions[segments[0]]).forEach(function (region){
-                if (actions[segments[0]][region].hasOwnProperty(segments[1])){
-                    c_action = actions[segments[0]][region][segments[1]];
-                }
-            });
-        }
+    if (segments[0].substring(0,4) === 'arpa'){
+        c_action = segments[0].substring(4);
+    }
+    else if (segments[0] === 'city' || segments[0] === 'evolution' || segments[0] === 'starDock'){
+        c_action = actions[segments[0]][segments[1]];
+    }
+    else {
+        Object.keys(actions[segments[0]]).forEach(function (region){
+            if (actions[segments[0]][region].hasOwnProperty(segments[1])){
+                c_action = actions[segments[0]][region][segments[1]];
+            }
+        });
+    }
     return { s: segments, a: c_action };
 }
 
@@ -1352,6 +1416,87 @@ export function challenge_multiplier(value,type,decimals,inputs){
     }
 }
 
+export function getResetConstants(type, inputs){
+    if (!inputs) { inputs = {}; }
+    let rc = {
+        pop_divisor: 999,
+        k_inc: 1000000,
+        k_mult: 100,
+        phage_mult: 0,
+        plasmid_cap: 150,
+    }
+
+    switch (type){
+        case 'mad':
+            rc.pop_divisor = 3;
+            rc.k_inc = 100000;
+            rc.k_mult = 1.1;
+            rc.plasmid_cap = 150;
+            if (inputs.synth){
+                rc.pop_divisor = 5;
+                rc.k_inc = 125000;
+                rc.plasmid_cap = 100;
+            }
+            break;
+        case 'cataclysm':
+        case 'bioseed':
+            rc.pop_divisor = 3;
+            rc.k_inc = 50000;
+            rc.k_mult = 1.015;
+            rc.phage_mult = 1;
+            rc.plasmid_cap = 400;
+            break;
+        case 'ai':
+            rc.pop_divisor = 2.5;
+            rc.k_inc = 45000;
+            rc.k_mult = 1.014;
+            rc.phage_mult = 2;
+            rc.plasmid_cap = 600;
+            break;
+        case 'vacuum':
+        case 'bigbang':
+            rc.pop_divisor = 2.2;
+            rc.k_inc = 40000;
+            rc.k_mult = 1.012;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 800;
+            break;
+        case 'ascend':
+        case 'terraform':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 30000;
+            rc.k_mult = 1.008;
+            rc.phage_mult = 4;
+            rc.plasmid_cap = 2000;
+            break;
+        case 'matrix':
+            rc.pop_divisor = 1.5;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.01;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'retired':
+            rc.pop_divisor = 1.15;
+            rc.k_inc = 32000;
+            rc.k_mult = 1.006;
+            rc.phage_mult = 3.2;
+            rc.plasmid_cap = 1800;
+            break;
+        case 'eden':
+            rc.pop_divisor = 1;
+            rc.k_inc = 18000;
+            rc.k_mult = 1.004;
+            rc.phage_mult = 2.5;
+            rc.plasmid_cap = 1800;
+            break;
+        default:
+            rc.unknown = true;
+            break;
+    }
+    return rc;
+}
+
 export function calcPrestige(type,inputs){
     let gains = {
         plasmid: 0,
@@ -1363,6 +1508,7 @@ export function calcPrestige(type,inputs){
     };
 
     if (!inputs) { inputs = {}; }
+    if (inputs.synth !== undefined) inputs.synth = races[global.race.species].type === 'synthetic';
     let challenge = inputs.genes;
     let universe = inputs.uni;
     universe = universe || global.race.universe;
@@ -1391,77 +1537,13 @@ export function calcPrestige(type,inputs){
         }
     }
 
-    let pop_divisor = 999;
-    let k_inc = 1000000;
-    let k_mult = 100;
-    let phage_mult = 0;
-    let plasmid_cap = 150;
+    let rc = getResetConstants(type, inputs);
+    let pop_divisor = rc.pop_divisor;
+    let k_inc = rc.k_inc;
+    let k_mult = rc.k_mult;
+    let phage_mult = rc.phage_mult;
+    let plasmid_cap = rc.plasmid_cap;
 
-    switch (type){
-        case 'mad':
-            pop_divisor = 3;
-            k_inc = 100000;
-            k_mult = 1.1;
-            plasmid_cap = 150;
-            if (inputs.synth !== undefined ? inputs.synth : races[global.race.species].type === 'synthetic'){
-                pop_divisor = 5;
-                k_inc = 125000;
-                plasmid_cap = 100;
-            }
-            break;
-        case 'cataclysm':
-        case 'bioseed':
-            pop_divisor = 3;
-            k_inc = 50000;
-            k_mult = 1.015;
-            phage_mult = 1;
-            plasmid_cap = 400;
-            break;
-        case 'ai':
-            pop_divisor = 2.5;
-            k_inc = 45000;
-            k_mult = 1.014;
-            phage_mult = 2;
-            plasmid_cap = 600;
-            break;
-        case 'vacuum':
-        case 'bigbang':
-            pop_divisor = 2.2;
-            k_inc = 40000;
-            k_mult = 1.012;
-            phage_mult = 2.5;
-            plasmid_cap = 800;
-            break;
-        case 'ascend':
-        case 'terraform':
-            pop_divisor = 1.15;
-            k_inc = 30000;
-            k_mult = 1.008;
-            phage_mult = 4;
-            plasmid_cap = 2000;
-            break;
-        case 'matrix':
-            pop_divisor = 1.5;
-            k_inc = 32000;
-            k_mult = 1.01;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'retire':
-            pop_divisor = 1.15;
-            k_inc = 32000;
-            k_mult = 1.006;
-            phage_mult = 3.2;
-            plasmid_cap = 1800;
-            break;
-        case 'eden':
-            pop_divisor = 1;
-            k_inc = 18000;
-            k_mult = 1.004;
-            phage_mult = 2.5;
-            plasmid_cap = 1800;
-            break;
-    }
 
     if (challenge !== undefined){
         plasmid_cap = Math.floor(plasmid_cap * (1 + (challenge + (inputs.tp ? 1 : 0)) / 8));
@@ -2207,7 +2289,7 @@ export function trickOrTreatBind(id,trick){
 }
 
 function single_emblem(achieve,size,icon,iconName,fool,uAffix){
-    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg></p>` : '';
+    return global.stats.achieve[achieve] && (fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]) > 0 ? `<p class="flair" title="${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}"><svg class="star${fool ? global.stats.achieve[achieve][uAffix] - 1 : global.stats.achieve[achieve][uAffix]}" version="1.1" x="0px" y="0px" width="${size}px" height="${size}px" viewBox="${svgViewBox(icon)}" xml:space="preserve">${svgIcons(icon)}</svg><span class="is-sr-only">${sLevel(global.stats.achieve[achieve][uAffix])} ${iconName}</span></p>` : '';
 }
 
 export function format_emblem(achieve,size,baseIcon,fool,universe){
@@ -2378,22 +2460,22 @@ export function deepClone(obj){
 export function flib(func,val,val2){
     switch (func){
         case 'reverse':
-            {
-                let str = val.toLowerCase().split('').reverse().join('');
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
+        {
+            let str = val.toLowerCase().split('').reverse().join('');
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
         case 'name':
-            {
-                if (eventActive('fool',2021)){
-                    return flib('reverse',races[global.race.species].name);
-                }
-                return races[global.race.species].name;
+        {
+            if (eventActive('fool',2021)){
+                return flib('reverse',races[global.race.species].name);
+            }
+            return races[global.race.species].name;
         }
         case 'curve':
         {   
             let exp = val2 || 1.5;
             return 1-((1-(val))**exp);
-            }
+        }
     }
     return false;
 }
@@ -2510,12 +2592,14 @@ export function getEaster(){
         global.special.egg[year]['egg17'] = false;
         global.special.egg[year]['egg18'] = false;
     }
+
+    // `month` is the 1-12 month when easter ends, `day` the 1-31 day it begins. Easter event has constant number of days.
 	let f = Math.floor,
 		// Golden Number - 1
 		G = year % 19,
 		C = f(year / 100),
 		// related to Epact
-		H = (C - f(C / 4) - f((8 * C + 13)/25) + 19 * G + 15) % 30,
+		H = (C - f(C / 4) - f((8 * C + 13)/25) + 19 * G + 15) % 30,
 		// number of days from 21 March to the Paschal full moon
 		I = H - f(H/28) * (1 - f(29/(H + 1)) * f((21-G)/11)),
 		// weekday for the Paschal full moon
@@ -2554,12 +2638,18 @@ export function getEaster(){
         easter.solveDate[1] -= easter.solveDate[0] === 2 ? 31 : 30;
         easter.solveDate[0]++;
     }
-    if (date.getMonth() >= easter.date[0] && date.getDate() >= easter.date[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+
+    let cur_day = date.getDate();
+    let cur_month = date.getMonth();
+
+    const isAfterBeginning = cur_month > easter.date[0] || (cur_month === easter.date[0] && cur_day >= easter.date[1]);
+    const isBeforeEnd = cur_month < easter.endDate[0] || (cur_month === easter.endDate[0] && cur_day <= easter.endDate[1]);
+    if (isAfterBeginning && isBeforeEnd){
         easter.active = true;
-        if (date.getMonth() >= easter.hintDate[0] && date.getDate() >= easter.hintDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.hintDate[0] && cur_day >= easter.hintDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.hint = true;
         }
-        if (date.getMonth() >= easter.solveDate[0] && date.getDate() >= easter.solveDate[1] && date.getMonth() <= easter.endDate[0] && date.getDate() <= easter.endDate[1]){
+        if (cur_month >= easter.solveDate[0] && cur_day >= easter.solveDate[1] && cur_month <= easter.endDate[0] && cur_day <= easter.endDate[1]){
             easter.solve = true;
         }
     }

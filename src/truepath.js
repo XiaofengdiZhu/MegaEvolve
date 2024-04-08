@@ -3,7 +3,7 @@ import { vBind, clearElement, popover, clearPopper, messageQueue, powerCostMod, 
 import { races, traits } from './races.js';
 import { spatialReasoning } from './resources.js';
 import { armyRating, garrisonSize } from './civics.js';
-import { jobScale, job_desc, virtualLoadFoundry } from './jobs.js';
+import { jobScale, job_desc, limitCraftsmen, virtualLoadFoundry } from './jobs.js';
 import { production, highPopAdjust } from './prod.js';
 import { actions, payCosts, powerOnNewStruct, setAction, bank_vault, buildTemplate, casinoEffect, housingLabel, virtualDrawTech, virtualSetAction} from './actions.js';
 import { fuel_adjust, int_fuel_adjust, spaceTech, checkRequirements, planetName, virtualRenderSpace} from './space.js';
@@ -178,21 +178,23 @@ const outerTruth = {
                 let gain = jobScale(1);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('plus_max_resource',[jobScale(1),global.race['truepath'] ? loc('job_colonist_tp',[planetName().titan]) : loc('colonist')])}</div><div>${loc('plus_max_resource',[gain,loc('citizen')])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[0].a,global.resource[$(this)[0].support_fuel()[0].r].name])}</div><div class="has-text-caution">${loc(`spend`,[$(this)[0].support_fuel()[1].a,global.resource[$(this)[0].support_fuel()[1].r].name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
             support_fuel(){ return [{ r: 'Water', a: 12 },{ r: 'Food', a: 500 }]; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.titan_quarters.count++;
                     global.civic.titan_colonist.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.titan_quarters.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         global.resource[global.race.species].max += jobScale(1);
-                        if (global.civic[global.civic.d_job].workers > 0){
-                            let hired = global.civic[global.civic.d_job].workers - jobScale(1) < 0 ? global.civic[global.civic.d_job].workers : jobScale(1);
-                            global.civic[global.civic.d_job].workers -= hired;
-                            global.civic.titan_colonist.workers += hired;
-                        }
+
+                        let hiredMax = jobScale(1);
+                        global.civic.titan_colonist.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.titan_colonist.workers += hired;
                     }
                     return true;
                 }
@@ -227,16 +229,15 @@ const outerTruth = {
                 let aluminium = +(alum_val).toFixed(3);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[adamantite,global.resource.Adamantite.name])}</div><div>${loc('space_red_mine_effect',[aluminium,global.resource.Aluminium.name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special(){ return true; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.titan_mine.count++;
                     global.resource.Adamantite.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.titan_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -313,7 +314,7 @@ const outerTruth = {
                         let heavy = $(this)[0].heavy(res);
                         let val = sizeApproximation(+(spatialReasoning($(this)[0].val(res)) * (heavy ? h_multiplier : multiplier)).toFixed(0),1);
                         storage = storage + `<span>${loc('plus_max_resource',[val,global.resource[res].name])}</span>`;
-                }
+                    }
                 };
                 storage = storage + '</div>';
                 return storage;
@@ -327,7 +328,7 @@ const outerTruth = {
                         if (global.resource[res].display){
                             let heavy = $(this)[0].heavy(res);
                             global.resource[res].max += (spatialReasoning($(this)[0].val(res)) * (heavy ? h_multiplier : multiplier));
-                    }
+                        }
                     };
                     return true;
                 }
@@ -381,15 +382,15 @@ const outerTruth = {
                 }
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().titan])}</div><div>${loc('space_red_mine_effect',[graphene,global.resource.Graphene.name])}</div><div>${loc('interstellar_g_factory_effect')}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.space.g_factory.count++;
                     global.resource.Graphene.display = true;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.g_factory.on++;
+                    if (powerOnNewStruct($(this)[0])){
                         if (global.race['kindling_kindred'] || global.race['smoldering']){
                             global.space.g_factory.Oil++;
                         }
@@ -462,15 +463,14 @@ const outerTruth = {
                 desc += `<div>${loc('space_red_exotic_lab_effect1',[know])}</div>`;
                 return desc + `<div class="has-text-caution">${loc('spend',[cipher,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
             },
+            s_type: 'titan',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             support_fuel(){ return { r: 'Cipher', a: 0.06 }; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.decoder.count++;
-                    if (global.space.electrolysis.support < global.space.electrolysis.s_max){
-                        global.space.decoder.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -670,14 +670,13 @@ const outerTruth = {
                 let water = +(production('water_freighter')).toFixed(2);
                 return `<div class="has-text-caution">${loc('space_used_support',[planetName().enceladus])}</div><div>${loc('produce',[water,global.resource.Water.name])}</div><div class="has-text-caution">${loc(`space_belt_station_effect3`,[helium])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.water_freighter.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.water_freighter.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -710,17 +709,22 @@ const outerTruth = {
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
             powered(){ return powerCostMod(12); },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.zero_g_lab.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.zero_g_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
+            },
+            post(){
+                loadFoundry();
+            },
+            postPower(on){
+                limitCraftsmen('Quantium');
             }
         },
         operating_base: {
@@ -749,14 +753,13 @@ const outerTruth = {
                 }
                 return desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
             },
+            s_type: 'enceladus',
             support(){ return -1; },
             powered(){ return powerCostMod(10); },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.operating_base.count++;
-                    if (global.space.titan_spaceport.support < global.space.titan_spaceport.s_max){
-                        global.space.operating_base.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -899,7 +902,7 @@ const outerTruth = {
                 if (global.tech['triton'] === 2){
                     global.tech['triton'] = 3;
                     virtualDrawTech();
-                     virtualRenderSpace();
+                    virtualRenderSpace();
                     messageQueue(loc('space_fob_msg'),'info',false,['progress']);
                 }
             }
@@ -918,7 +921,7 @@ const outerTruth = {
                 Neutronium(offset){ return spaceCostMultiplier('lander', offset, 10000, 1.15); },
                 Nano_Tube(offset){ return spaceCostMultiplier('lander', offset, 158000, 1.15); },
             },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             effect(wiki){
                 let oil = +fuel_adjust(50,true,wiki).toFixed(2);
                 let data = ``;
@@ -1229,14 +1232,13 @@ const outerTruth = {
                 }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
+            s_type: 'eris',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.shock_trooper.count++;
-                    if (global.space.drone_control.support < global.space.drone_control.s_max){
-                        global.space.shock_trooper.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1265,14 +1267,13 @@ const outerTruth = {
                 }
                 return desc + `<div>${loc(`space_digsite_offense`,[rating])}</div>`;
             },
+            s_type: 'eris',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.space.tank.count++;
-                    if (global.space.drone_control.support < global.space.drone_control.s_max){
-                        global.space.tank.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1571,12 +1572,13 @@ const tauCetiModules = {
                         global.tauceti.orbital_station.on++;
                         global.tauceti.colony.on++;
                         global.tauceti.mining_pit.on++;
-                        let jRequest = jobScale(4);
-                        if (global.civic[global.civic.d_job].workers < jRequest){
-                            jRequest = global.civic[global.civic.d_job].workers;
-                        }
-                        global.civic.pit_miner.workers += jRequest;
-                        global.civic[global.civic.d_job].workers -= jRequest;
+
+                        let hiredMax = jobScale(4);
+                        global.civic.pit_miner.max += hiredMax;
+
+                        let hired = Math.min(hiredMax, global.civic[global.civic.d_job].workers);
+                        global.civic[global.civic.d_job].workers -= hired;
+                        global.civic.pit_miner.workers += hired;
                     }
                     if (global.settings.tabLoad){
                         virtualDrawShips();
@@ -1670,15 +1672,14 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -2; },
             support_fuel(){ return { r: 'Food', a: global.tech['isolation'] ? (global.race['lone_survivor'] ? -2 : 75) : 1000 }; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.colony.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.colony.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -1696,7 +1697,6 @@ const tauCetiModules = {
             title(){
                 return housingLabel('small');
             },
-            desc: loc('city_basic_housing_desc'),
             desc(){
                 return $(this)[0].citizens() === 1 ? loc('city_basic_housing_desc') : loc('city_basic_housing_desc_plural',[$(this)[0].citizens()]);
             },
@@ -1883,14 +1883,13 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_pit.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.mining_pit.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2161,7 +2160,7 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_home_tau_factory_effect',[global.tech['isolation'] ? 5 : 3])}</div>`;
                 if (global.tech['isolation']){
                     if (!global.race['flier']){
-                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
+                        desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(2)])}</div>`;
                     }
                     desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(5)])}</div>`;
                 }
@@ -2170,14 +2169,13 @@ const tauCetiModules = {
                 return desc;
             },
             special: true,
+            s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return powerCostMod(global.tech['isolation'] ? 2 : 5); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.tau_factory.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.tau_factory.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2226,14 +2224,13 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
                 return desc;
             },
+            s_type: 'tau_home',
             support(){ return -1; },
             powered(){ return powerCostMod(global.tech['isolation'] ? (global.race['lone_survivor'] ? 2 : 8) : 35); },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.infectious_disease_lab.count++;
-                    if (global.tauceti.orbital_station.support - $(this)[0].support() <= global.tauceti.orbital_station.s_max){
-                        global.tauceti.infectious_disease_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2244,6 +2241,10 @@ const tauCetiModules = {
                     messageQueue(loc('tau_plague4',[loc('tab_tauceti')]),'info',false,['progress']);
                     virtualDrawTech();
                 }
+                virtualLoadFoundry();
+            },
+            postPower(on){
+                limitCraftsmen('Quantium');
             }
         },
         tauceti_casino: {
@@ -2560,14 +2561,13 @@ const tauCetiModules = {
                 }
                 return val;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.overseer.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.overseer.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2594,14 +2594,13 @@ const tauCetiModules = {
                 }
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_village.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_village.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2631,14 +2630,13 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_farm_effect2',[food / 2 * farmers])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_farm.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_farm.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2674,15 +2672,14 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_employ',[6])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_mine.count++;
                     global.resource.Unobtainium.display = true;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_mine.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2737,14 +2734,13 @@ const tauCetiModules = {
                 }
                 return val;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_fun.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_fun.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -2771,14 +2767,13 @@ const tauCetiModules = {
                 desc = desc + `<div>${loc('tau_red_womling_employ_single',[1])}</div>`;
                 return desc;
             },
+            s_type: 'tau_red',
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.womling_lab.count++;
-                    if (global.tauceti.orbital_platform.support - $(this)[0].support() <= global.tauceti.orbital_platform.s_max){
-                        global.tauceti.womling_lab.on++;
-                    }
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3062,7 +3057,7 @@ const tauCetiModules = {
                 }
                 let desc = `<div>${loc('tau_gas_womling_station_effect',[prod,tauCetiModules.tau_gas.info.name()])}</div>`;
                 if (!global.race['flier']){
-                desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
+                    desc = desc + `<div>${loc('city_cement_plant_effect1',[jobScale(1)])}</div>`;
                 }
                 desc = desc + `<div>${loc('space_red_fabrication_effect1',[jobScale(1)])}</div>`;
                 desc = desc + `<div class="has-text-caution">${loc('minus_power',[$(this)[0].powered()])}</div>`;
@@ -3136,7 +3131,7 @@ const tauCetiModules = {
             },
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 15 : 250 }; },
             support(){ return 1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             refresh: true,
             action(){
                 if (payCosts($(this)[0])){
@@ -3166,14 +3161,15 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
+            s_type: 'tau_roid',
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 12 : 75 }; },
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             special: true,
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.mining_ship.count++;
-                    global.tauceti.mining_ship.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3198,13 +3194,14 @@ const tauCetiModules = {
                 desc = desc + `<div class="has-text-caution">${loc('spend',[fuel,global.resource[$(this)[0].support_fuel().r].name])}</div>`;
                 return desc;
             },
+            s_type: 'tau_roid',
             support_fuel(){ return { r: 'Helium_3', a: global.tech['isolation'] ? 14 : 90 }; },
             support(){ return -1; },
-            powered(){ return powerCostMod(1); },
+            powered(){ return 0; },
             action(){
                 if (payCosts($(this)[0])){
                     global.tauceti.whaling_ship.count++;
-                    global.tauceti.whaling_ship.on++;
+                    powerOnNewStruct($(this)[0]);
                     return true;
                 }
                 return false;
@@ -3522,7 +3519,7 @@ function matrixProjection(){
 }
 
 function retireProjection(){
-    let gains = calcPrestige('retire');
+    let gains = calcPrestige('retired');
     let plasmidType = global.race.universe === 'antimatter' ? loc('resource_AntiPlasmid_plural_name') : loc('resource_Plasmid_plural_name');
     let skilled = global.stats.retire + 1 === global.stats.matrix ? `<div class="has-text-advanced">${loc('tau_star_matrix_skilled',[1])}</div>` : ``;
     return `<div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.plasmid,plasmidType])}</div><div class="has-text-advanced">${loc('interstellar_ascension_trigger_effect2',[gains.phage,loc('resource_Phage_name')])}</div><div class="has-text-advanced">${loc('tau_star_matrix_servants',[1])}</div>${skilled}`;
@@ -4234,20 +4231,20 @@ export function shipCosts(bp){
             break;
         case 'cruiser':
             costs['Money'] = 50000000;
-            costs['Adamantite'] = 1000000; //12000000;
+            costs['Adamantite'] = 1000000;
             h_inflate = 1.3;
             p_inflate = 1.25;
             break;
         case 'battlecruiser':
             costs['Money'] = 125000000;
-            costs['Adamantite'] = 2600000; //32000000;
+            costs['Adamantite'] = 2600000;
             h_inflate = 1.35;
             p_inflate = 1.3;
             creep_factor = 0.8;
             break;
         case 'dreadnought':
             costs['Money'] = 500000000;
-            costs['Adamantite'] = 8000000; //128000000;
+            costs['Adamantite'] = 8000000;
             h_inflate = 1.4;
             p_inflate = 1.35;
             creep_factor = 0.5;
@@ -4318,16 +4315,16 @@ export function shipCosts(bp){
     }
 
     if (bp.class !== 'explorer'){
-    switch (bp.sensor){
-        case 'radar':
+        switch (bp.sensor){
+            case 'radar':
                 costs['Money'] = Math.round(costs['Money'] ** 1.04);
-            break;
-        case 'lidar':
+                break;
+            case 'lidar':
                 costs['Money'] = Math.round(costs['Money'] ** 1.08);
-            break;
-        case 'quantum':
+                break;
+            case 'quantum':
                 costs['Money'] = Math.round(costs['Money'] ** 1.12);
-            break;
+                break;
         }
     }
 
@@ -4375,11 +4372,11 @@ export function shipCosts(bp){
             costs[res] = Math.ceil(costs[res] * ((typeCount + 1) * 3));
         }
         else {
-        if (typeCount < 2){
-            costs[res] = Math.ceil(costs[res] * (typeCount === 0 ? 0.75 : 0.9));
-        }
-        else if (typeCount > 2){
-            costs[res] = Math.ceil(costs[res] * creep);
+            if (typeCount < 2){
+                costs[res] = Math.ceil(costs[res] * (typeCount === 0 ? 0.75 : 0.9));
+            }
+            else if (typeCount > 2){
+                costs[res] = Math.ceil(costs[res] * creep);
             }
         }
     });
@@ -4491,16 +4488,16 @@ export function drawShips(){
             }
         }
         else {
-        Object.keys(spaceRegions).forEach(function(region){
-            if (ship.location !== region){
-                if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
-                    if (!global.race['orbit_decayed'] || (global.race['orbit_decayed'] && region !== 'spc_moon')){
-                        let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
-                        values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+            Object.keys(spaceRegions).forEach(function(region){
+                if (ship.location !== region){
+                    if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+                        if (!global.race['orbit_decayed'] || (global.race['orbit_decayed'] && region !== 'spc_moon')){
+                            let name = typeof spaceRegions[region].info.name === 'string' ? spaceRegions[region].info.name : spaceRegions[region].info.name();
+                            values += `<b-dropdown-item aria-role="listitem" v-on:click="setLoc('${region}',${i})" class="${region}">${name}</b-dropdown-item>`;
+                        }
                     }
                 }
-            }
-        });
+            });
         }
 
         let location = ship.location === 'tauceti' ? loc('tech_era_tauceti') : typeof spaceRegions[ship.location].info.name === 'string' ? spaceRegions[ship.location].info.name : spaceRegions[ship.location].info.name();
@@ -4656,20 +4653,20 @@ export function drawShips(){
             }
         }
         else {
-        Object.keys(spaceRegions).forEach(function(region){
-            if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
-                if (ship.location !== region){
-                    popover(`ship${i}loc${region}`, function(){
-                        return loc(`transit_time`,[Math.round(transferWindow(ship.xy,calcLandingPoint(ship, region)) / shipSpeed(ship))]);
-                    },
-                    {
-                        elm: `#ship${i}loc .${region}`,
-                        placement: 'left'
-                    });
+            Object.keys(spaceRegions).forEach(function(region){
+                if (spaceRegions[region].info.syndicate() || region === 'spc_dwarf'){
+                    if (ship.location !== region){
+                        popover(`ship${i}loc${region}`, function(){
+                            return loc(`transit_time`,[Math.round(transferWindow(ship.xy,calcLandingPoint(ship, region)) / shipSpeed(ship))]);
+                        },
+                        {
+                            elm: `#ship${i}loc .${region}`,
+                            placement: 'left'
+                        });
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
     }
 
     dragShipList();
@@ -4920,7 +4917,7 @@ export const spacePlanetStats = {
     spc_neptune: { dist: 30.08, orbit: 60152, size: 1 },
     spc_triton: { dist: 30.1, orbit: 60152, size: 0.1, moon: true },
     spc_kuiper: { dist: 39.5, orbit: 90498, size: 0.5, belt: true },
-    spc_eris: { dist: 68, orbit: 204060, size: 0.5, size: 0.5 },
+    spc_eris: { dist: 68, orbit: 204060, size: 0.5 },
     tauceti: { dist: 752568.8, orbit: -2, size: 2 },
 };
 
@@ -4965,15 +4962,15 @@ export function tpStorageMultiplier(type,heavy){
     switch (type){
         case 'storehouse':
         {
-    if (p_on['titan_spaceport']){
-        multiplier *= 1 + (p_on['titan_spaceport'] * 0.25);
-    }
-    if (heavy && global.tech['shelving']){
-        multiplier *= 2;
-    }
-    if (global.tech['shelving'] && global.tech.shelving >= 3){
-        multiplier *= 1.5;
-    }
+            if (p_on['titan_spaceport']){
+                multiplier *= 1 + (p_on['titan_spaceport'] * 0.25);
+            }
+            if (heavy && global.tech['shelving']){
+                multiplier *= 2;
+            }
+            if (global.tech['shelving'] && global.tech.shelving >= 3){
+                multiplier *= 1.5;
+            }
         }
         case 'repository':
         {
@@ -5237,7 +5234,6 @@ export function loneSurvivor(){
                 hunting: 0,
                 crafting: 0,
                 total: 0,
-                crafting: 0
             };
         }
         global.settings.showSpace = false;
