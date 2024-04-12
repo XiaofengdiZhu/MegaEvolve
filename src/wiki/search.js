@@ -47,6 +47,7 @@ export function initSearch(parent){
         data: {
             searchString: "",
             lastSearchString: "",
+            searchRegexps: null,
             useRegex: false,
             filteredResults: [],
             isLoading: true,
@@ -60,6 +61,7 @@ export function initSearch(parent){
                 if(searchString.length === 0){
                     this.filteredResults = Object.keys(virtualWiki).map(e=>virtualWiki[e]);
                     this.lastSearchString = "";
+                    this.searchRegexps = null;
                     return;
                 }
                 if(searchString === this.lastSearchString){
@@ -67,26 +69,26 @@ export function initSearch(parent){
                 }
                 this.lastSearchString = searchString;
                 this.filteredResults = [];
-                let regexps = [];
+                this.searchRegexps = [];
                 if(this.useRegex){
-                    regexps.push(new RegExp(searchString, "ig"));
+                    this.searchRegexps.push(new RegExp(searchString, "ig"));
                 }else if(/\S \S/.test(searchString)){
                     searchString.split(" ").forEach(str=>{
-                        regexps.push(new RegExp(escapeRegExp(str), "ig"));
+                        this.searchRegexps.push(new RegExp(escapeRegExp(str), "ig"));
                     });
                 }else{
-                    regexps.push(new RegExp(escapeRegExp(searchString), "ig"));
+                    this.searchRegexps.push(new RegExp(escapeRegExp(searchString), "ig"));
                 }
                 for(let hash in virtualWiki){
                     let content = [];
                     virtualWiki[hash].content?.forEach(paragraph => {
-                        for (let regexp of regexps) {
+                        for (let regexp of this.searchRegexps) {
                             if (!regexp.test(paragraph)) {
                                 return;
                             }
                         }
                         if(!paragraph.includes("</")){
-                            for (let regexp of regexps) {
+                            for (let regexp of this.searchRegexps) {
                                 paragraph = paragraph.replace(regexp, `<span class="has-text-warning">\$\&</span>`);
                             }
                         }
@@ -95,7 +97,7 @@ export function initSearch(parent){
                     if(content.length === 0){
                         let title = virtualWiki[hash].title;
                         let flag = true;
-                        for (let regexp of regexps) {
+                        for (let regexp of this.searchRegexps) {
                             if (!regexp.test(title)) {
                                 flag = false;
                                 break;
@@ -139,6 +141,30 @@ export function initSearch(parent){
                     }else{
                         menuDispatch(sub2Main[sub], sub, frag);
                     }
+                }
+                if(this.searchRegexps){
+                    if (!CSS.highlights) {
+                        console.log("CSS Custom Highlight API not supported.");
+                        return;
+                    }
+                    CSS.highlights.clear();
+                    let ranges = [];
+                    let treeWalker = document.createTreeWalker(document.getElementById("content"), NodeFilter.SHOW_TEXT);
+                    let currentNode = treeWalker.nextNode();
+                    while (currentNode) {
+                        if(currentNode instanceof Text) {
+                            for (let regexp of this.searchRegexps) {
+                                for (let match of currentNode.textContent.matchAll(regexp)) {
+                                    let range = new Range();
+                                    range.setStart(currentNode, match.index);
+                                    range.setEnd(currentNode, match.index + match[0].length);
+                                    ranges.push(range);
+                                }
+                            }
+                            currentNode = treeWalker.nextNode();
+                        }
+                    }
+                    CSS.highlights.set("search-results", new Highlight(...ranges));
                 }
             },
             scrollHandle() {
