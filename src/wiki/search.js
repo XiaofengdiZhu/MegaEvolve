@@ -125,15 +125,16 @@ export function initSearch(parent){
                 let array = hash.split('-');
                 hideSearchPopper();
                 let sub = array[0];
-                if(sub.startsWith("tp_")){
+                let isTp = sub.startsWith("tp_");
+                if(isTp){
                     sub = sub.slice(3);
                 }
                 let frag = array[1];
                 if(frag && frag.endsWith("_tech")){
                     if(isSub){
-                        menuDispatch("tech", sub);
+                        menuDispatch(isTp ? "tp_tech" : "tech", sub);
                     }else{
-                        menuDispatch("tech", sub, frag.slice(0, -5));
+                        menuDispatch(isTp ? "tp_tech" : "tech", sub, frag.slice(0, -5));
                     }
                 }else{
                     if(isSub){
@@ -263,7 +264,7 @@ function initVirtualWiki(vue){
     renderStructurePage(null, "standard", true);
     ["primitive","civilized","discovery","industrialized","globalized","early_space","deep_space","interstellar","intergalactic","dimensional"].forEach(era => renderTechPage(era, "standard", true));
     renderStructurePage(null, "truepath", true);
-    ["primitive","civilized","discovery","industrialized","globalized","early_space","deep_space","solar","tauceti"].forEach(era => renderTechPage(null, "truepath", true));
+    ["primitive","civilized","discovery","industrialized","globalized","early_space","deep_space","solar","tauceti"].forEach(era => renderTechPage(era, "truepath", true));
     arpaPage(null, true);
     renderAchievePage(null, true);
     changeLog();
