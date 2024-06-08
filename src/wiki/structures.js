@@ -805,7 +805,7 @@ function actionDescAndSoOnForSearch(hash, c_action, extended, key, section, regi
                 render = true;
             } else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool') {
                 let f_res = res === 'Species' ? global.race.species : res;
-                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
+                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : loc(`resource_${f_res}_name`)) + ': ';
                 label = label.replace("_", " ");
                 addCost(res, costs[res](), label);
             }
