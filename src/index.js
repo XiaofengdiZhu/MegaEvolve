@@ -978,7 +978,8 @@ export function index(){
             <option value="0">否</option>
             <option value="1">是</option>
         </select>
-        <span id="pausegame" class="atime" role="button" @click="pause" :aria-label="pausedesc()" style="margin:auto 1rem"></span>
+        <span id="pausegame" class="atime" role="button" @click="pause" :aria-label="pausedesc()" style="margin-left: 1rem;"></span>
+        <span @click="stepByStep" title="逐步" style="margin-left: 1rem;">→</span>
         <span class="version" id="versionLog" style="margin:0 1rem"><a href="wiki.html#changelog" target="_blank"></a></span>
     </div>`);
     let main = $(`<div id="main" class="main"></div>`);

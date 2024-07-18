@@ -499,6 +499,15 @@ vBind({
         },
         autoRefreshChanged(event){
             global.settings.autoRefresh = event.target.value==="1";
+        },
+        stepByStep() {
+            let $pausegame=$('#pausegame');
+            $pausegame.removeClass('play');
+            if (!global.settings.pause) {
+                global.settings.pause = true;
+                $pausegame.text("▶");
+            }
+            stepByStep(true);
         }
     },
     filters: {
@@ -740,9 +749,17 @@ if (window.Worker){
         var data = e.data;
         switch (data) {
             case 'fast':
-                if (global.settings.pause && webWorker.s){
+                if (global.settings.pause && webWorker.s) {
                     gameLoop('stop');
+                    // Save game state
+                    global.stats['current'] = Date.now();
+                    if (!global.race.hasOwnProperty('geck')){
+                        save.setItem('evolved',JSON.stringify(global));
+                    }
                     break;
+                }
+                while(global.stats.daysMega % 1 > 0.01) {
+                    stepByStep(false);
                 }
                 let frameLongLoopCount = global.settings.frameLongLoopCount??1;
                 try{
@@ -759,7 +776,7 @@ if (window.Worker){
                     }
                     frameLoop();
                 }catch (e) {console.log(e);}
-                if(counter%720 ===0){
+                if(counter % 720 === 0){
                     let costTime = new Date() - hourLoopStartTime;
                     let factor = (3600000 / costTime).toFixed(1);
                     let str = "一小时实际耗时"+(costTime / 1000)+"秒，倍率"+factor;
@@ -785,7 +802,34 @@ if (window.Worker){
         }
     }, false);
 }
-gameLoop('start');
+if(!global.settings.pause) {
+    gameLoop('start');
+}
+function stepByStep(forceFrameLoop = false){
+    try{
+        let frameStartTime = new Date();
+        global.frameFactor = 1;
+        fastLoop();
+        global.stats.daysMega += 0.05;
+        if(global.stats.daysMega % 0.2 < 0.01) {
+            midLoop();
+        }
+        if(global.stats.daysMega % 1 < 0.01) {
+            longLoop();
+            if(!forceFrameLoop) {
+                frameLoop();
+            }
+        }
+        if(forceFrameLoop) {
+            frameLoop();
+            $("#realFactor").text("1");
+            $("#frameCost").text(((new Date()-frameStartTime)).toFixed(1) + "ms");
+        }
+    }
+    catch (e){
+        console.log(e);
+    }
+}
 
 resourceAlt();
 
