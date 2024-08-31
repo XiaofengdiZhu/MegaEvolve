@@ -9731,7 +9731,7 @@
   "wiki_universe_intro": "Universes",
   "wiki_universe_intro_para1": "The multiverse is infinite! ...but your choices are not. All universes can be classified into one of %0 general types: %1.",
   "wiki_universe_intro_para2": "Each universe type has unique properties that modify the game rules. The starting universe is always the %0 type.",
-  "wiki_universe_intro_para3": "In order to change universes, you must complete a %0 reset.",
+  "wiki_universe_intro_para3": "In order to change universes, you must complete a %0 or %1 reset.",
   "wiki_universe_standard": "Standard",
   "wiki_universe_standard_para1": "The %0 universe is the base game experience; it has no special properties.",
   "wiki_universe_standard_para2": "%0 in this universe gives a storage bonus.",
@@ -10162,5 +10162,7 @@
   "wiki_achievements_missing": "Missing",
   "wiki_achievements_obtained": "Obtained",
   "wiki_achievements_incomplete": "Incomplete",
-  "wiki_achievements_completed": "Completed"
+  "wiki_achievements_completed": "Completed",
+  "wiki_search_placeholder": "Please Search...",
+  "wiki_search_regex": "RegEx"
 }

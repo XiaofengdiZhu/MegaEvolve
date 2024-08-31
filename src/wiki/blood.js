@@ -3,8 +3,15 @@ import { loc } from './../locale.js';
 import { vBind } from './../functions.js';
 import { bloodPool } from './../arpa.js';
 import { sideMenu } from './functions.js';
+import { add2virtualWikiContent, add2virtualWikiTitle } from "./search";
 
-export function bloodPage(content){
+export function bloodPage(content, forSearch = false){
+    if(forSearch){
+        Object.keys(bloodPool).forEach(function (trait){
+            bloodDesc(null, trait, forSearch);
+        });
+        return;
+    }
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_blood')}</div>`);
 
     let mainContent = $(`<div></div>`);
@@ -32,8 +39,59 @@ Object.keys(bloodPool).forEach(function (blood){
     };
 });
 
-function bloodDesc(info,trait){
+function bloodDesc(info,trait,forSearch){
     let owned = global.blood[bloodPool[trait].grant[0]] && global.blood[bloodPool[trait].grant[0]] >= bloodPool[trait].grant[1] ? true : false;
+    if(forSearch){
+        let hash = `blood-${trait}`
+        add2virtualWikiTitle(hash, bloodPool[trait].title);
+        add2virtualWikiContent(hash, `${bloodPool[trait].desc} | ${loc(`wiki_arpa_blood_${bloodPool[trait].grant[0]}`)}: ${bloodPool[trait].grant[1]}`);
+        let costs = [];
+        let resources = {};
+        if (bloodPool[trait].grant[1] === '*') {
+            let inputs = {
+                owned: 0,
+            };
+            inputs.real_owned = global.blood[trait] ? global.blood[trait] : 0;
+            let cost = bloodPool[trait].cost;
+            Object.keys(cost).forEach(function (res) {
+                resources[res] = {};
+            });
+            Object.keys(resources).forEach(function (res) {
+                let new_cost = cost[res] ? cost[res](inputs.owned - inputs.real_owned) : 0;
+                resources[res].vis = new_cost > 0;
+                resources[res].cost = new_cost;
+            });
+        }
+        Object.keys(bloodPool[trait].cost).forEach(function(res){
+            let label = loc(`resource_${res}_name`);
+            if (bloodPool[trait].grant[1] === '*') {
+                costs.push(`${label}: ${resources[res].cost}`);
+            }
+            else {
+                let res_cost = bloodPool[trait].cost[res]();
+                if (res_cost > 0){
+                    costs.push(`${label}: ${res_cost}`);
+                }
+            }
+        });
+        add2virtualWikiContent(hash, `${loc("wiki_calc_cost")}: ${costs.join(', ')}`);
+        if (Object.keys(bloodPool[trait].reqs).length > 0 || bloodPool[trait].hasOwnProperty('condition')){
+            let reqs = loc('wiki_arpa_crispr_req');
+
+            let comma = false;
+            if (Object.keys(bloodPool[trait].reqs).length > 0){
+                Object.keys(bloodPool[trait].reqs).forEach(function (req){
+                    reqs += `${comma ? `, ` : ``}${loc(`wiki_arpa_blood_${req}`)} ${bloodPool[trait].reqs[req]}`;
+                    comma = true;
+                });
+            }
+            if (bloodPool[trait].hasOwnProperty('condition')){
+                reqs += `${comma ? `, ` : ``}${loc(`wiki_arpa_crispr_blood`)} 3`;
+            }
+            add2virtualWikiContent(hash, reqs);
+        }
+        return;
+    }
 
     info.append(`<div class="type"><h2 class="has-text-warning">${bloodPool[trait].title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_blood_${bloodPool[trait].grant[0]}`)}: ${bloodPool[trait].grant[1]}</span></div>`);
 

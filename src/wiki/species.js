@@ -1,12 +1,18 @@
 import { global } from './../vars.js';
 import { loc } from './../locale.js';
-import { clearElement, popover, getEaster, getTraitDesc } from './../functions.js';
+import {clearElement, popover, getEaster, getTraitDesc, getTraitVals, traitExtra } from './../functions.js';
 import { races, traits, genus_traits, traitSkin } from './../races.js';
 import { ascendLab } from './../space.js';
 import { actions } from './../actions.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
+import { add2virtualWikiContent, add2virtualWikiTitle } from "./search";
 
-export function speciesPage(zone){
+export function speciesPage(zone, forSearch){
+    if(forSearch){
+        racesPage(null, forSearch);
+        traitsPage(null, forSearch);
+        return;
+    }
     let content = $(`#content`);
     clearElement(content);
 
@@ -43,6 +49,7 @@ export function customPage(content) {
             9: [(global.genes['transcendence'] ? 'wiki.html#civilized-tech-alt_fanaticism' : 'wiki.html#civilized-tech-fanaticism'),'wiki.html#early_space-tech-deify']
         }
     });
+
     let lab = $(`<div class="infoBox wide"></div>`);
     content.append(lab);
     ascendLab(lab);
@@ -74,15 +81,32 @@ Object.keys(evolutionPath).forEach(function (key) {
     evolutionPath[key] = evolutionPath[key].map(function (s) { return typeof actions.evolution[s].title === 'function' ? actions.evolution[s].title() : actions.evolution[s].title; }).join(' -> ');
 });
 
-export function racesPage(content){
-    content = sideMenu('create',content);
+export function racesPage(content, forSearch){
+    content = sideMenu('create',content,null,null,forSearch);
 
     let list = [];
     Object.keys(races).forEach(function (race){
         if ((race === 'custom' && !global.custom.hasOwnProperty('race0')) || race === 'protoplasm'){
             return;
         }
-
+        if(forSearch){
+            let hash = "races-" + race;
+            add2virtualWikiTitle(hash, races[race].name);
+            add2virtualWikiContent(hash,`${loc(`genelab_genus_${races[race].type}`)} | ${typeof races[race].desc === 'string' ? races[race].desc : races[race].desc()}`);
+            let extraTraits = extraTraitList(race);
+            let genes = [];
+            Object.keys(genus_traits[races[race].type]).sort().forEach(function (trait){
+                genes.push(traits[trait].name);
+            });
+            Object.keys(races[race].traits).sort().forEach(function (trait){
+                genes.push(traits[trait].name);
+            });
+            for (let i=0; i<extraTraits.length; i++){
+                genes.push(traits[extraTraits[i].t].name);
+            }
+            add2virtualWikiContent(hash, genes.join(", "));
+            return;
+        }
         let info = $(`<div id="${race}" class="infoBox"></div>`);
         content.append(info);
 
@@ -129,7 +153,7 @@ export function racesPage(content){
             popover(id,desc,{ wide: true, classes: 'w25' });
         }
     });
-
+    if(forSearch)return;
     list.sort((a,b) => races[a].name < races[b].name ? -1 : 1).forEach(function(race){
         sideMenu('add',`races-species`,race,races[race].name);
     });
@@ -160,10 +184,22 @@ function extraTraitList(race){
     }
 }
 
-export function traitsPage(content){
+export function traitsPage(content, forSearch){
+    let types = [['genus','major'],['minor'],['special']];
+    if(forSearch){
+        for (let i=0; i<types.length; i++){
+            Object.keys(traits).sort( (a,b) => traitSkin('name',a).localeCompare(traitSkin('name',b)) ).forEach(function (trait){
+                if (types[i].includes(traits[trait].type)){
+                    let hash = `traits-${traits[trait].type}_${trait}`;
+                    add2virtualWikiTitle(hash, traitSkin('name', trait));
+                    getTraitDescForSearch(trait, hash);
+                }
+            });
+        }
+        return;
+    }
     content = sideMenu('create',content);
 
-    let types = [['genus','major'],['minor'],['special']];
     for (let i=0; i<types.length; i++){
         Object.keys(traits).sort( (a,b) => traitSkin('name',a).localeCompare(traitSkin('name',b)) ).forEach(function (trait){
             if (types[i].includes(traits[trait].type)){
@@ -172,6 +208,31 @@ export function traitsPage(content){
                 getTraitDesc(info, trait, { tpage: true, wiki: true });
                 sideMenu('add',`traits-species`,`${traits[trait].type}_${trait}`,traitSkin('name',trait));
             }
+        });
+    }
+}
+function getTraitDescForSearch(trait, hash) {
+    let firstLine = [];
+    if (['genus', 'major'].includes(traits[trait].type)) {
+        firstLine.push(`${loc(`wiki_trait_rank`)} ${global.race[trait] || 1}`);
+    }
+    if (traits[trait].hasOwnProperty('val')) {
+        firstLine.push(loc(`wiki_trait_${traits[trait].type}`));
+        firstLine.push(loc(`wiki_trait_value`, [traits[trait].val]));
+    } else {
+        firstLine.push(loc(`wiki_trait_${traits[trait].type}`));
+    }
+    add2virtualWikiContent(hash, firstLine.join(" | "));
+    add2virtualWikiContent(hash, traitSkin('desc', trait));
+    if (['genus', 'major'].includes(traits[trait].type)) {
+        add2virtualWikiContent(hash, loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, global.race[trait] || 1)));
+    } else {
+        add2virtualWikiContent(hash, loc(`wiki_trait_effect_${trait}`, getTraitVals(trait, true)));
+
+    }
+    if (traitExtra[trait]) {
+        traitExtra[trait].forEach(function (te) {
+            add2virtualWikiContent(hash, te);
         });
     }
 }

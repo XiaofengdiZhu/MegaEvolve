@@ -6,8 +6,16 @@ import { clearElement, eventActive } from './../functions.js';
 import { loc } from './../locale.js';
 import { swissKnife } from './../tech.js';
 import { sideMenu, infoBoxBuilder, getSolarName } from './functions.js';
+import { add2virtualWikiContent } from "./search";
 
-export function eventsPage(zone){
+export function eventsPage(zone, forSearch = false){
+    if(forSearch){
+        mainEventsPage(null, forSearch);
+        minorEventsPage(null, forSearch);
+        progressEventsPage(null, forSearch);
+        specialEventsPage(null, forSearch);
+        return;
+    }
     let content = $(`#content`);
     clearElement(content);
 
@@ -27,8 +35,8 @@ export function eventsPage(zone){
     }
 }
 
-function mainEventsPage(content){
-    let mainContent = sideMenu('create',content);
+function mainEventsPage(content, forSearch){
+    let mainContent = sideMenu('create',content,null,null,forSearch);
     
     {   // Intro
         infoBoxBuilder(mainContent,{ name: 'major_intro', template: 'events', paragraphs: 3, h_level: 2,
@@ -37,23 +45,23 @@ function mainEventsPage(content){
                 2: [loc(`wiki_menu_major`)],
                 3: [loc(`wiki_menu_major`)]
             }
-        });
-        sideMenu('add',`major-events`,'major_intro',loc('wiki_menu_intro'));
+        }, null, forSearch, 'major');
+        sideMenu('add',`major-events`,'major_intro',loc('wiki_menu_intro'), forSearch);
     }
-    
+
     {   // DNA Replication
         let section = infoBoxBuilder(mainContent,{ name: 'replication', template: 'events', label: loc('wiki_events_replication'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [1,loc('wiki_events_replication_para1_note',[3])],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'evolution', template: 'events', label: loc('wiki_events_replication'), paragraphs: 1, h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'evolution', template: 'events', label: loc('wiki_events_replication'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'replication_examples', template: 'events', label: loc('wiki_events_replication'), h_level: 2, 
             examples: [
                 loc(`event_dna`,[10])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`replication`,loc('wiki_events_replication'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`replication`,loc('wiki_events_replication'), forSearch);
     }
 
     {   // RNA Meteor
@@ -61,14 +69,14 @@ function mainEventsPage(content){
             para_data: {
                 1: [1,loc('wiki_events_rna_meteor_para1_note',[2])],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'evolution', template: 'events', label: loc('wiki_events_rna_meteor'), paragraphs: 1, h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'evolution', template: 'events', label: loc('wiki_events_rna_meteor'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'rna_meteor_examples', template: 'events', label: loc('wiki_events_rna_meteor'), h_level: 2, 
             examples: [
                 loc(`event_rna`,[22])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`rna_meteor`,loc('wiki_events_rna_meteor'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`rna_meteor`,loc('wiki_events_rna_meteor'), forSearch);
     }
 
     {   // Inspiration
@@ -79,8 +87,8 @@ function mainEventsPage(content){
             examples: [
                 loc(`event_inspiration`)
             ]
-        });
-        sideMenu('add',`major-events`,`inspiration`,loc('wiki_events_inspiration'));
+        }, null, forSearch, 'major');
+        sideMenu('add',`major-events`,`inspiration`,loc('wiki_events_inspiration'), forSearch);
     }
 
     {   // Motivation
@@ -92,8 +100,8 @@ function mainEventsPage(content){
             examples: [
                 loc(`event_motivation`)
             ]
-        });
-        sideMenu('add',`major-events`,`motivation`,loc('wiki_events_motivation'));
+        }, null, forSearch, 'major');
+        sideMenu('add',`major-events`,`motivation`,loc('wiki_events_motivation'), forSearch);
     }
 
     {   // Fire
@@ -101,14 +109,14 @@ function mainEventsPage(content){
             para_data: {
                 1: [1,`25%`],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'fire_condition', template: 'events', label: loc('wiki_events_fire'), paragraphs: 2, break: [2], h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'fire_condition', template: 'events', label: loc('wiki_events_fire'), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'fire_examples', template: 'events', label: loc('wiki_events_fire'), h_level: 2, 
             examples: [
                 loc(`event_fire`,[(1337).toLocaleString()])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`fire`,loc('wiki_events_fire'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`fire`,loc('wiki_events_fire'), forSearch);
     }
 
     {   // Flare
@@ -117,15 +125,15 @@ function mainEventsPage(content){
                 2: [`10%`],
                 3: [`20%`,20,200],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'flare_condition', template: 'events', label: loc('wiki_events_flare'), paragraphs: 4, break: [2], h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'flare_condition', template: 'events', label: loc('wiki_events_flare'), paragraphs: 4, break: [2], h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'flare_examples', template: 'events', label: loc('wiki_events_flare'), h_level: 2, 
             examples: [
                 loc(`event_flare`,[races[global.race.species].home,69]),
                 loc(`event_flare2`,[races[global.race.species].home,42])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`flare`,loc('wiki_events_flare'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`flare`,loc('wiki_events_flare'), forSearch);
     }
 
     {   // Raid
@@ -133,7 +141,7 @@ function mainEventsPage(content){
             para_data: {
                 2: [`25%`],
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'raid_condition', template: 'events', label: loc('wiki_events_raid'), paragraphs: 2, h_level: 2,
             para_data: {
                 2: [loc(`wiki_challenges_scenarios_truepath`)],
@@ -141,14 +149,14 @@ function mainEventsPage(content){
             data_link: {
                 2: ['wiki.html#challenges-gameplay-scenarios_truepath']
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'raid_examples', template: 'events', label: loc('wiki_events_raid'), h_level: 2, 
             examples: [
                 loc(`event_raid1`,[10,31]),
                 loc(`event_raid2`,[244,0,50])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`raid`,loc('wiki_events_raid'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`raid`,loc('wiki_events_raid'), forSearch);
     }
 
     {   // Siege
@@ -156,7 +164,7 @@ function mainEventsPage(content){
             para_data: {
                 2: [`50%`],
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'siege_condition', template: 'events', label: loc('wiki_events_siege'), paragraphs: 3, h_level: 2,
             para_data: {
                 3: [loc(`wiki_challenges_scenarios_truepath`)],
@@ -164,18 +172,18 @@ function mainEventsPage(content){
             data_link: {
                 3: ['wiki.html#challenges-gameplay-scenarios_truepath']
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'siege_examples', template: 'events', label: loc('wiki_events_siege'), h_level: 2, 
             examples: [
                 loc(`event_siege1`,[30,49]),
                 loc(`event_siege2`,[(500024).toLocaleString(),0,25])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`siege`,loc('wiki_events_siege'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`siege`,loc('wiki_events_siege'), forSearch);
     }
 
     {   // Terrorist
-        let section = infoBoxBuilder(mainContent,{ name: 'terrorist', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'terrorist', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 1, h_level: 2 }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'terrorist_condition', template: 'events', label: loc('wiki_events_terrorist'), paragraphs: 2, h_level: 2,
             para_data: {
                 2: [loc(`wiki_challenges_scenarios_truepath`)],
@@ -183,14 +191,14 @@ function mainEventsPage(content){
             data_link: {
                 2: ['wiki.html#challenges-gameplay-scenarios_truepath']
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'terrorist_examples', template: 'events', label: loc('wiki_events_terrorist'), h_level: 2, 
             examples: [
                 loc(`event_terrorist1`,[14]),
                 loc(`event_terrorist2`,[54,18])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`terrorist`,loc('wiki_events_terrorist'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`terrorist`,loc('wiki_events_terrorist'), forSearch);
     }
 
     {   // Pillage
@@ -200,7 +208,7 @@ function mainEventsPage(content){
                 3: [`50%`],
                 5: [loc(`civics_gov_relations`),`40%`]
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'pillage_condition', template: 'events', label: loc('wiki_events_pillage'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`wiki_challenges_scenarios_truepath`)],
@@ -208,7 +216,7 @@ function mainEventsPage(content){
             data_link: {
                 1: ['wiki.html#challenges-gameplay-scenarios_truepath']
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'pillage_examples', template: 'events', label: loc('wiki_events_pillage'), h_level: 2, 
             examples: [
                 loc(`event_pillaged1`,[loc(`civics_gov2`,[loc(`civics_gov_name4`)]),10,55]),
@@ -239,31 +247,31 @@ function mainEventsPage(content){
                     `2264649 ${loc('resource_Orichalcum_name')}`,
                     `$19235850`].join(', ')])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`pillage`,loc('wiki_events_pillage'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`pillage`,loc('wiki_events_pillage'), forSearch);
     }
 
     {   // Quake
-        let section = infoBoxBuilder(mainContent,{ name: 'quake', template: 'events', label: loc('wiki_events_quake'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'quake_condition', template: 'events', label: loc('wiki_events_quake'), paragraphs: 2, break: [2], h_level: 2 }, section);
+        let section = infoBoxBuilder(mainContent,{ name: 'quake', template: 'events', label: loc('wiki_events_quake'), paragraphs: 1, h_level: 2 }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'quake_condition', template: 'events', label: loc('wiki_events_quake'), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'quake_examples', template: 'events', label: loc('wiki_events_quake'), h_level: 2, 
             examples: [
                 loc('event_quake',[global.race['cataclysm'] || global.race['orbit_decayed'] ? races[global.race.species].solar.red : races[global.race.species].home])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`quake`,loc('wiki_events_quake'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`quake`,loc('wiki_events_quake'), forSearch);
     }
 
     {   // Doom
-        let section = infoBoxBuilder(mainContent,{ name: 'doom', template: 'events', label: loc('wiki_events_doom'), paragraphs: 2, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'doom_condition', template: 'events', label: loc('wiki_events_doom'), paragraphs: 2, break: [2], h_level: 2 }, section);
+        let section = infoBoxBuilder(mainContent,{ name: 'doom', template: 'events', label: loc('wiki_events_doom'), paragraphs: 2, h_level: 2 }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'doom_condition', template: 'events', label: loc('wiki_events_doom'), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'doom_examples', template: 'events', label: loc('wiki_events_doom'), h_level: 2, 
             examples: [
                 loc(`event_doom`,[races[global.race.species].solar.dwarf]),
                 loc(`event_doom_alt`,[races[global.race.species].solar.dwarf])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`doom`,loc('wiki_events_doom'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`doom`,loc('wiki_events_doom'), forSearch);
     }
 
     {   // Demon Horde
@@ -271,14 +279,14 @@ function mainEventsPage(content){
             para_data: {
                 1: [2500,5000],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'dhorde_condition', template: 'events', label: loc('wiki_events_dhorde'), paragraphs: 1, h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'dhorde_condition', template: 'events', label: loc('wiki_events_dhorde'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'dhorde_examples', template: 'events', label: loc('wiki_events_dhorde'), h_level: 2, 
             examples: [
                 loc('event_demon_influx',[(3456).toLocaleString()])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`dhorde`,loc('wiki_events_dhorde'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`dhorde`,loc('wiki_events_dhorde'), forSearch);
     }
 
     {   // Ancient Ruins
@@ -286,40 +294,40 @@ function mainEventsPage(content){
             para_data: {
                 2: [loc(`resource_Iron_name`),loc(`resource_Copper_name`),loc(`resource_Steel_name`),loc(`resource_Cement_name`),'25%'],
             }
-        });
-        infoBoxBuilder(mainContent, { name: 'ruins_condition', template: 'events', label: loc('wiki_events_ruins'), paragraphs: 1, h_level: 2 }, section);
+        }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'ruins_condition', template: 'events', label: loc('wiki_events_ruins'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'ruins_examples', template: 'events', label: loc('wiki_events_ruins'), h_level: 2, 
             examples: [
                 loc('event_ruins')
             ]
-        }, section);
-        sideMenu('add',`major-events`,`ruins`,loc('wiki_events_ruins'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`ruins`,loc('wiki_events_ruins'), forSearch);
     }
 
     {   // Tax Revolt
-        let section = infoBoxBuilder(mainContent,{ name: 'taxrevolt', template: 'events', label: loc('wiki_events_taxrevolt'), paragraphs: 2, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'taxrevolt', template: 'events', label: loc('wiki_events_taxrevolt'), paragraphs: 2, h_level: 2 }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'taxrevolt_condition', template: 'events', label: loc('wiki_events_taxrevolt'), paragraphs: 3, break: [2], h_level: 2,
             para_data: {
                 1: [`> 25%`,`< 100%`],
                 2: [loc('govern_oligarchy'),`20%`],
                 3: [loc('governor_noble'),`10%`]
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'taxrevolt_examples', template: 'events', label: loc('wiki_events_taxrevolt'), h_level: 2, 
             examples: [
                 loc('event_tax_revolt')
             ]
-        }, section);
-        sideMenu('add',`major-events`,`taxrevolt`,loc('wiki_events_taxrevolt'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`taxrevolt`,loc('wiki_events_taxrevolt'), forSearch);
     }
 
     {   // Slave Death
-        let section = infoBoxBuilder(mainContent,{ name: 'slave', template: 'events', label: loc('wiki_events_slave'), paragraphs: 2, break: [2], h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'slave', template: 'events', label: loc('wiki_events_slave'), paragraphs: 2, break: [2], h_level: 2 }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'slave_condition', template: 'events', label: loc('wiki_events_slave'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_slaver_name`)]
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'slave_examples', template: 'events', label: loc('wiki_events_slave'), h_level: 2, 
             examples: [
                 loc(`event_slave_death1`),
@@ -327,8 +335,8 @@ function mainEventsPage(content){
                 loc(`event_slave_death3`),
                 loc(`event_slave_none`)
             ]
-        }, section);
-        sideMenu('add',`major-events`,`slave`,loc('wiki_events_slave'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`slave`,loc('wiki_events_slave'), forSearch);
     }
 
     {   // Protests
@@ -338,12 +346,12 @@ function mainEventsPage(content){
                 2: ['30%'],
                 3: [30,90],
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'protest_condition', template: 'events', label: loc('wiki_events_protest'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`govern_republic`)]
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'protest_examples', template: 'events', label: loc('wiki_events_protest'), h_level: 2, 
             examples: [
                 loc(`event_protest0`,[housingLabel('small')]),
@@ -357,8 +365,8 @@ function mainEventsPage(content){
                 loc(`event_protest8`),
                 loc(`event_protest9`)
             ]
-        }, section);
-        sideMenu('add',`major-events`,`protest`,loc('wiki_events_protest'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`protest`,loc('wiki_events_protest'), forSearch);
     }
 
     {   // Scandals
@@ -367,12 +375,12 @@ function mainEventsPage(content){
                 1: [loc('governor_media')],
                 2: ['8%',15,90]
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'scandal_condition', template: 'events', label: loc('wiki_events_scandal'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc('governor_media')]
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'scandal_examples', template: 'events', label: loc('wiki_events_scandal'), h_level: 2, 
             examples: [
                 loc(`event_scandal0`),
@@ -386,30 +394,30 @@ function mainEventsPage(content){
                 loc(`event_scandal8`),
                 loc(`event_scandal9`)
             ]
-        }, section);
-        sideMenu('add',`major-events`,`scandal`,loc('wiki_events_scandal'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`scandal`,loc('wiki_events_scandal'), forSearch);
     }
 
     {   // Spy Caught
-        let section = infoBoxBuilder(mainContent,{ name: 'spy', template: 'events', label: loc('wiki_events_spy'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'spy_condition', template: 'events', label: loc('wiki_events_spy'), paragraphs: 1, h_level: 2 }, section);
+        let section = infoBoxBuilder(mainContent,{ name: 'spy', template: 'events', label: loc('wiki_events_spy'), paragraphs: 1, h_level: 2 }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'spy_condition', template: 'events', label: loc('wiki_events_spy'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'spy_examples', template: 'events', label: loc('wiki_events_spy'), h_level: 2, 
             examples: [
                 loc(`event_spy`,[govTitle(1)])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`spy`,loc('wiki_events_spy'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`spy`,loc('wiki_events_spy'), forSearch);
     }
 
     {   // Mine Collapse
-        let section = infoBoxBuilder(mainContent,{ name: 'mine_collapse', template: 'events', label: loc('wiki_events_mine_collapse'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'mine_collapse_condition', template: 'events', label: loc('wiki_events_mine_collapse'), paragraphs: 1, h_level: 2 }, section);
+        let section = infoBoxBuilder(mainContent,{ name: 'mine_collapse', template: 'events', label: loc('wiki_events_mine_collapse'), paragraphs: 1, h_level: 2 }, null, forSearch, 'major');
+        infoBoxBuilder(mainContent, { name: 'mine_collapse_condition', template: 'events', label: loc('wiki_events_mine_collapse'), paragraphs: 1, h_level: 2 }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'mine_collapse_examples', template: 'events', label: loc('wiki_events_mine_collapse'), h_level: 2, 
             examples: [
                 loc(`event_mine_collapse`)
             ]
-        }, section);
-        sideMenu('add',`major-events`,`mine_collapse`,loc('wiki_events_mine_collapse'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`mine_collapse`,loc('wiki_events_mine_collapse'), forSearch);
     }
 
     {   // M Curious
@@ -428,12 +436,12 @@ function mainEventsPage(content){
                 5: ['5%',200,600],
                 6: [loc('race_cath'),'10%',500,1000],
             }
-        });
+        }, null, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'm_curious_condition', template: 'events', label: loc('wiki_events_m_curious'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_curious_name`)]
             }
-        }, section);
+        }, section, forSearch, 'major');
         infoBoxBuilder(mainContent, { name: 'm_curious_examples', template: 'events', label: loc('wiki_events_m_curious'), h_level: 2, 
             examples: [
                 loc(`event_m_curious0`,[races[global.race.species].name,(444015).toLocaleString(),loc('resource_Alloy_name')]),
@@ -443,33 +451,33 @@ function mainEventsPage(content){
                 loc(`event_m_curious4a`,[loc('race_cath')]),
                 loc(`event_m_curious4b`,[loc('race_octigoran')])
             ]
-        }, section);
-        sideMenu('add',`major-events`,`m_curious`,loc('wiki_events_m_curious'));
+        }, section, forSearch, 'major');
+        sideMenu('add',`major-events`,`m_curious`,loc('wiki_events_m_curious'), forSearch);
     }
 }
 
-function minorEventsPage(content){
-    let mainContent = sideMenu('create',content);
+function minorEventsPage(content, forSearch){
+    let mainContent = sideMenu('create',content,null,null,forSearch);
     
     {   // Intro
-        let section = infoBoxBuilder(mainContent,{ name: 'minor_intro', template: 'events', paragraphs: 1, h_level: 2});
+        let section = infoBoxBuilder(mainContent,{ name: 'minor_intro', template: 'events', paragraphs: 1, h_level: 2}, null, forSearch, 'minor');
         infoBoxBuilder(mainContent,{ name: 'major_intro', template: 'events', paragraphs: 3, h_level: 2,
             para_data: {
                 1: [loc(`wiki_menu_minor`),850,71],
                 2: [loc(`wiki_menu_minor`)],
                 3: [loc(`wiki_menu_minor`)]
             }
-        }, section);
-        sideMenu('add',`minor-events`,'minor_intro',loc('wiki_menu_intro'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,'minor_intro',loc('wiki_menu_intro'), forSearch);
     }
     
     {   // Curious
-        let section = infoBoxBuilder(mainContent,{ name: 'curious', template: 'events', label: loc('wiki_events_curious'), paragraphs: 2, break: [2], h_level: 2});
+        let section = infoBoxBuilder(mainContent,{ name: 'curious', template: 'events', label: loc('wiki_events_curious'), paragraphs: 2, break: [2], h_level: 2}, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'curious_condition', template: 'events', label: loc('wiki_events_curious'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_curious_name`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'curious_examples', template: 'events', label: loc('wiki_events_curious'), h_level: 2, 
             examples: [
                 loc(`event_curious0`,[races[global.race.species].name]),
@@ -483,17 +491,17 @@ function minorEventsPage(content){
                 loc(`event_curious8`,[races[global.race.species].name]),
                 loc(`event_curious9`,[races[global.race.species].name])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`curious`,loc('wiki_events_curious'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`curious`,loc('wiki_events_curious'), forSearch);
     }
     
     {   // Slave Escape
-        let section = infoBoxBuilder(mainContent,{ name: 'slave_escape', template: 'events', label: loc('wiki_events_slave_escape'), paragraphs: 2, break: [2], h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'slave_escape', template: 'events', label: loc('wiki_events_slave_escape'), paragraphs: 2, break: [2], h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'slave_escape_condition', template: 'events', label: loc('wiki_events_slave_escape'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_slaver_name`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'slave_escape_examples', template: 'events', label: loc('wiki_events_slave_escape'), h_level: 2, 
             examples: [
                 loc(`event_slave_escape1`),
@@ -501,53 +509,53 @@ function minorEventsPage(content){
                 loc(`event_slave_death4`),
                 loc(`event_slave_none`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`slave_escape`,loc('wiki_events_slave_escape'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`slave_escape`,loc('wiki_events_slave_escape'), forSearch);
     }
     
     {   // Shooting Star
-        let section = infoBoxBuilder(mainContent,{ name: 'shooting_star', template: 'events', label: loc('wiki_events_shooting_star'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'shooting_star', template: 'events', label: loc('wiki_events_shooting_star'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_shooting_star'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'shooting_star_examples', template: 'events', label: loc('wiki_events_shooting_star'), h_level: 2, 
             examples: [
                 loc(`event_shooting_star`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`shooting_star`,loc('wiki_events_shooting_star'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`shooting_star`,loc('wiki_events_shooting_star'), forSearch);
     }
     
     {   // Tumbleweed
-        let section = infoBoxBuilder(mainContent,{ name: 'tumbleweed', template: 'events', label: loc('wiki_events_tumbleweed'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'tumbleweed', template: 'events', label: loc('wiki_events_tumbleweed'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_tumbleweed'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tumbleweed_examples', template: 'events', label: loc('wiki_events_tumbleweed'), h_level: 2, 
             examples: [
                 loc(`event_tumbleweed`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`tumbleweed`,loc('wiki_events_tumbleweed'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`tumbleweed`,loc('wiki_events_tumbleweed'), forSearch);
     }
     
     {   // Flashmob
-        let section = infoBoxBuilder(mainContent,{ name: 'flashmob', template: 'events', label: loc('wiki_events_flashmob'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'flashmob', template: 'events', label: loc('wiki_events_flashmob'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_flashmob'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mad_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'flashmob_examples', template: 'events', label: loc('wiki_events_flashmob'), h_level: 2, 
             examples: [
                 loc(`event_flashmob`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`flashmob`,loc('wiki_events_flashmob'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`flashmob`,loc('wiki_events_flashmob'), forSearch);
     }
     
     {   // Heatwave
@@ -555,18 +563,18 @@ function minorEventsPage(content){
             para_data: {
                 1: [loc(`hot`)]
             }
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'heatwave_condition', template: 'events', label: loc('wiki_events_heatwave'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`),loc(`evo_challenge_cataclysm`),loc(`hot`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'heatwave_examples', template: 'events', label: loc('wiki_events_heatwave'), h_level: 2, 
             examples: [
                 loc(`event_heatwave`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`heatwave`,loc('wiki_events_heatwave'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`heatwave`,loc('wiki_events_heatwave'), forSearch);
     }
     
     {   // Coldsnap
@@ -574,203 +582,203 @@ function minorEventsPage(content){
             para_data: {
                 1: [loc(`cold`)]
             }
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'coldsnap_condition', template: 'events', label: loc('wiki_events_coldsnap'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`),loc(`evo_challenge_cataclysm`),loc(`cold`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'coldsnap_examples', template: 'events', label: loc('wiki_events_coldsnap'), h_level: 2, 
             examples: [
                 loc(`event_coldsnap`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`coldsnap`,loc('wiki_events_coldsnap'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`coldsnap`,loc('wiki_events_coldsnap'), forSearch);
     }
     
     {   // Cucumber
-        let section = infoBoxBuilder(mainContent,{ name: 'cucumber', template: 'events', label: loc('wiki_events_cucumber'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'cucumber', template: 'events', label: loc('wiki_events_cucumber'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_cucumber'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'cucumber_examples', template: 'events', label: loc('wiki_events_cucumber'), h_level: 2, 
             examples: [
                 loc(`event_cucumber`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`cucumber`,loc('wiki_events_cucumber'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`cucumber`,loc('wiki_events_cucumber'), forSearch);
     }
     
     {   // Planking
-        let section = infoBoxBuilder(mainContent,{ name: 'planking', template: 'events', label: loc('wiki_events_planking'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'planking', template: 'events', label: loc('wiki_events_planking'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_planking'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mad_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'planking_examples', template: 'events', label: loc('wiki_events_planking'), h_level: 2, 
             examples: [
                 loc(`event_planking`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`planking`,loc('wiki_events_planking'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`planking`,loc('wiki_events_planking'), forSearch);
     }
     
     {   // Furryfish
-        let section = infoBoxBuilder(mainContent,{ name: 'furryfish', template: 'events', label: loc('wiki_events_furryfish'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'furryfish', template: 'events', label: loc('wiki_events_furryfish'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_furryfish'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'furryfish_examples', template: 'events', label: loc('wiki_events_furryfish'), h_level: 2, 
             examples: [
                 loc(`event_furryfish`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`furryfish`,loc('wiki_events_furryfish'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`furryfish`,loc('wiki_events_furryfish'), forSearch);
     }
     
     {   // Meteor Shower
-        let section = infoBoxBuilder(mainContent,{ name: 'meteor_shower', template: 'events', label: loc('wiki_events_meteor_shower'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'meteor_shower', template: 'events', label: loc('wiki_events_meteor_shower'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_meteor_shower'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'meteor_shower_examples', template: 'events', label: loc('wiki_events_meteor_shower'), h_level: 2, 
             examples: [
                 loc(`event_meteor_shower`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`meteor_shower`,loc('wiki_events_meteor_shower'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`meteor_shower`,loc('wiki_events_meteor_shower'), forSearch);
     }
     
     {   // Hum
-        let section = infoBoxBuilder(mainContent,{ name: 'hum', template: 'events', label: loc('wiki_events_hum'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'hum', template: 'events', label: loc('wiki_events_hum'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_hum'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mad_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'hum_examples', template: 'events', label: loc('wiki_events_hum'), h_level: 2, 
             examples: [
                 loc(`event_hum`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`hum`,loc('wiki_events_hum'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`hum`,loc('wiki_events_hum'), forSearch);
     }
     
     {   // Bloodrain
-        let section = infoBoxBuilder(mainContent,{ name: 'bloodrain', template: 'events', label: loc('wiki_events_bloodrain'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'bloodrain', template: 'events', label: loc('wiki_events_bloodrain'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_bloodrain'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'bloodrain_examples', template: 'events', label: loc('wiki_events_bloodrain'), h_level: 2, 
             examples: [
                 loc(`event_bloodrain`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`bloodrain`,loc('wiki_events_bloodrain'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`bloodrain`,loc('wiki_events_bloodrain'), forSearch);
     }
     
     {   // Haunting
-        let section = infoBoxBuilder(mainContent,{ name: 'haunting', template: 'events', label: loc('wiki_events_haunting'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'haunting', template: 'events', label: loc('wiki_events_haunting'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_haunting'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'haunting_examples', template: 'events', label: loc('wiki_events_haunting'), h_level: 2, 
             examples: [
                 loc(`event_haunting`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`haunting`,loc('wiki_events_haunting'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`haunting`,loc('wiki_events_haunting'), forSearch);
     }
     
     {   // Mothman
-        let section = infoBoxBuilder(mainContent,{ name: 'mothman', template: 'events', label: loc('wiki_events_mothman'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'mothman', template: 'events', label: loc('wiki_events_mothman'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_mothman'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'mothman_examples', template: 'events', label: loc('wiki_events_mothman'), h_level: 2, 
             examples: [
                 loc(`event_mothman`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`mothman`,loc('wiki_events_mothman'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`mothman`,loc('wiki_events_mothman'), forSearch);
     }
     
     {   // Deja Vu
-        let section = infoBoxBuilder(mainContent,{ name: 'dejavu', template: 'events', label: loc('wiki_events_dejavu'), paragraphs: 1, h_level: 2 });
-        infoBoxBuilder(mainContent, { name: 'dejavu_condition', template: 'events', label: loc('wiki_events_dejavu'), paragraphs: 1, h_level: 2 }, section);
+        let section = infoBoxBuilder(mainContent,{ name: 'dejavu', template: 'events', label: loc('wiki_events_dejavu'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
+        infoBoxBuilder(mainContent, { name: 'dejavu_condition', template: 'events', label: loc('wiki_events_dejavu'), paragraphs: 1, h_level: 2 }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'dejavu_examples', template: 'events', label: loc('wiki_events_dejavu'), h_level: 2, 
             examples: [
                 loc(`event_dejavu`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`dejavu`,loc('wiki_events_dejavu'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`dejavu`,loc('wiki_events_dejavu'), forSearch);
     }
     
     {   // Dollar
-        let section = infoBoxBuilder(mainContent,{ name: 'dollar', template: 'events', label: loc('wiki_events_dollar'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'dollar', template: 'events', label: loc('wiki_events_dollar'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_dollar'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_currency`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'dollar_examples', template: 'events', label: loc('wiki_events_dollar'), h_level: 2, 
             examples: [
                 loc(`event_dollar`,[6])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`dollar`,loc('wiki_events_dollar'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`dollar`,loc('wiki_events_dollar'), forSearch);
     }
     
     {   // Pickpocket
-        let section = infoBoxBuilder(mainContent,{ name: 'pickpocket', template: 'events', label: loc('wiki_events_pickpocket'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'pickpocket', template: 'events', label: loc('wiki_events_pickpocket'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pickpocket'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_currency`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'pickpocket_examples', template: 'events', label: loc('wiki_events_pickpocket'), h_level: 2, 
             examples: [
                 loc(`event_pickpocket`,[9])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`pickpocket`,loc('wiki_events_pickpocket'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`pickpocket`,loc('wiki_events_pickpocket'), forSearch);
     }
     
     {   // Bird
-        let section = infoBoxBuilder(mainContent,{ name: 'bird', template: 'events', label: loc('wiki_events_bird'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'bird', template: 'events', label: loc('wiki_events_bird'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_bird'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'bird_examples', template: 'events', label: loc('wiki_events_bird'), h_level: 2, 
             examples: [
                 loc(`event_bird`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`bird`,loc('wiki_events_bird'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`bird`,loc('wiki_events_bird'), forSearch);
     }
     
     {   // Contest
-        let section = infoBoxBuilder(mainContent,{ name: 'contest', template: 'events', label: loc('wiki_events_contest'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'contest', template: 'events', label: loc('wiki_events_contest'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_contest'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'contest_examples', template: 'events', label: loc('wiki_events_contest'), h_level: 2, 
             examples: [
                 loc(`event_contest`,[loc('event_contest_place0'),loc('event_contest_type0')]),
@@ -784,17 +792,17 @@ function minorEventsPage(content){
                 loc(`event_contest`,[loc('event_contest_place2'),loc('event_contest_type8')]),
                 loc(`event_contest`,[loc('event_contest_place0'),loc('event_contest_type9')]),
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`contest`,loc('wiki_events_contest'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`contest`,loc('wiki_events_contest'), forSearch);
     }
     
     {   // Cloud
-        let section = infoBoxBuilder(mainContent,{ name: 'cloud', template: 'events', label: loc('wiki_events_cloud'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'cloud', template: 'events', label: loc('wiki_events_cloud'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_cloud'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'cloud_examples', template: 'events', label: loc('wiki_events_cloud'), h_level: 2, 
             examples: [
                 loc(`event_cloud`,[loc('event_cloud_type0')]),
@@ -809,8 +817,8 @@ function minorEventsPage(content){
                 loc(`event_cloud`,[loc('event_cloud_type9')]),
                 loc(`event_cloud`,[loc('event_cloud_type10')])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`cloud`,loc('wiki_events_cloud'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`cloud`,loc('wiki_events_cloud'), forSearch);
     }
     
     {   // Dark Cloud
@@ -818,18 +826,18 @@ function minorEventsPage(content){
             para_data: {
                 1: [loc(`rain`),loc(`snow`)]
             }
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'dark_cloud_condition', template: 'events', label: loc('wiki_events_dark_cloud'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`),loc(`evo_challenge_cataclysm`),loc(`rain`),loc(`snow`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'dark_cloud_examples', template: 'events', label: loc('wiki_events_dark_cloud'), h_level: 2, 
             examples: [
                 loc(`event_dark_cloud`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`dark_cloud`,loc('wiki_events_dark_cloud'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`dark_cloud`,loc('wiki_events_dark_cloud'), forSearch);
     }
     
     {   // Gloom
@@ -837,106 +845,106 @@ function minorEventsPage(content){
             para_data: {
                 1: [loc(`cloudy`)]
             }
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'gloom_condition', template: 'events', label: loc('wiki_events_gloom'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`),loc(`evo_challenge_cataclysm`),loc(`cloudy`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'gloom_examples', template: 'events', label: loc('wiki_events_gloom'), h_level: 2, 
             examples: [
                 loc(`event_gloom`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`gloom`,loc('wiki_events_gloom'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`gloom`,loc('wiki_events_gloom'), forSearch);
     }
     
     {   // Tracks
-        let section = infoBoxBuilder(mainContent,{ name: 'tracks', template: 'events', label: loc('wiki_events_tracks'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'tracks', template: 'events', label: loc('wiki_events_tracks'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_tracks'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tracks_examples', template: 'events', label: loc('wiki_events_tracks'), h_level: 2, 
             examples: [
                 loc(`event_tracks`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`tracks`,loc('wiki_events_tracks'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`tracks`,loc('wiki_events_tracks'), forSearch);
     }
     
     {   // Hoax
-        let section = infoBoxBuilder(mainContent,{ name: 'hoax', template: 'events', label: loc('wiki_events_hoax'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'hoax', template: 'events', label: loc('wiki_events_hoax'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_hoax'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'hoax_examples', template: 'events', label: loc('wiki_events_hoax'), h_level: 2, 
             examples: [
                 loc(`event_hoax`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`hoax`,loc('wiki_events_hoax'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`hoax`,loc('wiki_events_hoax'), forSearch);
     }
     
     {   // Burial
-        let section = infoBoxBuilder(mainContent,{ name: 'burial', template: 'events', label: loc('wiki_events_burial'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'burial', template: 'events', label: loc('wiki_events_burial'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_burial'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'burial_examples', template: 'events', label: loc('wiki_events_burial'), h_level: 2, 
             examples: [
                 loc(`event_burial`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`burial`,loc('wiki_events_burial'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`burial`,loc('wiki_events_burial'), forSearch);
     }
     
     {   // Artifacts
-        let section = infoBoxBuilder(mainContent,{ name: 'artifacts', template: 'events', label: loc('wiki_events_artifacts'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'artifacts', template: 'events', label: loc('wiki_events_artifacts'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_artifacts'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mad_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'artifacts_examples', template: 'events', label: loc('wiki_events_artifacts'), h_level: 2, 
             examples: [
                 loc(`event_artifacts`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`artifacts`,loc('wiki_events_artifacts'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`artifacts`,loc('wiki_events_artifacts'), forSearch);
     }
     
     {   // Parade
         let section = infoBoxBuilder(mainContent,{ name: 'parade', template: 'events', label: loc('wiki_events_parade'), paragraphs: 1, h_level: 2 
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'parade_condition', template: 'events', label: loc('wiki_events_parade'), paragraphs: 1, h_level: 2 
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'parade_examples', template: 'events', label: loc('wiki_events_parade'), h_level: 2, 
             examples: [
                 loc(`event_parade`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`parade`,loc('wiki_events_parade'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`parade`,loc('wiki_events_parade'), forSearch);
     }
     
     {   // Crop Circle
-        let section = infoBoxBuilder(mainContent,{ name: 'crop_circle', template: 'events', label: loc('wiki_events_crop_circle'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'crop_circle', template: 'events', label: loc('wiki_events_crop_circle'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_crop_circle'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_agriculture`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'crop_circle_examples', template: 'events', label: loc('wiki_events_crop_circle'), h_level: 2, 
             examples: [
                 loc(`event_crop_circle`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`crop_circle`,loc('wiki_events_crop_circle'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`crop_circle`,loc('wiki_events_crop_circle'), forSearch);
     }
     
     {   // Llama
@@ -944,12 +952,12 @@ function minorEventsPage(content){
             para_data: {
                 1: [25,100]
             }
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_llama'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'llama_condition', template: 'events', label: loc('wiki_events_llama'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_carnivore_name`),loc(`trait_soul_eater_name`),loc(`trait_detritivore_name`),loc(`trait_artifical_name`)]
@@ -957,52 +965,52 @@ function minorEventsPage(content){
             data_link: {
                 1: ['wiki.html#traits-species-genus_carnivore','wiki.html#traits-species-special_soul_eater','wiki.html#traits-species-genus_detritivore','wiki.html#traits-species-genus_artifical']
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'llama_examples', template: 'events', label: loc('wiki_events_llama'), h_level: 2, 
             examples: [
                 loc(`event_llama`,[51])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`llama`,loc('wiki_events_llama'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`llama`,loc('wiki_events_llama'), forSearch);
     }
     
     {   // Cat
-        let section = infoBoxBuilder(mainContent,{ name: 'cat', template: 'events', label: loc('wiki_events_cat'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'cat', template: 'events', label: loc('wiki_events_cat'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_cat'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_cat'), h_level: 2, 
             examples: [
                 loc(`event_cat`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`cat`,loc('wiki_events_cat'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`cat`,loc('wiki_events_cat'), forSearch);
     }
     
     {   // Omen
-        let section = infoBoxBuilder(mainContent,{ name: 'omen', template: 'events', label: loc('wiki_events_omen'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'omen', template: 'events', label: loc('wiki_events_omen'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_omen'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'omen_examples', template: 'events', label: loc('wiki_events_omen'), h_level: 2, 
             examples: [
                 loc(`event_omen`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`omen`,loc('wiki_events_omen'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`omen`,loc('wiki_events_omen'), forSearch);
     }
     
     {   // Theft
-        let section = infoBoxBuilder(mainContent,{ name: 'theft', template: 'events', label: loc('wiki_events_theft'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'theft', template: 'events', label: loc('wiki_events_theft'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_theft'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'theft_examples', template: 'events', label: loc('wiki_events_theft'), h_level: 2, 
             examples: [
                 loc(`event_theft`,[loc('event_theft_type0')]),
@@ -1016,62 +1024,62 @@ function minorEventsPage(content){
                 loc(`event_theft`,[loc('event_theft_type8')]),
                 loc(`event_theft`,[loc('event_theft_type9')])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`theft`,loc('wiki_events_theft'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`theft`,loc('wiki_events_theft'), forSearch);
     }
     
     {   // Compass
-        let section = infoBoxBuilder(mainContent,{ name: 'compass', template: 'events', label: loc('wiki_events_compass'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'compass', template: 'events', label: loc('wiki_events_compass'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_compass'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mining`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'compass_examples', template: 'events', label: loc('wiki_events_compass'), h_level: 2, 
             examples: [
                 loc(`event_compass`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`compass`,loc('wiki_events_compass'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`compass`,loc('wiki_events_compass'), forSearch);
     }
     
     {   // Bone
-        let section = infoBoxBuilder(mainContent,{ name: 'bone', template: 'events', label: loc('wiki_events_bone'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'bone', template: 'events', label: loc('wiki_events_bone'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_bone'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'bone_examples', template: 'events', label: loc('wiki_events_bone'), h_level: 2, 
             examples: [
                 loc(`event_bone`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`bone`,loc('wiki_events_bone'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`bone`,loc('wiki_events_bone'), forSearch);
     }
     
     {   // Delicacy
-        let section = infoBoxBuilder(mainContent,{ name: 'delicacy', template: 'events', label: loc('wiki_events_delicacy'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'delicacy', template: 'events', label: loc('wiki_events_delicacy'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_delicacy'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_mad_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'delicacy_examples', template: 'events', label: loc('wiki_events_delicacy'), h_level: 2, 
             examples: [
                 loc(`event_delicacy`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`delicacy`,loc('wiki_events_delicacy'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`delicacy`,loc('wiki_events_delicacy'), forSearch);
     }
     
     {   // Prank
-        let section = infoBoxBuilder(mainContent,{ name: 'prank', template: 'events', label: loc('wiki_events_prank'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'prank', template: 'events', label: loc('wiki_events_prank'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_prank'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'prank_examples', template: 'events', label: loc('wiki_events_prank'), h_level: 2, 
             examples: [
                 loc(`event_prank`,[loc('event_prank_type0')]),
@@ -1085,39 +1093,39 @@ function minorEventsPage(content){
                 loc(`event_prank`,[loc('event_prank_type8')]),
                 loc(`event_prank`,[loc('event_prank_type9')])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`prank`,loc('wiki_events_prank'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`prank`,loc('wiki_events_prank'), forSearch);
     }
     
     {   // Graffiti
-        let section = infoBoxBuilder(mainContent,{ name: 'graffiti', template: 'events', label: loc('wiki_events_graffiti'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'graffiti', template: 'events', label: loc('wiki_events_graffiti'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_graffiti'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_science`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'graffiti_examples', template: 'events', label: loc('wiki_events_graffiti'), h_level: 2, 
             examples: [
                 loc(`event_graffiti`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`graffiti`,loc('wiki_events_graffiti'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`graffiti`,loc('wiki_events_graffiti'), forSearch);
     }
     
     {   // Soul
         let section = infoBoxBuilder(mainContent,{ name: 'soul', template: 'events', label: loc('wiki_events_soul'), paragraphs: 1, h_level: 2 
-        });
+        }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'soul_condition', template: 'events', label: loc('wiki_events_soul'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`trait_soul_eater_name`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'soul_examples', template: 'events', label: loc('wiki_events_soul'), h_level: 2, 
             examples: [
                 loc(`event_soul`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`soul`,loc('wiki_events_soul'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`soul`,loc('wiki_events_soul'), forSearch);
     }
     
     {   // Cheese
@@ -1126,42 +1134,42 @@ function minorEventsPage(content){
         let section = infoBoxBuilder(mainContent,{ name: 'cheese', template: 'events', label: loc('wiki_events_cheese'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [`${cheese}%`,10,9+resets]
-            }});
+            }}, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_cheese'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [swissKnife()]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'cheese_examples', template: 'events', label: loc('wiki_events_cheese'), h_level: 2, 
             examples: [
                 loc(`event_cheese`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`cheese`,loc('wiki_events_cheese'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`cheese`,loc('wiki_events_cheese'), forSearch);
     }
     
     {   // Tremor
-        let section = infoBoxBuilder(mainContent,{ name: 'tremor', template: 'events', label: loc('wiki_events_tremor'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'tremor', template: 'events', label: loc('wiki_events_tremor'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_tremor'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tremor_examples', template: 'events', label: loc('wiki_events_tremor'), h_level: 2, 
             examples: [
                 loc(`event_tremor`)
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`tremor`,loc('wiki_events_tremor'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`tremor`,loc('wiki_events_tremor'), forSearch);
     }
     
     {   // Rumor
-        let section = infoBoxBuilder(mainContent,{ name: 'rumor', template: 'events', label: loc('wiki_events_rumor'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'rumor', template: 'events', label: loc('wiki_events_rumor'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_rumor'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'rumor_examples', template: 'events', label: loc('wiki_events_rumor'), h_level: 2, 
             examples: [
                 loc(`event_rumor`,[loc('event_rumor_type0')]),
@@ -1175,33 +1183,33 @@ function minorEventsPage(content){
                 loc(`event_rumor`,[loc('event_rumor_type8')]),
                 loc(`event_rumor`,[loc('event_rumor_type9')])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`rumor`,loc('wiki_events_rumor'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`rumor`,loc('wiki_events_rumor'), forSearch);
     }
 
     {   // Pet
-        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: 'pet', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2 }, null, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'tech', template: 'events', label: loc('wiki_events_pet'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_club`)]
             }
-        }, section);
+        }, section, forSearch, 'minor');
         infoBoxBuilder(mainContent, { name: 'cat_examples', template: 'events', label: loc('wiki_events_pet'), h_level: 2, 
             examples: [
                 loc(`event_pet_cat`,[loc(`event_cat_name3`)]),
                 loc(`event_pet_dog`,[loc(`event_dog_name0`)])
             ]
-        }, section);
-        sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'));
+        }, section, forSearch, 'minor');
+        sideMenu('add',`minor-events`,`pet`,loc('wiki_events_pet'), forSearch);
     }
 }
 
-function progressEventsPage(content){
-    let mainContent = sideMenu('create',content);
+function progressEventsPage(content, forSearch){
+    let mainContent = sideMenu('create',content,null,null,forSearch);
     
     {   // Intro
-        infoBoxBuilder(mainContent,{ name: 'progress_intro', template: 'events', paragraphs: 3, h_level: 2});
-        sideMenu('add',`progress-events`,'progress_intro',loc('wiki_menu_intro'));
+        infoBoxBuilder(mainContent,{ name: 'progress_intro', template: 'events', paragraphs: 3, h_level: 2}, null, forSearch, 'progress');
+        sideMenu('add',`progress-events`,'progress_intro',loc('wiki_menu_intro'), forSearch);
     }
     
     {   // Steel Discovery Trade
@@ -1210,7 +1218,7 @@ function progressEventsPage(content){
                 1: [loc(`resource_Steel_name`)],
                 2: [`0.08%`]
             }
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'steel_condition', template: 'events', label: loc('wiki_events_steel'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`resource_Steel_name`)]
@@ -1218,8 +1226,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`steel_sample`)
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`steel`,loc('wiki_events_steel'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`steel`,loc('wiki_events_steel'), forSearch);
     }
     
     {   // Elerium Discovery
@@ -1235,8 +1243,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`discover_elerium`)
             ]
-        });
-        sideMenu('add',`progress-events`,`elerium`,loc('wiki_events_elerium'));
+        }, null, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`elerium`,loc('wiki_events_elerium'), forSearch);
     }
     
     {   // Gas Moon Oil
@@ -1252,8 +1260,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`discover_oil`,[getSolarName('gas_moon')])
             ]
-        });
-        sideMenu('add',`progress-events`,`oil`,loc('wiki_events_oil'));
+        }, null, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`oil`,loc('wiki_events_oil'), forSearch);
     }
     
     {   // Pit Discovery
@@ -1264,7 +1272,7 @@ function progressEventsPage(content){
             data_link: {
                 1: [false,false,'wiki.html#hell-structures-pit_mission']
             },
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'pit_condition', template: 'events', label: loc('wiki_events_pit'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [(1000000).toLocaleString(),loc(`galaxy_telemetry_beacon`)]
@@ -1275,8 +1283,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`portal_hell_pit_found`)
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`pit`,loc('wiki_events_pit'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`pit`,loc('wiki_events_pit'), forSearch);
     }
     
     {   // Alien Encounter
@@ -1288,7 +1296,7 @@ function progressEventsPage(content){
             data_link: {
                 1: ['wiki.html#intergalactic-structures-scout_ship','wiki.html#intergalactic-tech-xeno_linguistics','wiki.html#intergalactic-tech-corvette_ship']
             },
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'alien_encounter_condition', template: 'events', label: loc('wiki_events_alien_encounter'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`galaxy_scout_ship`)]
@@ -1296,8 +1304,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`galaxy_encounter`)
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`alien_encounter`,loc('wiki_events_alien_encounter'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`alien_encounter`,loc('wiki_events_alien_encounter'), forSearch);
     }
     
     {   // Piracy Unlock
@@ -1309,7 +1317,7 @@ function progressEventsPage(content){
             data_link: {
                 2: ['wiki.html#mechanics-gameplay-piracy']
             }
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'piracy_condition', template: 'events', label: loc('wiki_events_piracy'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`galaxy_embassy`)]
@@ -1320,8 +1328,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`galaxy_piracy_msg`,[races[global.galaxy.hasOwnProperty('alien2') ? global.galaxy.alien2.id : global.race.species].name])
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`piracy`,loc('wiki_events_piracy'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`piracy`,loc('wiki_events_piracy'), forSearch);
     }
     
     {   // Alien Database
@@ -1336,8 +1344,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`galaxy_scavenger_find`)
             ]
-        });
-        sideMenu('add',`progress-events`,`alien_database`,loc('wiki_events_alien_database'));
+        }, null, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`alien_database`,loc('wiki_events_alien_database'), forSearch);
     }
     
     {   // Corrupt Soul Gem
@@ -1352,7 +1360,7 @@ function progressEventsPage(content){
                 1: [false,'wiki.html#hell-structures-soul_forge'],
                 2: [false,false,'wiki.html#hell-structures-soul_attractor']
             }
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'corrupt_gem_condition', template: 'events', label: loc('wiki_events_corrupt_gem'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_metaphysics`)]
@@ -1363,8 +1371,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`portal_corrupt_gem`)
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`corrupt_gem`,loc('wiki_events_corrupt_gem'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`corrupt_gem`,loc('wiki_events_corrupt_gem'), forSearch);
     }
     
     {   // Vault Discovery
@@ -1380,8 +1388,8 @@ function progressEventsPage(content){
             examples: [
                 loc(`portal_ruins_vault`)
             ]
-        });
-        sideMenu('add',`progress-events`,`vault_find`,loc('wiki_events_vault_find'));
+        }, null, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`vault_find`,loc('wiki_events_vault_find'), forSearch);
     }
     
     {   // Syndicate Unlock
@@ -1393,7 +1401,7 @@ function progressEventsPage(content){
             data_link: {
                 1: ['wiki.html#solar-tp_tech-shipyard']
             },
-        });
+        }, null, forSearch, 'progress');
         infoBoxBuilder(mainContent, { name: 'syndicate_condition', template: 'events', label: loc('wiki_events_syndicate'), paragraphs: 1, h_level: 2,
             para_data: {
                 1: [loc(`tech_long_range_probes`)]
@@ -1404,21 +1412,21 @@ function progressEventsPage(content){
             examples: [
                 loc(`outer_syndicate`,[loc(`civics_gov5`,[loc(`civics_gov_name1`)])])
             ]
-        }, section);
-        sideMenu('add',`progress-events`,`syndicate`,loc('wiki_events_syndicate'));
+        }, section, forSearch, 'progress');
+        sideMenu('add',`progress-events`,`syndicate`,loc('wiki_events_syndicate'), forSearch);
     }
 }
 
-function specialEventsPage(content){
-    let mainContent = sideMenu('create',content);
+function specialEventsPage(content, forSearch){
+    let mainContent = sideMenu('create',content,null,null,forSearch);
     
     {   // Intro
         infoBoxBuilder(mainContent,{ name: 'special_intro', template: 'events', paragraphs: 3, h_level: 2,
             para_data: {
                 3: [loc('boring')],
             }
-        });
-        sideMenu('add',`special-events`,'special_intro',loc('wiki_menu_intro'));
+        }, null, forSearch, 'special');
+        sideMenu('add',`special-events`,'special_intro',loc('wiki_menu_intro'), forSearch);
     }
     
     {   // Friday the 13th
@@ -1427,9 +1435,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_friday_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Valentine's Day
@@ -1438,9 +1446,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_love_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Unlucky
@@ -1449,9 +1457,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_leprechaun_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // April Fools Day
@@ -1460,9 +1468,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_fool_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {
@@ -1473,13 +1481,13 @@ function specialEventsPage(content){
                 para_data: {
                     2: [loc('feat_easter_name')],
                 }
-            });
+            }, null, forSearch, 'special');
             infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
                 para_data: {
                     1: [`${loc(`month${easter.date[0]}`)} ${easter.date[1]}`],
                 }
-            }, section);
-            sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+            }, section, forSearch, 'special');
+            sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
         }
 
         {   // Egg Hunt
@@ -1490,7 +1498,7 @@ function specialEventsPage(content){
                     5: [loc('trait_hyper_name'),loc('trait_fast_growth_name'),loc('trait_rainbow_name'),loc('trait_optimistic_name')],
                     7: [loc('trait_cannibalize_name'),loc('trait_rage_name'),loc('trait_blood_thirst_name'),loc('trait_sticky_name')],
                 }
-            });
+            }, null, forSearch, 'special');
 
             let hints = [
                 `U2FsdGVkX1/PcdpekGFnkjSSCBa9yVo3z5xq3a2662iSlAA8yuaPEsK4Qyn5OSED`,
@@ -1537,40 +1545,59 @@ function specialEventsPage(content){
             const date = new Date();
             const year = date.getFullYear();
             const passphrase = 'egghunt';
-            let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div>`;
-            eggs = eggs + `<div class="tbl">`;
-            for (let i=1; i<=18; i++){
-                let egg = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
-                let found = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'found' : 'missing';
-                
-                let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}</span>`;
-                if (easter.hint){
-                    const bytes = CryptoJS.AES.decrypt(hints[i-1], passphrase);
-                    hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+            if(forSearch){
+                let hash = "special-" + event;
+                add2virtualWikiContent(hash, loc('wiki_feat_egghunt_found'));
+                for (let i = 1; i <= 18; i++) {
+                    let hint, sol;
+                    if (easter.hint) {
+                        hint = CryptoJS.AES.decrypt(hints[i - 1], passphrase).toString(CryptoJS.enc.Utf8);
+                    } else {
+                        hint = `${loc('wiki_events_hint_avail')} ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}`;
+                    }
+                    if (easter.solve) {
+                        sol = loc('wiki_events_reveal_sol');
+                    } else {
+                        sol = `${loc('wiki_events_sol_avail')} ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}`;
+                    }
+                    add2virtualWikiContent("special-egghunt", `${loc('wiki_feat_egghunt_num', [i])}${hint}${sol}`);
                 }
+            }else {
+                let eggs = `<div class="has-text-warning">${loc('wiki_feat_egghunt_found')}</div>`;
+                eggs = eggs + `<div class="tbl">`;
+                for (let i = 1; i <= 18; i++) {
+                    let egg = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'has-text-success' : 'has-text-danger';
+                    let found = global.special.egg.hasOwnProperty(year) && global.special.egg[year][`egg${i}`] ? 'found' : 'missing';
 
-                let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}</span>`;
-                if (easter.solve){
-                    sol = `<span class="tcell eggsol" data-sol="${solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                    let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${easter.hintDate[0]}`)} ${easter.hintDate[1]}</span>`;
+                    if (easter.hint) {
+                        const bytes = CryptoJS.AES.decrypt(hints[i - 1], passphrase);
+                        hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+                    }
+
+                    let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${easter.solveDate[0]}`)} ${easter.solveDate[1]}</span>`;
+                    if (easter.solve) {
+                        sol = `<span class="tcell eggsol" data-sol="${solutions[i - 1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                    }
+
+                    eggs = eggs + `<div class="trow"><span role="img" class="tcell ${egg}" aria-label="${loc('wiki_feat_egghunt_num', [i])} ${found}">${loc('wiki_feat_egghunt_num', [i])}</span>${hint}${sol}</div>`
                 }
+                eggs = eggs + `</div>`;
+                section.append(eggs);
 
-                eggs = eggs + `<div class="trow"><span role="img" class="tcell ${egg}" aria-label="${loc('wiki_feat_egghunt_num',[i])} ${found}">${loc('wiki_feat_egghunt_num',[i])}</span>${hint}${sol}</div>`
+                $(`.eggsol`).on('click', function(){
+                    const solution = $(this).attr('data-sol');
+                    const bytes = CryptoJS.AES.decrypt(solution, passphrase);
+                    $(this).html(bytes.toString(CryptoJS.enc.Utf8));
+                });
             }
-            eggs = eggs + `</div>`;
-            section.append(eggs);
-
-            $(`.eggsol`).on('click', function(){
-                const solution = $(this).attr('data-sol');
-                const bytes = CryptoJS.AES.decrypt(solution, passphrase);
-                $(this).html(bytes.toString(CryptoJS.enc.Utf8));
-            });
 
             infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2,
                 para_data: {
                     1: [`${loc(`month${easter.date[0]}`)} ${easter.date[1]}`, `${loc(`month${easter.endDate[0]}`)} ${easter.endDate[1]}`],
                 }
-            }, section);
-            sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+            }, section, forSearch, 'special');
+            sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
         }
     }
 
@@ -1581,9 +1608,9 @@ function specialEventsPage(content){
                 2: [loc('feat_launch_day_name')],
                 3: [`5%`],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Solstice
@@ -1596,9 +1623,9 @@ function specialEventsPage(content){
                 1: [(thermite).toLocaleString(),loc(`wiki_events_${event}`)],
                 2: [loc('feat_solstice_name')]
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Firework
@@ -1610,9 +1637,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_firework_name')]
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Halloween
@@ -1621,9 +1648,9 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_boo_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Trick or Treat
@@ -1634,7 +1661,7 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_trickortreat_name'),12],
             }
-        });
+        }, null, forSearch, 'special');
 
         let candy_hints = [
             `U2FsdGVkX1/PDiFXguD51NL4kEt4e9qRJwl5IKNCQE9vI3XAoH5gDW28r2V4O5GY`,
@@ -1680,54 +1707,95 @@ function specialEventsPage(content){
         const year = date.getFullYear();
         const passphrase = 'trickortreat';
 
-        let treats = `<div class="has-text-warning">${loc('wiki_feat_trick_found')}</div>`;
-        treats = treats + `<div class="tbl">`;
-        for (let i=1; i<=candy_hints.length; i++){
-            let treat = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';
-            let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'found' : 'missing';
-            
-            let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
-            if (halloween.hint){
-                const bytes = CryptoJS.AES.decrypt(candy_hints[i-1], passphrase);
-                hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+        if(forSearch){
+            let hash = "special-"+event;
+            add2virtualWikiContent(hash, loc('wiki_feat_trick_found'));
+            for (let i = 1; i <= candy_hints.length; i++) {
+
+                let hint, sol;
+                if (halloween.hint) {
+                    hint = CryptoJS.AES.decrypt(candy_hints[i - 1], passphrase).toString(CryptoJS.enc.Utf8);
+                }else{
+                    hint = `${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}`;
+                }
+
+                add2virtualWikiContent(hash, `${loc('wiki_feat_treat_num', [i])}${hint}`);
+                if (halloween.solve) {
+                    sol = loc('wiki_events_reveal_sol');
+                }else{
+                    sol = `${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}`;
+                }
+                add2virtualWikiContent(hash, sol);
             }
+            add2virtualWikiContent(hash, loc('wiki_feat_treat_found'));
+            for (let i = 1; i <= ghost_hints.length; i++) {
 
-            treats = treats + `<div class="trow"><span role="img" class="tcell ${treat}" aria-label="${loc('wiki_feat_treat_num',[i])} ${found}">${loc('wiki_feat_treat_num',[i])}</span>${hint}</div>`
+                let hint, sol;
+                if (halloween.hint) {
+                    hint = `<span class="tcell">` + CryptoJS.AES.decrypt(ghost_hints[i - 1], passphrase).toString(CryptoJS.enc.Utf8) + `</span>`;
+                }else{
+                    hint = `${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}`;
+                }
+                add2virtualWikiContent(hash, `${loc('wiki_feat_trick_num', [i])}${hint}`);
+                if (halloween.solve) {
+                    sol = loc('wiki_events_reveal_sol');
+                }else{
+                    sol = `${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}`;
+                }
 
-            let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
-            if (halloween.solve){
-                sol = `<span class="tcell totsol" data-sol="${candy_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                add2virtualWikiContent(hash, sol);
             }
-
-            treats = treats + `<div class="trow"><span class="tcell"></span>${sol}</div>`
         }
-        treats = treats + `</div>`;
-        section.append(treats);
+        else {
+            let treats = `<div class="has-text-warning">${loc('wiki_feat_trick_found')}</div>`;
+            treats = treats + `<div class="tbl">`;
+            for (let i = 1; i <= candy_hints.length; i++) {
+                let treat = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'has-text-success' : 'has-text-danger';
+                let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`treat${i}`] ? 'found' : 'missing';
 
-        let tricks = `<div class="has-text-warning">${loc('wiki_feat_treat_found')}</div>`;
-        tricks = tricks + `<div class="tbl">`;
-        for (let i=1; i<=ghost_hints.length; i++){
-            let trick = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';
-            let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'found' : 'missing';
-            
-            let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
-            if (halloween.hint){
-                const bytes = CryptoJS.AES.decrypt(ghost_hints[i-1], passphrase);
-                hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+                let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
+                if (halloween.hint) {
+                    const bytes = CryptoJS.AES.decrypt(candy_hints[i - 1], passphrase);
+                    hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+                }
+
+                treats = treats + `<div class="trow"><span role="img" class="tcell ${treat}" aria-label="${loc('wiki_feat_treat_num', [i])} ${found}">${loc('wiki_feat_treat_num', [i])}</span>${hint}</div>`
+
+                let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
+                if (halloween.solve) {
+                    sol = `<span class="tcell totsol" data-sol="${candy_solutions[i - 1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                }
+
+                treats = treats + `<div class="trow"><span class="tcell"></span>${sol}</div>`
             }
+            treats = treats + `</div>`;
+            section.append(treats);
 
-            tricks = tricks + `<div class="trow"><span role="img" class="tcell ${trick}" aria-label="${loc('wiki_feat_trick_num',[i])} ${found}">${loc('wiki_feat_trick_num',[i])}</span>${hint}</div>`
 
-            let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
-            if (halloween.solve){
-                sol = `<span class="tcell totsol" data-sol="${ghost_solutions[i-1]}">${loc('wiki_events_reveal_sol')}</span>`;
+            let tricks = `<div class="has-text-warning">${loc('wiki_feat_treat_found')}</div>`;
+            tricks = tricks + `<div class="tbl">`;
+            for (let i = 1; i <= ghost_hints.length; i++) {
+                let trick = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'has-text-success' : 'has-text-danger';
+                let found = global.special.trick.hasOwnProperty(year) && global.special.trick[year][`trick${i}`] ? 'found' : 'missing';
+
+                let hint = `<span class="tcell">${loc('wiki_events_hint_avail')} ${loc(`month${halloween.hintDate[0]}`)} ${halloween.hintDate[1]}</span>`;
+                if (halloween.hint) {
+                    const bytes = CryptoJS.AES.decrypt(ghost_hints[i - 1], passphrase);
+                    hint = `<span class="tcell">` + bytes.toString(CryptoJS.enc.Utf8) + `</span>`;
+                }
+
+                tricks = tricks + `<div class="trow"><span role="img" class="tcell ${trick}" aria-label="${loc('wiki_feat_trick_num', [i])} ${found}">${loc('wiki_feat_trick_num', [i])}</span>${hint}</div>`
+
+                let sol = `<span class="tcell">${loc('wiki_events_sol_avail')} ${loc(`month${halloween.solveDate[0]}`)} ${halloween.solveDate[1]}</span>`;
+                if (halloween.solve) {
+                    sol = `<span class="tcell totsol" data-sol="${ghost_solutions[i - 1]}">${loc('wiki_events_reveal_sol')}</span>`;
+                }
+
+                tricks = tricks + `<div class="trow"><span class="tcell"></span>${sol}</div>`
             }
-
-            tricks = tricks + `<div class="trow"><span class="tcell"></span>${sol}</div>`
+            tricks = tricks + `</div>`;
+            section.append(tricks);
         }
-        tricks = tricks + `</div>`;
-        section.append(tricks);
-
         $(`.totsol`).on('click', function(){
             const solution = $(this).attr('data-sol');
             const bytes = CryptoJS.AES.decrypt(solution, passphrase);
@@ -1738,8 +1806,8 @@ function specialEventsPage(content){
             para_data: {
                 1: [`${loc(`month${halloween.date[0]}`)} ${halloween.date[1]}`, `${loc(`month${halloween.endDate[0]}`)} ${halloween.endDate[1]}`],
             }
-        }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Thanksgiving
@@ -1748,25 +1816,25 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_gobble_gobble_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // Holiday Elf Season
         let event = 'festive';
-        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 });
+        let section = infoBoxBuilder(mainContent,{ name: event, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 }, null, forSearch, 'special');
 
         ['elven','centaur','capybara','wendigo','yeti','entish'].forEach(function(species){
             infoBoxBuilder(section,{ name: species, template: `events_${event}`, label: loc(`wiki_events_${event}`), paragraphs: 2, h_level: 0,
                 para_data: {
                     1: [loc(`race_${species}`)],
                 }
-            });
+            }, null, forSearch, 'special');
         });
 
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 2, break: [2], h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 
     {   // XMas
@@ -1775,8 +1843,8 @@ function specialEventsPage(content){
             para_data: {
                 2: [loc('feat_xmas_name')],
             }
-        });
-        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 }, section);
-        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`));
+        }, null, forSearch, 'special');
+        infoBoxBuilder(mainContent, { name: `${event}_condition`, template: 'events', label: loc(`wiki_events_${event}`), paragraphs: 1, h_level: 2 }, section, forSearch, 'special');
+        sideMenu('add',`special-events`,event,loc(`wiki_events_${event}`), forSearch);
     }
 }

@@ -27,7 +27,7 @@ export function loc(key, variables) {
             let re = new RegExp("%\\d+(?!\\d)", 'g');
             const results = string.match(re);
             if(results && global.settings.expose){
-                console.error(`${results} was found in the string, but there is no variables to make the replacement`);
+                console.error(`${results} was found in the string "${key}", but there is no variables to make the replacement`);
             }
         }
         else {

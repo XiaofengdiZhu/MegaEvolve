@@ -1,8 +1,8 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
-export function govPage(content){
-    let mainContent = sideMenu('create',content);
+export function govPage(content, forSearch = false){
+    let mainContent = sideMenu('create',content, null, null, forSearch);
 
     infoBoxBuilder(mainContent,{ name: 'info', template: 'government', label: loc('tab_gov'), paragraphs: 8, break: [3,6], h_level: 2,
         para_data: {
@@ -12,8 +12,8 @@ export function govPage(content){
             5: [1000]
         },
         data_color: { 2: ['caution'] }
-    });
-    sideMenu('add',`government-gameplay`,`info`,loc('tab_gov'));
+    }, null, forSearch);
+    sideMenu('add',`government-gameplay`,`info`,loc('tab_gov'), forSearch);
 
     let govs = {
         anarchy: {
@@ -147,7 +147,7 @@ export function govPage(content){
             },
             para_data: govs[gov].hasOwnProperty('para_data') ? govs[gov].para_data : {},
             para_color: govs[gov].hasOwnProperty('para_color') ? govs[gov].para_color : {},
-        });
-        sideMenu('add',`government-gameplay`,gov,loc(`govern_${gov}`));
+        }, null, forSearch);
+        sideMenu('add',`government-gameplay`,gov,loc(`govern_${gov}`), forSearch);
     });
 }

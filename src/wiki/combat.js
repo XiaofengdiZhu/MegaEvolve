@@ -1,11 +1,11 @@
 import { loc } from './../locale.js';
 import { sideMenu, infoBoxBuilder } from './functions.js';
 
-export function combatPage(content){
-    let mainContent = sideMenu('create',content);
+export function combatPage(content, forSearch = false){
+    let mainContent = sideMenu('create',content, null, null, forSearch);
 
-    infoBoxBuilder(mainContent,{ name: 'basics', template: 'combat', label: loc('wiki_combat_basics'), paragraphs: 4, h_level: 2});
-    sideMenu('add',`combat-gameplay`,`basics`,loc('wiki_combat_basics'));
+    infoBoxBuilder(mainContent,{ name: 'basics', template: 'combat', label: loc('wiki_combat_basics'), paragraphs: 4, h_level: 2}, null, forSearch);
+    sideMenu('add',`combat-gameplay`,`basics`,loc('wiki_combat_basics'), forSearch);
 
     infoBoxBuilder(mainContent,{ name: 'campaign', template: 'combat', label: loc('wiki_combat_campaign'), paragraphs: 14, break: [5,11], h_level: 2,
         para_data: {
@@ -17,8 +17,8 @@ export function combatPage(content){
             13: ['50%', '100%'],
             14: ['50%'],
         }
-    });
-    sideMenu('add',`combat-gameplay`,`campaign`,loc('wiki_combat_campaign'));
+    }, null, forSearch);
+    sideMenu('add',`combat-gameplay`,`campaign`,loc('wiki_combat_campaign'), forSearch);
 
     infoBoxBuilder(mainContent,{ name: 'loot', template: 'combat', label: loc('wiki_combat_loot'), paragraphs: 30, break: [3,5,10,13,16,19,22,26,27,28,29,30], h_level: 2,
         para_data: {
@@ -68,8 +68,8 @@ export function combatPage(content){
             28: ['advanced'],
             30: ['advanced'],
         }
-    });
-    sideMenu('add',`combat-gameplay`,`loot`,loc('wiki_combat_loot'));
+    }, null, forSearch);
+    sideMenu('add',`combat-gameplay`,`loot`,loc('wiki_combat_loot'), forSearch);
 
 
     

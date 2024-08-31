@@ -2,8 +2,9 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { planetTraits, biomes } from './../races.js';
 import { headerBoxBuilder, infoBoxBuilder } from './functions.js';
+import {add2virtualWikiContent, add2virtualWikiTitle} from "./search";
 
-export function planetsPage(content) {
+export function planetsPage(content, forSearch = false) {
     let info = $('<div class="duelList"/>');
 
     let intro = headerBoxBuilder(content,{ name: 'planet', template: 'planet', paragraphs: 4, full: true,
@@ -12,17 +13,18 @@ export function planetsPage(content) {
             3: [4],
             4: ['200-600']
         }
-    });
+    }, null, forSearch, 'planets');
     infoBoxBuilder(content,{ name: 'geology', template: 'planet', label: loc('wiki_menu_planets'), paragraphs: 4, h_level: 2,
         para_data: {
             2: [2],
             3: ['-10%','+19%'],
             4: [7,'+44%']
         }
-    },intro);
+    },intro,forSearch,'planets');
 
-    let planetInfo = infoForFeature(biomes, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_biome')}</h3></div>`));
-    let planetTraitsInfo = infoForFeature(planetTraits, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_trait')}</h3></div>`));
+    let planetInfo = infoForFeature(biomes, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_biome')}</h3></div>`), forSearch);
+    let planetTraitsInfo = infoForFeature(planetTraits, $(`<div class="listSide"><h3 class="header has-text-caution">${loc('wiki_planet_trait')}</h3></div>`), forSearch);
+    if(forSearch)return;
     info.append(planetInfo);
     info.append(planetTraitsInfo);
     content.append(info);
@@ -50,7 +52,31 @@ const extraInfo = {
     retrograde: ['trait']
 };
 
-function infoForFeature(planetFeatures, content) {
+function infoForFeature(planetFeatures, content, forSearch) {
+    if(forSearch){
+        Object.keys(planetFeatures).forEach(function (planetFeatureName) {
+            let planetFeature = planetFeatures[planetFeatureName];
+            let hash = `planets-${planetFeatureName}`;
+            add2virtualWikiTitle(hash, planetFeature.label);
+            add2virtualWikiContent(hash, planetFeature.desc);
+
+            let modifiers = [];
+            if (planetFeature['vars'] && planetFeature['wiki']) {
+                for (let i=0; i<planetFeature.vars().length; i++){
+                    let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : (planetFeature.wiki[i] === '-A' ? 'inverted-decimal' : 'decimal'));
+                    modifiers.push(`${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars()[i], type, forSearch)])}`);
+                }
+            }
+            add2virtualWikiContent(hash, modifiers.join(';'));
+
+            if (extraInfo[planetFeatureName]){
+                extraInfo[planetFeatureName].forEach(function (label){
+                    add2virtualWikiContent(hash, `${loc(`wiki_planet_${planetFeatureName}_${label}`)}`);
+                });
+            }
+        });
+        return;
+    }
     Object.keys(planetFeatures).forEach(function (planetFeatureName) {
         let planetFeature = planetFeatures[planetFeatureName];
         let info = $(`<div id="${planetFeatureName}" class="infoBox"></div>`);
@@ -63,7 +89,7 @@ function infoForFeature(planetFeatures, content) {
         if (planetFeature['vars'] && planetFeature['wiki']) {
             for (let i=0; i<planetFeature.vars().length; i++){
                 let type = planetFeature.wiki[i] === '%' ? 'percent' : (planetFeature.wiki[i] === '-%' ? 'inverted' : (planetFeature.wiki[i] === '-A' ? 'inverted-decimal' : 'decimal'));
-                modifiers.append($(`<div class="has-text-label">${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars()[i], type)])}</div>`));
+                modifiers.append($(`<div class="has-text-label">${loc(`wiki_planet_${planetFeatureName}${i}`,[formatBonusNumber(planetFeature.vars()[i], type, forSearch)])}</div>`));
             }
         }
         info.append(modifiers);
@@ -77,7 +103,7 @@ function infoForFeature(planetFeatures, content) {
     return content;
 }
 
-export function formatBonusNumber(num, style) {
+export function formatBonusNumber(num, style, forSearch) {
     let modRes = num - 1 * (style === 'percent' || style === 'inverted' ? 1 : 0);
     if (style === 'inverted' || style === 'inverted-decimal'){
         modRes *= -1;
@@ -89,6 +115,7 @@ export function formatBonusNumber(num, style) {
         }
     }
     let modResText = (modRes >= 0 ? '+' : '') + modRes.toLocaleString(global.settings.locale, { style: style, maximumFractionDigits: 2 });
+    if(forSearch)return modResText;
     let textColor = modRes >= 0 ? 'success' : 'danger';
     let modResTextColored = `<span class="has-text-${textColor}">${modResText}</span>`;
     return modResTextColored;

@@ -1,12 +1,13 @@
-import { global } from './../vars.js';
+import {global, sizeApproximation} from './../vars.js';
 import { loc } from './../locale.js';
 import { universeAffix } from './../achieve.js';
 import { actions, housingLabel } from './../actions.js';
 import { techList } from './../tech.js';
 import { checkControlling } from './../civics.js';
 import { races, traits } from './../races.js';
-import { getHalloween, svgIcons, svgViewBox } from './../functions.js';
+import {adjustCosts, getHalloween, svgIcons, svgViewBox} from './../functions.js';
 import { actionDesc, sideMenu, getSolarName } from './functions.js';
+import {add2virtualWikiContent, add2virtualWikiTitle} from "./search";
 
 const isHalloween = getHalloween();
 const standard_tech = techList('standard');
@@ -4211,7 +4212,128 @@ function addRequirements(parent,key,keyName,path){
         }
     }
 }
-
+function addRequirementsForSearch(hash,key,keyName,path){
+    let techTrees = getTechTrees(path);
+    if (Object.keys(key.reqs).length > 0){
+        let techReqs = {};
+        let otherReqs = {};
+        Object.keys(key.reqs).forEach(function (req){
+            let reqID = req + key.reqs[req];
+            //Determine Tech Requirements and Non-Tech Requirements
+            if (techTrees[req] && techTrees[req][key.reqs[req]]) {
+                techReqs[reqID] = [];
+                let currTechReq = techTrees[req][key.reqs[req]];
+                //For anomalies where multiple techs can fill one pre-req.
+                currTechReq.forEach(function (subReq){
+                    techReqs[reqID].push({
+                        name: subReq.name,
+                        title: subReq.title,
+                        era: subReq.era
+                    });
+                });
+            }
+            else if (extraRequirements[reqID]){
+                otherReqs[reqID] = {
+                    title: extraRequirements[reqID].title,
+                    link: extraRequirements[reqID].link
+                };
+            }
+        });
+        //Add Tech Requirements
+        if (Object.keys(techReqs).length > 0){
+            let techReq = [];
+            Object.keys(techReqs).forEach(function (req){
+                let reqText = '';
+                let isOr = false;
+                techReqs[req].forEach(function (subReq){
+                    let subText = subReq.title;
+                    if (isOr){
+                        reqText = loc('wiki_tech_req_or',[reqText,subText]);
+                    }
+                    else {
+                        isOr = true;
+                        reqText = subText;
+                    }
+                });
+                techReq.push(reqText);
+            });
+            add2virtualWikiContent(hash, loc('wiki_tech_req_tech') + techReq.join(', '));
+        }
+        //Add Non-Tech Requirements
+        if (Object.keys(otherReqs).length > 0){
+            let otherReq = [];
+            Object.keys(otherReqs).forEach(function (req){
+                otherReq.push(otherReqs[req].title);
+            });
+            add2virtualWikiContent(hash, loc('wiki_tech_req_other') + otherReq.join(', '));
+        }
+    }
+    //Add Special Requirements
+    if (specialRequirements.hasOwnProperty(keyName)){
+        let specialReq = [];
+        let hasReq = false;
+        specialRequirements[keyName].forEach(function (req){
+            if (req.truepath && path !== 'truepath'){
+                return;
+            }
+            hasReq = true;
+            let multi = false;
+            let reqText = '';
+            req.subreqs.forEach(function (subreq){
+                let subText = '';
+                switch (req.category){
+                    case 'species':
+                        subText = loc(`race_${subreq.name}`);
+                        break;
+                    case 'genus':
+                        subText = loc(`genelab_genus_${subreq.name}`);
+                        break;
+                    case 'trait':
+                        subText = loc(`trait_${subreq.name}_name`);
+                        break;
+                    case 'tech':
+                        subText = typeof actions.tech[subreq.name].title === 'string' ? actions.tech[subreq.name].title : actions.tech[subreq.name].title();
+                        break;
+                    case 'universe':
+                        subText = loc(`universe_${subreq.name}`);
+                        break;
+                    case 'crispr':
+                        subText = loc(`arpa_genepool_${subreq.name}_title`);
+                        break;
+                    case 'achieve':
+                        subText = subreq.val + ` <span class="flair" aria-label="star"><svg class="star${subreq.val}" version="1.1" x="0px" y="0px" width="16px" height="16px" viewBox="${svgViewBox('star')}" xml:space="preserve">${svgIcons('star')}</svg></span> ` + loc(`achieve_${subreq.name}_name`);
+                        break;
+                    case 'government':
+                        subText = loc(`govern_${subreq.name}`);
+                        break;
+                    case 'scenario':
+                        subText = loc(`wiki_challenges_scenarios_${subreq.name}`);
+                        break;
+                    case 'challenge':
+                        subText = loc(`wiki_challenges_modes_${subreq.name}`);
+                        break;
+                    case 'unique':
+                        subText = subreq.title;
+                        break;
+                }
+                if (multi){
+                    reqText = loc('wiki_tech_req_or',[reqText,subText]);
+                }
+                else {
+                    multi = true;
+                    reqText = subText;
+                }
+            });
+            if (req.category !== 'unique'){
+                reqText = loc(`wiki_tech_special_${req.category}${req.not ? '_not' : ''}`,[reqText]);
+            }
+            specialReq.push(reqText);
+        });
+        if (hasReq){
+            add2virtualWikiContent(hash, loc('wiki_tech_req_special') + specialReq.join(", "));
+        }
+    }
+}
 const alt_era = {
     solar: 'interstellar'
 };
@@ -4219,11 +4341,26 @@ const alt_era_r = {
     interstellar: 'solar'
 };
 
-export function renderTechPage(era,path){
-    let content = sideMenu('create');;
+export function renderTechPage(era,path,forSearch){
+    let techs = path === 'truepath' ? truepath_tech : standard_tech;
+
+    if(forSearch) {
+        Object.keys(techs).forEach(function (actionName){
+            let action = techs[actionName];
+            if (action.hasOwnProperty('era') && (action.era === era || action.era === alt_era[era]) && (!action.hasOwnProperty('wiki') || action.wiki)){
+                let id = action.id.split('-');
+                let hash = `${path === "truepath" ? "tp_" : ""}${era}-${id[1]}${(era ==="interstellar" || era === "intergalactic" || era === "tauceti") ? "_tech" : ""}`;
+                add2virtualWikiTitle(hash, typeof action.title === 'string' ? action.title : action.title());
+                actionTechDescAndSoOnForSearch(hash, action, actionName, path);
+                addRequirementsForSearch(hash, action, actionName, path);
+            }
+        });
+        return;
+    }
+
+    let content = sideMenu('create');
     let techListing = [];
     let otherTechs = [];
-    let techs = path === 'truepath' ? truepath_tech : standard_tech;
     let prefix = path === 'truepath' ? 'tp_tech' : 'tech';
 
     Object.keys(techs).forEach(function (actionName){
@@ -4282,5 +4419,93 @@ export function renderTechPage(era,path){
         content.append(techListing[i][1]);
         let id = techListing[i][0].id.split('-');
         sideMenu('add',`${era}-${prefix}`,id[1],typeof techListing[i][0].title === 'function' ? techListing[i][0].title() : techListing[i][0].title);
+    }
+}
+
+function actionTechDescAndSoOnForSearch(hash, c_action, key, path) {
+    let title = typeof c_action.title === 'string' ? c_action.title : c_action.title();
+    let firstLine = [];
+    firstLine.push(`${loc(`wiki_tech_tree_${c_action.grant[0]}`)}: ${c_action.grant[1]}`);
+    if (global.tech[c_action.grant[0]] && global.tech[c_action.grant[0]] >= c_action.grant[1]) {
+        firstLine.push(loc('wiki_arpa_purchased'));
+    }
+
+    let desc = typeof c_action.desc === 'string' ? c_action.desc : c_action.desc(true);
+    if (desc !== title) {
+        firstLine.push(desc);
+    }
+    add2virtualWikiContent(hash, firstLine.join(" | "));
+
+    if (c_action.hasOwnProperty('effect')) {
+        let effect = typeof c_action.effect === 'string' ? c_action.effect : c_action.effect(true);
+        if (effect !== false) {
+            add2virtualWikiContent(hash, effect, true);
+        }
+    }
+    if (extraInformationTP.hasOwnProperty(key) && path === 'truepath'){
+        for (let i=0; i<extraInformationTP[key].length; i++){
+            add2virtualWikiContent(hash, extraInformationTP[key][i]);
+        }
+    }
+    else if (extraInformation.hasOwnProperty(key)){
+        for (let i=0; i<extraInformation[key].length; i++){
+            add2virtualWikiContent(hash, extraInformation[key][i]);
+        }
+    }
+    else {
+        add2virtualWikiContent(hash, loc(`wiki_tech_empty`));
+    }
+    if (c_action.hasOwnProperty('cost')) {
+        let costs = adjustCosts(c_action, true);
+        let cost = [];
+        let costCreep = ``;
+        let render = false;
+
+        let addCost = function (res, res_cost, label) {
+            if (res_cost > 0) {
+                cost.push(`${label}${sizeApproximation(res_cost, 1)}`);
+                render = true;
+            }
+        };
+
+        Object.keys(costs).forEach(function (res) {
+            if (res === 'Structs') {
+                let structs = costs[res]();
+                Object.keys(structs).forEach(function (region) {
+                    Object.keys(structs[region]).forEach(function (struct) {
+                        let res_cost = structs[region][struct].hasOwnProperty('on') ? structs[region][struct].on : structs[region][struct].count;
+
+                        let label = '';
+                        if (structs[region][struct].hasOwnProperty('s')) {
+                            let sector = structs[region][struct].s;
+                            label = typeof actions[region][sector][struct].title === 'string' ? actions[region][sector][struct].title : actions[region][sector][struct].title();
+                        } else {
+                            label = typeof actions[region][struct].title === 'string' ? actions[region][struct].title : actions[region][struct].title();
+                        }
+                        cost.push(`${label}: ${res_cost}`);
+                        render = true;
+                    });
+                });
+            } else if (['Plasmid', 'Phage', 'Dark', 'Harmony', 'AICore', 'Artifact', 'Blood_Stone', 'AntiPlasmid'].includes(res)) {
+                let resName = res;
+                if (res === 'Plasmid' && global.race.universe === 'antimatter') {
+                    resName = 'AntiPlasmid';
+                }
+                addCost(res, costs[res](), loc(`resource_${resName}_name`) + ': ');
+            } else if (res === 'Supply') {
+                addCost(res, costs[res](), loc(`resource_${res}_name`) + ': ');
+            } else if (res === 'Custom') {
+                cost.push(costs[res]().label);
+                render = true;
+            } else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool') {
+                let f_res = res === 'Species' ? global.race.species : res;
+                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
+                label = label.replace("_", " ");
+                addCost(res, costs[res](), label);
+            }
+        });
+        if (render) {
+            add2virtualWikiContent(hash, loc('wiki_calc_cost') + ": " + cost.join(", "));
+        }
     }
 }

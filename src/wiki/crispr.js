@@ -2,20 +2,27 @@ import { global } from './../vars.js';
 import { loc } from './../locale.js';
 import { genePool } from './../arpa.js';
 import { sideMenu } from './functions.js';
+import {add2virtualWikiContent, add2virtualWikiTitle} from "./search";
 
-export function crisprPage(content){
+export function crisprPage(content, forSearch){
+    if(forSearch){
+        Object.keys(genePool).forEach(function (gene){
+            geneDesc(null,gene,forSearch);
+        });
+        return;
+    }
     content.append(`<div class="header has-text-warning">${loc('wiki_arpa_crispr')}</div>`);
 
     let mainContent = $(`<div></div>`);
-    let crisprContent = sideMenu('create',mainContent);
+    let crisprContent = sideMenu('create',mainContent, null, null, forSearch);
     content.append(mainContent);
 
     Object.keys(genePool).forEach(function (gene){
         let id = genePool[gene].id.split('-');
         let info = $(`<div id="${id[1]}" class="infoBox"></div>`);
         crisprContent.append(info);
-        geneDesc(info,gene);
-        sideMenu('add',`crispr-prestige`,id[1],genePool[gene].title);
+        geneDesc(info,gene,forSearch);
+        sideMenu('add',`crispr-prestige`,id[1],genePool[gene].title, forSearch);
     });
 }
 
@@ -69,7 +76,43 @@ Object.keys(genePool).forEach(function (gene){
     };
 });
 
-function geneDesc(info,gene){
+function geneDesc(info,gene,forSearch){
+    if(forSearch){
+        let hash = `crispr-${gene}`;
+        add2virtualWikiTitle(hash, genePool[gene].title);
+        add2virtualWikiContent(hash, `${genePool[gene].desc} | ${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]} `);
+        let costs = [];
+        Object.keys(genePool[gene].cost).forEach(function(res){
+            let res_cost = genePool[gene].cost[res]();
+            if (res_cost > 0){
+                if (res === 'Plasmid' && global.race.universe === 'antimatter'){
+                    res = 'AntiPlasmid';
+                }
+                let label = loc(`resource_${res}_name`);
+                costs.push(`${label}: ${res_cost}`);
+            }
+        });
+        add2virtualWikiContent(hash, `${loc("wiki_calc_cost")}: ${costs.join(', ')}`);
+        if (Object.keys(genePool[gene].reqs).length > 0){
+            let reqs = loc('wiki_arpa_crispr_req');
+            let comma = false;
+            Object.keys(genePool[gene].reqs).forEach(function (req){
+                reqs += `${comma ? `, ` : ``}${loc(`wiki_arpa_crispr_${req}`)} ${genePool[gene].reqs[req]}`;
+                comma = true;
+            });
+            add2virtualWikiContent(hash, reqs);
+        }
+        if (specialRequirements.hasOwnProperty(gene)){
+            let comma = false;
+            let specialReq = loc('wiki_arpa_crispr_req_extra');
+            Object.keys(specialRequirements[gene]).forEach(function (req){
+                specialReq+=`${comma ? `, ` : ``}${specialRequirements[gene][req].title}`;
+                comma = true;
+            });
+            add2virtualWikiContent(hash, specialReq);
+        }
+        return;
+    }
     let owned = global.genes[genePool[gene].grant[0]] && global.genes[genePool[gene].grant[0]] >= genePool[gene].grant[1] ? true : false;
 
     info.append(`<div class="type"><h2 class="has-text-warning">${genePool[gene].title}</h2>${owned ? `<span class="is-sr-only">${loc('wiki_arpa_purchased')}</span>` : ``}<span class="has-text-${owned ? `success` : `caution`}">${loc(`wiki_arpa_crispr_${genePool[gene].grant[0]}`)}: ${genePool[gene].grant[1]}</span></div>`);

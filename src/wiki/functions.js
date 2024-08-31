@@ -4,16 +4,17 @@ import { clearElement, vBind, adjustCosts } from './../functions.js';
 import { actions } from './../actions.js';
 import { races, genusVars } from './../races.js';
 import { planetName } from './../space.js';
+import {add2virtualWikiContent, add2virtualWikiTitle} from "./search.js";
 
-export function headerBoxBuilder(parent,args,box){
+export function headerBoxBuilder(parent,args,box,forSearch,realSub){
     if (!args.hasOwnProperty('h_level')){
         args['h_level'] = 2;
     }
     args['header'] = true;
-    return infoBoxBuilder(parent,args,box);
+    return infoBoxBuilder(parent,args,box,forSearch,realSub);
 }
 
-export function infoBoxBuilder(parent,args,box){
+export function infoBoxBuilder(parent,args,box,forSearch,realSub){
     if (!args.hasOwnProperty('name')){ return; }
     if (!args.hasOwnProperty('template')){ return; }
     if (!args.hasOwnProperty('paragraphs')){ args['paragraphs'] = 0; }
@@ -29,6 +30,48 @@ export function infoBoxBuilder(parent,args,box){
     if (!args.hasOwnProperty('default_color')){ args['default_color'] = 'warning'; }
     if (!args.hasOwnProperty('examples')){ args['examples'] = false; }
 
+    if(forSearch){
+        if(parent === "thralls")box = parent;
+        let hash = `${realSub??args.template}-${box??args.name}`;
+        add2virtualWikiTitle(hash, args['label']??loc(`wiki_${args.template}_${box??args.name}`));
+        let ranges = [{s: 1, e: args.break ? args.break[0] - 1 : args.paragraphs}];
+
+        if (args.break){
+            for (let i=0; i<args.break.length; i++){
+                let end = i+1 === args.break.length ? args.paragraphs : (args.break[i+1] - 1);
+                ranges.push({ s: args.break[i], e: end });
+            }
+        }
+        ranges.forEach(function(range){
+            let para = [];
+            for (let i=range.s; i<=range.e; i++){
+                if ((args.text[i] || args.rawtext[i] || args.para_data[i]) && Array.isArray(args.para_data[i])){
+                    let inputs = args.para_data[i];
+                    if (args.data_link[i] && Array.isArray(args.data_link[i])){
+                        for (let j=0; j<args.data_link[i].length; j++){
+                            if (args.data_link[i][j] && args.data_link[i][j] !== 'plain'){
+                                inputs[j] = `${inputs[j]}`;
+                            }
+                        }
+                    }
+                    let string = args.rawtext[i] ? args.rawtext[i] : (loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`,inputs));
+                    para.push(`${string}`);
+                }
+                else {
+                    let string = args.rawtext[i] ? args.rawtext[i] : (loc(args.text[i] ? args.text[i] : `wiki_${args.template}_${args.name}_para${i}`));
+                    para.push(`${string}`);
+                }
+            }
+            if(para.length > 0)add2virtualWikiContent(hash, para.join(''));
+            if (args.examples){
+                let exampleString = loc(`wiki_examples`);
+                args.examples.forEach(function(example){
+                    add2virtualWikiContent(hash,`${exampleString} ${example}`);
+                });
+            }
+        });
+        return args.name;
+    }
     let info = false;
     if (box){
         info = box;
@@ -196,7 +239,7 @@ export function actionDesc(info, c_action, extended, isStruct){
             }
             else if (res !== 'Morale' && res !== 'Army' && res !== 'Bool'){
                 let f_res = res === 'Species' ? global.race.species : res;
-                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : global.resource[f_res].name) + ': ';
+                let label = f_res === 'Money' ? '$' : (res === 'HellArmy' ? loc('fortress_troops') : loc(`resource_${f_res}_name`)) + ': ';
                 label = label.replace("_", " ");
                 addCost(res,costs[res](),label,color);
             }
@@ -224,7 +267,8 @@ export function bindScroll(elm, target){
     });
 }
 
-export function sideMenu(action,arg1,arg2,arg3){
+export function sideMenu(action,arg1,arg2,arg3,forSearch=false){
+    if(forSearch)return;
     if (action === 'create'){
         let content = arg1 ? (typeof arg1 === 'string' ? $(`#${arg1}`) : arg1) : $(`#content`);
         clearElement(content);
@@ -247,8 +291,8 @@ export function sideMenu(action,arg1,arg2,arg3){
     
 }
 
-export function subSideMenu(action,arg1,arg2,arg3){
-    sideMenu(action,arg1,arg2,`ᄂ` + arg3);
+export function subSideMenu(action,arg1,arg2,arg3,forSearch=false){
+    if(!forSearch)sideMenu(action,arg1,arg2,`ᄂ` + arg3);
 }
 
 export function getSolarName(planet) {
@@ -263,6 +307,7 @@ export function getSolarName(planet) {
 }
 
 export function createRevealSection(info,id,type,insert){
+    if(!info?.append)return;
     let reveal = $(`<div></div>`);
     info.append(reveal);
     reveal.append(`<span role="button" id="${id}${type}Button" class="has-text-info reveal" @click="show()">{{ vis | label }}</span>`);
@@ -298,6 +343,7 @@ export function createRevealSection(info,id,type,insert){
 }
 
 export function createCalcSection(info,id,type,insert){
+    if(!info?.append)return;
     insert = insert || loc(`wiki_calc_insert_` + type);
     let calc = $(`<div></div>`);
     info.append(calc);

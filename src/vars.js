@@ -1231,7 +1231,7 @@ if (!global['settings']){
         q_merge: 'merge_nearby',
         cLabels: true,
         theme: 'gruvboxDark',
-        locale: 'en-US',
+        locale: ["cs-CZ","de-DE","es-ES","im-PL","it-IT","ko-KR","pl-PL","pt-BR","ru-RU","zh-CN","zh-TW"].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US',
         icon: 'star'
     };
 }
@@ -1393,7 +1393,7 @@ if (!global.settings['showAchieve']){
     global.settings['showAchieve'] = false;
 }
 if (!global.settings['locale']){
-    global.settings['locale'] = 'en-US';
+    global.settings['locale'] = ["cs-CZ","es-ES","im-PL","ko-KR","pt-BR","ru-RU","zh-CN","zh-TW",].indexOf(window.navigator.language)>-1?window.navigator.language:'en-US';
 }
 if (typeof global.settings.pause === 'undefined'){
     global.settings['pause'] = false;
