@@ -1,6 +1,6 @@
-import { global, seededRandom, keyMultiplier, sizeApproximation, doInNextLoop } from './vars.js';
+import {global, seededRandom, keyMultiplier, sizeApproximation, doInNextLoop, virtualElement} from './vars.js';
 import { loc } from './locale.js';
-import { calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat } from './functions.js';
+import {calcPrestige, clearElement, popover, clearPopper, vBind, timeFormat, modRes, messageQueue, genCivName, darkEffect, eventActive, easterEgg, trickOrTreat, virtualClearElement} from './functions.js';
 import { universeAffix } from './achieve.js';
 import { races, racialTrait, traits, planetTraits, biomes, fathomCheck } from './races.js';
 import { defineGovernor, govActive } from './governor.js';
@@ -58,6 +58,8 @@ export function defineGovernment(define){
             }
         }
     });
+    virtualDrawGovModal();
+    virtualTaxRates();
     
     government($(`#r_govern0`));
     taxRates($(`#r_govern0`));
@@ -416,7 +418,50 @@ function drawGovModal(){
         }
     );
 }
-
+export function virtualDrawGovModal(){
+    let govModal = new virtualElement("govModal");
+    virtualClearElement("govModal");
+    govModal.setGov=(g)=>{
+        if (global.civic.govern.rev === 0){
+            let drawTechs = global.genes['governor'] && global.civic.govern.type === 'anarchy';
+            global.civic.govern.type = g;
+            let time = 1000;
+            if (global.tech['high_tech']){
+                time += 250;
+                if (global.tech['high_tech'] >= 3){
+                    time += 250;
+                }
+                if (global.tech['high_tech'] >= 6){
+                    time += 250;
+                }
+            }
+            if (global.tech['space_explore'] && global.tech['space_explore'] >= 3){
+                time += 250;
+            }
+            if (global.race['unorganized']){
+                time = Math.round(time * (1 + traits.unorganized.vars()[0] / 100));
+            }
+            if (global.stats.achieve['anarchist']){
+                time = Math.round(time * (1 - (global.stats.achieve['anarchist'].l / 10)));
+            }
+            if (global.race['lawless']){
+                time = Math.round(time * ((100 - traits.lawless.vars()[0]) / 100));
+            }
+            let fathom = fathomCheck('tuskin');
+            if (fathom > 0){
+                time = Math.round(time * ((100 - traits.lawless.vars(1)[0] * fathom) / 100));
+            }
+            let aristoVal = govActive('aristocrat',0);
+            if (aristoVal){
+                time = Math.round(time * (1 - (aristoVal / 100)));
+            }
+            global.civic.govern.rev = time + global.civic.govern.fr;
+            if (drawTechs){
+                virtualDrawTech();
+            }
+        }
+    }
+}
 export function foreignGov(){
     if ($('#foreign').length === 0 && !global.race['cataclysm'] && (!global.tech['world_control'] || global.race['truepath']) && !global.tech['isolation']){
         let foreign = $('<div id="foreign" v-show="vis()" class="government is-child"></div>');
@@ -1026,6 +1071,13 @@ function taxRates(govern){
             classes: `has-background-light has-text-dark`
         }
     );
+}
+
+export function virtualTaxRates(){
+    let tax_rates = new virtualElement("tax_rates");
+    virtualClearElement("tax_rates");
+    tax_rates.add = n=>adjustTax('add',n);
+    tax_rates.sub = n=>adjustTax('sub',n);
 }
 
 export function govCivics(f,v){

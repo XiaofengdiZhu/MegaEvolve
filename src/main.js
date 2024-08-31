@@ -807,28 +807,34 @@ if(!global.settings.pause) {
 }
 function stepByStep(forceFrameLoop = false){
     try{
-        let frameStartTime = new Date();
+        let frameStartTime = Date.now();
         global.frameFactor = 1;
         fastLoop();
         global.stats.daysMega += 0.05;
-        if(global.stats.daysMega % 0.2 < 0.01) {
+        if(isApproximatelyMultiple(global.stats.daysMega, 0.2)) {
             midLoop();
         }
-        if(global.stats.daysMega % 1 < 0.01) {
+        if(isApproximatelyMultiple(global.stats.daysMega, 1)) {
             longLoop();
-            if(!forceFrameLoop) {
-                frameLoop();
-            }
         }
         if(forceFrameLoop) {
             frameLoop();
             $("#realFactor").text("1");
-            $("#frameCost").text(((new Date()-frameStartTime)).toFixed(1) + "ms");
+            $("#frameCost").text((Date.now()-frameStartTime) + "ms");
         }
     }
     catch (e){
         console.log(e);
     }
+}
+window.stepByStep = stepByStep;
+
+function isApproximatelyMultiple(num, factor) {
+    if (factor === 0) {
+        throw new Error("Factor cannot be zero");
+    }
+    const quotient = num / factor;
+    return Math.abs(quotient - Math.round(quotient)) < 0.01;
 }
 
 resourceAlt();

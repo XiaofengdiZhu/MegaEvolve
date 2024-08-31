@@ -1710,7 +1710,7 @@ export function marketItem(mount,market_item,name,color,full){
         }
     });
 }
-function virtualInitGalaxyTrade(){
+export function virtualInitGalaxyTrade(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }
@@ -2755,7 +2755,7 @@ export function containerValue(){
     return Math.round(spatialReasoning(container_value));
 }
 
-function virtualInitMarket(){
+export function virtualInitMarket(){
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 0)){
         return;
     }
@@ -2781,7 +2781,7 @@ function initMarket(){
     $('#market').append(market);
     loadMarket();
 }
-function virtualInitStorage() {
+export function virtualInitStorage() {
     if (!global.settings.tabLoad && (global.settings.civTabs !== 4 || global.settings.marketTabs !== 1)){
         return;
     }

@@ -63,7 +63,7 @@ export var message_logs = {
 };
 export const message_filters = ['all','progress','queue','building_queue','research_queue','combat','spy','events','major_events','minor_events','achievements','hell'];
 export var virtualHeaders = "";
-const specialIds = ["fleet","fort","gFort","mechList","shipList","createHead","market-qty","galaxyTrade","foundry","skilledServants","sshifter"];
+const specialIds = ["fleet","fort","gFort","mechList","shipList","createHead","market-qty","galaxyTrade","foundry","skilledServants","sshifter","govModal","tax_rates","candidates","iReplicator","iFactory", "tauRoidMiningShip","tauGas2AlienStation"];
 export class virtualElement {
     constructor(id,parentId) {
         if(id){
@@ -2400,7 +2400,7 @@ export function clearStates(){
     global.settings.space.home = true;
     setRegionStates(true);
     global.settings.disableReset = false;
-    global.settings.pause = false;
+    //global.settings.pause = false;
     global.arpa = {};
 
     delete global.race['hrt'];

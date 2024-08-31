@@ -3999,7 +3999,7 @@ export function drawMechLab(){
         virtualDrawMechs();
     }
 }
-function virtualDrawMechs(){
+export function virtualDrawMechs(){
     let list = new virtualElement("mechList");
     virtualClearElement("mechList");
     list.scrap = (id)=> {

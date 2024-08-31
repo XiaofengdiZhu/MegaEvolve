@@ -4405,7 +4405,7 @@ function dragShipList(){
         }
     });
 }
-function virtualDrawShips(){
+export function virtualDrawShips(){
     let list = new virtualElement("shipList");
     virtualClearElement("shipList");
     if (global.space.shipyard.sort){

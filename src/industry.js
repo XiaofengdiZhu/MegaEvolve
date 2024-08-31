@@ -1,6 +1,6 @@
-import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, doInNextLoop } from './vars.js';
+import { global, keyMultiplier, sizeApproximation, p_on, support_on, quantum_level, doInNextLoop, virtualElement } from './vars.js';
 import { loc } from './locale.js';
-import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat } from './functions.js';
+import { vBind, popover, clearElement, powerGrid, easterEgg, trickOrTreat, virtualClearElement } from './functions.js';
 import { actions, checkCityRequirements, checkPowerRequirements } from './actions.js';
 import { races, traits, fathomCheck } from './races.js';
 import { atomic_mass } from './resources.js';
@@ -15,6 +15,7 @@ export function loadIndustry(industry,parent,bind){
             loadSmelter(parent,bind);
             break;
         case 'factory':
+            virtualLoadFactory();
             loadFactory(parent,bind);
             break;
         case 'droid':
@@ -36,13 +37,16 @@ export function loadIndustry(industry,parent,bind){
             loadNFactory(parent,bind);
             break;
         case 'mining_ship':
+            virtualLoadMiningShip();
             loadMiningShip(parent,bind);
             break;
         case 'alien_space_station':
+            virtualLoadAlienSpaceStation();
             loadAlienSpaceStation(parent,bind);
             break;
         case 'replicator':
             loadReplicator(parent,bind);
+            virtualLoadReplicator();
             break;
     }
 }
@@ -727,6 +731,33 @@ function loadFactory(parent,bind){
         });
     });
 }
+
+export function virtualLoadFactory(){
+    let factory = new virtualElement("iFactory");
+    virtualClearElement(factory);
+    factory.subItem = (item, count) => {
+        count = Math.min(count, global.city.factory[item] ?? 0);
+        if(count > 0){
+            global.city.factory[item] -= count;
+        }
+    };
+    factory.addItem = (item, count) => {
+        let max = global.space['red_factory'] ? global.space.red_factory.on + global.city.factory.on : global.city.factory.on;
+        if (global.interstellar['int_factory'] && p_on['int_factory']){
+            max += p_on['int_factory'] * 2;
+        }
+        if (global.tauceti['tau_factory'] && support_on['tau_factory']){
+            max += support_on['tau_factory'] * (global.tech['isolation'] ? 5 : 3);
+        }
+        let used = global.city.factory.Lux + global.city.factory.Furs + global.city.factory.Alloy + global.city.factory.Polymer + global.city.factory.Nano + global.city.factory.Stanene;
+        let available = max - used;
+        if(available > 0){
+            count = Math.min(count, available);
+            global.city.factory[item] += count;
+        }
+    };
+}
+
 export function luxGoodPrice(demand){
     if (global.race['toxic']){
         demand *= 1 + (traits.toxic.vars()[0] / 100);
@@ -1353,6 +1384,27 @@ function loadMiningShip(parent,bind){
     });
 }
 
+export function virtualLoadMiningShip() {
+    let tauRoidMiningShip = new virtualElement("tauRoidMiningShip");
+    virtualClearElement("tauRoidMiningShip");
+    tauRoidMiningShip.sub = (r, count) => {
+        if (global.tauceti.mining_ship[r] > 0){
+            global.tauceti.mining_ship[r] -= count;
+            if (global.tauceti.mining_ship[r] < 0){
+                global.tauceti.mining_ship[r] = 0;
+            }
+        }
+    };
+    tauRoidMiningShip.add = (r, count) => {
+        if (global.tauceti.mining_ship[r] < 100){
+            global.tauceti.mining_ship[r] += count;
+            if (global.tauceti.mining_ship[r] > 100){
+                global.tauceti.mining_ship[r] = 100;
+            }
+        }
+    };
+}
+
 function loadAlienSpaceStation(parent,bind){
     parent.append($(`<div>${loc('tau_gas2_alien_station_focus',[global.resource.Knowledge.name])}</div>`));
     let common = $(`<div class="sliderbar thin"><span class="sub" role="button" @click="sub('focus')" aria-label="Decrease Knowledge Focus">&laquo;</span><b-slider v-model="focus" format="percent"></b-slider><span class="add" role="button" @click="add('focus')" aria-label="Increase Knowledge Focus">&raquo;</span></div>`);
@@ -1382,6 +1434,27 @@ function loadAlienSpaceStation(parent,bind){
             }
         }
     });
+}
+
+export function virtualLoadAlienSpaceStation() {
+    let tauGas2AlienStation = new virtualElement("tauGas2AlienStation");
+    virtualClearElement("tauGas2AlienStation");
+    tauGas2AlienStation.sub = (r, count) => {
+        if (global.tauceti.alien_space_station[r] > 0){
+            global.tauceti.alien_space_station[r] -= count;
+            if (global.tauceti.alien_space_station[r] < 0){
+                global.tauceti.alien_space_station[r] = 0;
+            }
+        }
+    };
+    tauGas2AlienStation.add = (r, count) => {
+        if (global.tauceti.alien_space_station[r] < 100){
+            global.tauceti.alien_space_station[r] += count;
+            if (global.tauceti.alien_space_station[r] > 100){
+                global.tauceti.alien_space_station[r] = 100;
+            }
+        }
+    };
 }
 
 function loadReplicator(parent,bind){
@@ -1472,6 +1545,30 @@ function loadReplicator(parent,bind){
                 scrollContainer.scrollLeft += evt.deltaY;
             });
         }
+    }
+}
+
+export function virtualLoadReplicator(){
+    let iReplicator = new virtualElement("iReplicator");
+    virtualClearElement("iReplicator");
+    iReplicator.less = count => {
+        if (global.race.replicator.pow > 0){
+            global.race.replicator.pow -= count;
+            if (global.race.replicator.pow < 0){
+                global.race.replicator.pow = 0;
+            }
+        }
+    };
+    iReplicator.more = count => {
+        global.race.replicator.pow += count;
+    };
+    iReplicator.setVal = r => {
+        if (global.resource[r].display){
+            global.race.replicator.res = r;
+        }
+    };
+    iReplicator.avail = r => {
+        return global.resource[r].display;
     }
 }
 

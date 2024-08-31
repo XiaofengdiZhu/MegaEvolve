@@ -1,5 +1,5 @@
-import { global, seededRandom, p_on, breakdown } from './vars.js';
-import { vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename } from './functions.js';
+import {global, seededRandom, p_on, breakdown, virtualElement} from './vars.js';
+import {vBind, popover, tagEvent, calcQueueMax, calcRQueueMax, clearElement, adjustCosts, decodeStructId, timeCheck, arpaTimeCheck, hoovedRename, virtualClearElement} from './functions.js';
 import { races } from './races.js';
 import { actions, checkCityRequirements, housingLabel, wardenLabel, updateQueueNames, checkAffordable } from './actions.js';
 import { govCivics, govTitle } from './civics.js';
@@ -284,6 +284,7 @@ export function defineGovernor(){
             drawnGovernOffice();
         }
         else {
+            virtualAppointGovernor();
             appointGovernor();
         }
     }
@@ -704,6 +705,33 @@ function appointGovernor(){
             elm: `#candidates .${gov.bg} .bg`,
         });
     });
+}
+
+export function virtualAppointGovernor(){
+    let candidates = new virtualElement("candidates");
+    virtualClearElement("candidates");
+    if (!global.race.hasOwnProperty('governor') || !global.race.governor.hasOwnProperty('candidates')){
+        global.race['governor'] = {
+            candidates: genGovernor(10)
+        };
+    }
+    candidates.appoint = gi=>{
+        if (global.genes['governor'] && global.tech['governor']){
+            let gov = global.race.governor.candidates[gi];
+            global.race.governor['g'] = gov;
+            delete global.race.governor.candidates;
+            global.race.governor['tasks'] = {
+                t0: 'none', t1: 'none', t2: 'none', t3: 'none', t4: 'none', t5: 'none'
+            };
+            updateQueueNames(false, ['city-amphitheatre', 'city-apartment']);
+            calcQueueMax();
+            calcRQueueMax();
+            defineGovernor();
+            tagEvent('governor',{
+                'appoint': global.race.governor.g.bg
+            });
+        }
+    };
 }
 
 export function govActive(trait,val){
