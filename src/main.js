@@ -758,7 +758,9 @@ if (window.Worker){
                     }
                     break;
                 }
-                while(global.stats.daysMega % 1 > 0.01) {
+                while(true) {
+                    let temp = global.stats.daysMega % 1;
+                    if(temp < 0.025 || temp > 0.975) break;
                     stepByStep(false);
                 }
                 let frameLongLoopCount = global.settings.frameLongLoopCount??1;
@@ -811,10 +813,12 @@ function stepByStep(forceFrameLoop = false){
         global.frameFactor = 1;
         fastLoop();
         global.stats.daysMega += 0.05;
-        if(global.stats.daysMega % 0.2 < 0.01) {
+        let temp = global.stats.daysMega % 0.2;
+        if(temp < 0.025 || temp > 0.175) {
             midLoop();
         }
-        if(global.stats.daysMega % 1 < 0.01) {
+        temp = global.stats.daysMega % 1;
+        if(temp < 0.025 || temp > 0.975) {
             longLoop();
             if(!forceFrameLoop) {
                 frameLoop();
